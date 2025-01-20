@@ -2,6 +2,23 @@
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
+## Videos
+
+<!-- Embed a video -->
+### Prototype Figma
+<video controls>
+  <source src="./assets/videos/Prototype.mov">
+  Your browser does not support the video tag.
+</video>
+
+### Bare Bones
+<video controls>
+  <source src="./assets/videos/Skeleton.mov">
+  Your browser does not support the video tag.
+</video>
+
+
+
 ## Get started
 
 1. Install dependencies
