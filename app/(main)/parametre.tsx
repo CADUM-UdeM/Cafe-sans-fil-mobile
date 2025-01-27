@@ -6,7 +6,11 @@ export default function ParametreScreen() {
   return (
     <ScrollableLayout>
       <SafeAreaView>
-        <Text>ParametreScreen</Text>
+        <Text>Mon compte</Text>
+        <Text>Mes commandes</Text>
+        <Text>Mes préférences</Text>
+        <Text>Paramètres Application</Text>
+        <Text>À propos</Text>
       </SafeAreaView>
     </ScrollableLayout>
   )
