@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Redirect, router } from "expo-router";
 import * as Location from "expo-location";
 import { Star, Vegan } from "lucide-react-native";
-import { View, StyleSheet, Image, Text } from "react-native";
+import { View, StyleSheet, Image, Text, FlatList } from "react-native";
 
 
 import useLocation from "@/hooks/useLocation";
@@ -52,6 +52,21 @@ import { useUser } from "@clerk/clerk-expo";
  * - All Cafes Cards: Lists all available cafes.
  */
 export default function HomeScreen() {
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // fetch cafe list
+  useEffect(() => {
+    fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
+      .then((response) => response.json())
+      .then((json) => {
+        console.log(JSON.stringify(json));
+        setData(json);
+      })
+      .catch((error) => console.error(error))
+      .finally(() => setIsLoading(false));;
+  }, []);
+
   // Get the user's current location
   const [location, getCurrentLocation] = useLocation();
 
@@ -105,12 +120,12 @@ export default function HomeScreen() {
         </View>
 
         {/* Announcement Image */}
-        <Image
+        {/* <Image
           width={361}
           height={210}
           style={styles.announcementImage}
           source={require("@/assets/images/placeholder/imagexl.png")}
-        />
+        /> */}
 
         {/* Quick Search Section with Tooltips */}
         <CardScrollableLayout
@@ -146,41 +161,18 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
-              slug="Cafe Tore et Fraction"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="closing soon"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="closed"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
+            <FlatList data={data} renderItem={({item}) => 
+                                <CafeCard
+                                  name={item.name}
+                                  image={item.image_url}
+                                  location={item.location.pavillon}
+                                  priceRange="$$"
+                                  rating={4.8}
+                                  status={item.is_open}
+                                />}
+              keyExtractor={item => item.cafe_id}
+              horizontal
+              ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
             />
           </CardScrollableLayout>
           <CardScrollableLayout
@@ -191,40 +183,18 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="closing soon"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="closed"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
+                        <FlatList data={data} renderItem={({item}) => 
+                                <CafeCard
+                                  name={item.name}
+                                  image={item.image_url}
+                                  location={item.location.pavillon}
+                                  priceRange="$$"
+                                  rating={4.8}
+                                  status={item.is_open}
+                                />}
+              keyExtractor={item => item.cafe_id}
+              horizontal
+              ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
             />
           </CardScrollableLayout>
           <CardScrollableLayout
@@ -235,40 +205,18 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="closing soon"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="closed"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
+                        <FlatList data={data} renderItem={({item}) => 
+                                <CafeCard
+                                  name={item.name}
+                                  image={item.image_url}
+                                  location={item.location.pavillon}
+                                  priceRange="$$"
+                                  rating={4.8}
+                                  status={item.is_open}
+                                />}
+              keyExtractor={item => item.cafe_id}
+              horizontal
+              ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
             />
           </CardScrollableLayout>
           <CardScrollableLayout
@@ -279,40 +227,18 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="closing soon"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="closed"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
+                        <FlatList data={data} renderItem={({item}) => 
+                                <CafeCard
+                                  name={item.name}
+                                  image={item.image_url}
+                                  location={item.location.pavillon}
+                                  priceRange="$$"
+                                  rating={4.8}
+                                  status={item.is_open}
+                                />}
+              keyExtractor={item => item.cafe_id}
+              horizontal
+              ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
             />
           </CardScrollableLayout>
         </View>
@@ -387,7 +313,7 @@ const styles = StyleSheet.create({
   },
   announcementImage: {
     marginTop: SPACING["xl"],
-    borderRadius: SPACING["sm"],
+    borderRadius: 12,
     marginHorizontal: SPACING["md"],
   },
   tooltipSearch: {
