@@ -29,7 +29,10 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   ScrollView,
+  FlatList,
 } from "react-native";
+import DayCard from "@/components/common/Cards/DayCard";
+
 
 export default function CafeScreen() {
   const [isLoading, setIsLoading] = useState(true);
@@ -45,7 +48,7 @@ export default function CafeScreen() {
         try {
             const response = await fetch(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}`);
             const json = await response.json();
-            //console.log('Received image URL:', json.image_url); // Log before state update
+            console.log(json.opening_hours);
             setCafe(json);
         } catch (error) {
             console.error('Fetch error:', error);
@@ -105,6 +108,21 @@ export default function CafeScreen() {
           paddingHorizontal: 28,
         }}
       >
+
+        <Text
+          style={[
+            TYPOGRAPHY.body.large.semiBold,
+            { color: COLORS.subtuleDark, textAlign: "center" },
+          ]}
+        >
+          Horaires
+        </Text>
+        <FlatList data={cafe.opening_hours} horizontal
+          keyExtractor={(item, index) => `${item.day}-${index}`} // Add a keyExtractor to avoid warnings
+          renderItem={({ item }) => (
+            <DayCard day={item.day} blocks={item.blocks} />
+          )}
+        />
         <Text
           style={[
             TYPOGRAPHY.body.large.semiBold,
