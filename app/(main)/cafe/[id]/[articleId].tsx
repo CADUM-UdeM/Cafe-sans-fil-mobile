@@ -25,7 +25,7 @@ import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, KeyboardAvoidin
 
 export default function ArticleScreen() {
   const { id, articleId } = useLocalSearchParams();
-  console.log("Caffé Id", id);
+  console.log("Café Id", id);
   console.log("Article Id", articleId) ;
 
   const scrollViewRef = useRef<ScrollView>(null);

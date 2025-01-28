@@ -60,7 +60,6 @@ export default function HomeScreen() {
     fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
       .then((response) => response.json())
       .then((json) => {
-        console.log(JSON.stringify(json));
         setData(json);
       })
       .catch((error) => console.error(error))
@@ -169,10 +168,11 @@ export default function HomeScreen() {
                                   priceRange="$$"
                                   rating={4.8}
                                   status={item.is_open}
+                                  id={item.cafe_id}
                                 />}
               keyExtractor={item => item.cafe_id}
-              horizontal
-              ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
+              horizontal // render honrizontalement
+              ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
             />
           </CardScrollableLayout>
           <CardScrollableLayout

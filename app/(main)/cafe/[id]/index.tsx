@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import IconButton from "@/components/common/Buttons/IconButton";
 import ArticleCard from "@/components/common/Cards/ArticleCard";
 import CafeCard from "@/components/common/Cards/CafeCard";
@@ -32,25 +32,43 @@ import {
 } from "react-native";
 
 export default function CafeScreen() {
+  const [isLoading, setIsLoading] = useState(true);
   const { id } = useLocalSearchParams();
   const scrollViewRef = useRef<ScrollView>(null);
 
+  const [cafe, setCafe] = useState({});
+  // fetch cafe data
   useEffect(() => {
     scrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true });
+    
+    const fetchCafe = async () => {
+        try {
+            const response = await fetch(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}`);
+            const json = await response.json();
+            //console.log('Received image URL:', json.image_url); // Log before state update
+            setCafe(json);
+        } catch (error) {
+            console.error('Fetch error:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+      fetchCafe();
   }, [id]);
 
   return (
+    <SafeAreaView>
     <ScrollView
       ref={scrollViewRef}
       showsVerticalScrollIndicator={false}
       showsHorizontalScrollIndicator={false}
-      style={[{ backgroundColor: COLORS.white }]}>
+      style={{backgroundColor: "#f4f4f4"}} >
       <View>
         <Image
           style={styles.cafeBackgroundImage}
-          source={require("@/assets/images/placeholder/image2xl.png")}
+          source={isLoading ? require("@/assets/images/placeholder/image2xl.png") : {uri: cafe.image_url}}
         />
-
         <View style={styles.cafeHeaderButtons}>
           <IconButton
             Icon={ArrowLeft}
@@ -65,17 +83,16 @@ export default function CafeScreen() {
         </View>
 
         <View style={styles.cafeHeaderOpenStatus}>
-          <Tooltip label={"Ouvert"} showChevron={true} status="green" />
+          <Tooltip label={"Ouvert"} showChevron={true} status={cafe.is_open ? "green" : "red"} />
         </View>
       </View>
 
       <View>
         <Text style={[TYPOGRAPHY.heading.medium.bold, styles.cafeName]}>
-          {id}
+          {isLoading? id : cafe.name}
         </Text>
         <Text style={[TYPOGRAPHY.body.large.base, styles.cafeDescription]}>
-          Accédez facilement à toutes les options de restauration du campus en
-          un seul endroit.
+          {cafe.description}
         </Text>
       </View>
       <View
@@ -485,13 +502,19 @@ export default function CafeScreen() {
         />
       </CardScrollableLayout>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   cafeBackgroundImage: {
+    width: '100%',  // Fill width
+    height: 250,    // Fixed height, adjust as needed
     borderBottomLeftRadius: SPACING["7xl"],
     borderBottomRightRadius: SPACING["7xl"],
+    borderTopLeftRadius: SPACING["7xl"],
+    borderTopRightRadius: SPACING["7xl"],
+    
   },
   cafeHeaderButtons: {
     position: "absolute",
@@ -500,7 +523,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
     paddingHorizontal: 16,
-    marginTop: SPACING["9xl"],
+    marginTop: SPACING["sm"],
   },
   cafeHeaderButtonsRight: {
     flexDirection: "row",
