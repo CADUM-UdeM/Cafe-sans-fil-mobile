@@ -42,6 +42,7 @@ export default function CafeScreen() {
   const [cafe, setCafe] = useState({});
   // fetch cafe data
   useEffect(() => {
+    setIsLoading(true);
     scrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true });
     
     const fetchCafe = async () => {
@@ -92,10 +93,10 @@ export default function CafeScreen() {
 
       <View>
         <Text style={[TYPOGRAPHY.heading.medium.bold, styles.cafeName]}>
-          {isLoading? id : cafe.name}
+          {isLoading? "..." : cafe.name}
         </Text>
         <Text style={[TYPOGRAPHY.body.large.base, styles.cafeDescription]}>
-          {cafe.description}
+          {isLoading? "..." : cafe.description}
         </Text>
       </View>
       <View
