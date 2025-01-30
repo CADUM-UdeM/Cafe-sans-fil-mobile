@@ -39,7 +39,7 @@ export default function FirstOnboardingScreen() {
 
       <View style={styles.buttonContainer}>
         <Button onPress={() => router.push("/second-onboarding")}>Suivant</Button>
-        <Button onPress={() => {}} type="secondary">Sauter</Button>
+        <Button onPress={() => router.push("/sign-in")} type="secondary">Sauter</Button>
       </View>
     </View>
   );
