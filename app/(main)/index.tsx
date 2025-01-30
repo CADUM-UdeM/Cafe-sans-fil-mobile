@@ -173,6 +173,7 @@ export default function HomeScreen() {
               keyExtractor={item => item.cafe_id}
               horizontal // render honrizontalement
               ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
+              scrollEnabled={false}
             />
           </CardScrollableLayout>
           <CardScrollableLayout

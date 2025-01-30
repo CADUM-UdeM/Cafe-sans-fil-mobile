@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import IconButton from "@/components/common/Buttons/IconButton";
 import ArticleCard from "@/components/common/Cards/ArticleCard";
 import CafeCard from "@/components/common/Cards/CafeCard";
+import DayCard from "@/components/common/Cards/DayCard";
 import CategoryCard from "@/components/common/Cards/CategoryCard";
 import Tooltip from "@/components/common/Tooltip";
 import CardScrollableLayout from "@/components/layouts/CardScrollableLayout";
@@ -31,7 +32,6 @@ import {
   ScrollView,
   FlatList,
 } from "react-native";
-import DayCard from "@/components/common/Cards/DayCard";
 
 
 export default function CafeScreen() {
@@ -164,62 +164,35 @@ export default function CafeScreen() {
         dividerBottom
         dividerTop
       >
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          cafeSlug="Cafe Tore et Fraction"
-          slug="1"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
+        <FlatList data={cafe.menu_items} horizontal scrollEnabled={false} 
+          renderItem={({item}) => <ArticleCard 
+                                    name={item.name} 
+                                    price={"$" + item.price} 
+                                    status={item.in_stock? "In Stock" : "Out of Stock"}
+                                    cafeSlug={item.slug}
+                                    rating={4.8}
+                                    calories="350 CALORIES"
+                                    image={item.image_url}
+                                    />} 
+        ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
         />
       </CardScrollableLayout>
 
-      <CardScrollableLayout
+      {/* <CardScrollableLayout
         title="Catégories"
         titleMarginTop={SPACING["xl"]}
         scrollMarginTop={SPACING["xs"]}
         scrollMarginBottom={SPACING["md"]}
         scrollGap={SPACING["lg"]}
         dividerBottom
-      >
-        <CategoryCard name="Boissons" icon={CupSoda} />
-        <CategoryCard name="Snacks" icon={Sandwich} />
-        <CategoryCard name="Caffé" icon={Coffee} />
-        <CategoryCard name="Patisserie" icon={CakeSlice} />
-      </CardScrollableLayout>
+      > */}
+        <FlatList style={{backgroundColor:COLORS.white, padding:"2%"}} 
+          data={cafe.menu_items? [...new Set(cafe.menu_items.map(item => item.category))].sort() : []}
+          horizontal renderItem={({item}) => <CategoryCard name={item} icon={CupSoda}/>}
+          ItemSeparatorComponent={() => <View style={{width:"10%"}}></View>}
+        />
+        
+      {/* </CardScrollableLayout> */}
 
       <CardScrollableLayout
         title="Boissons"
@@ -229,45 +202,18 @@ export default function CafeScreen() {
         scrollGap={SPACING["xl"]}
         dividerBottom
       >
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
+        <FlatList data={cafe.menu_items ? cafe.menu_items.filter((item) => item.category === "Boissons chaudes") : []} // on ne prend que les boissons chaudes
+          horizontal scrollEnabled={false} 
+          renderItem={({item}) => <ArticleCard 
+                                    name={item.name} 
+                                    price={"$" + item.price} 
+                                    status={item.in_stock? "In Stock" : "Out of Stock"}
+                                    cafeSlug={item.slug}
+                                    rating={4.8}
+                                    calories="350 CALORIES"
+                                    image={item.image_url}
+                                    />}
+        ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
         />
       </CardScrollableLayout>
 
@@ -287,38 +233,7 @@ export default function CafeScreen() {
           status="In Stock"
           slug="Cafe Tore et Fraction"
         />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
+        
       </CardScrollableLayout>
 
       <CardScrollableLayout
@@ -329,38 +244,6 @@ export default function CafeScreen() {
         scrollGap={SPACING["xl"]}
         dividerBottom
       >
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
         <ArticleCard
           name="Croissant au chocolat"
           calories="350 CALORIES"
@@ -382,99 +265,20 @@ export default function CafeScreen() {
       >
         <Text style={TYPOGRAPHY.heading.small.bold}>Tous les articles</Text>
       </View>
-      <View style={{ paddingHorizontal: 16, paddingBlock: 28, gap: 32 }}>
-        <ArticleCard
-          status={"In Stock"}
-          name={""}
-          calories={""}
-          price={""}
-          rating={0}
-          size="large"
-          cafeSlug="Cafe Tore et Fraction"
-          slug="1"
-        ></ArticleCard>
-        <ArticleCard
-          status={"In Stock"}
-          name={""}
-          calories={""}
-          price={""}
-          rating={0}
-          size="large"
-        ></ArticleCard>
-        <ArticleCard
-          status={"In Stock"}
-          name={""}
-          calories={""}
-          price={""}
-          rating={0}
-          size="large"
-        ></ArticleCard>
-        <ArticleCard
-          status={"In Stock"}
-          name={""}
-          calories={""}
-          price={""}
-          rating={0}
-          size="large"
-        ></ArticleCard>
-        <ArticleCard
-          status={"In Stock"}
-          name={""}
-          calories={""}
-          price={""}
-          rating={0}
-          size="large"
-        ></ArticleCard>
-        <ArticleCard
-          status={"In Stock"}
-          name={""}
-          calories={""}
-          price={""}
-          rating={0}
-          size="large"
-        ></ArticleCard>
-        <ArticleCard
-          status={"In Stock"}
-          name={""}
-          calories={""}
-          price={""}
-          rating={0}
-          size="large"
-        ></ArticleCard>
-        <ArticleCard
-          status={"In Stock"}
-          name={""}
-          calories={""}
-          price={""}
-          rating={0}
-          size="large"
-        ></ArticleCard>
-        <ArticleCard
-          status={"In Stock"}
-          name={""}
-          calories={""}
-          price={""}
-          rating={0}
-          size="large"
-        ></ArticleCard>
-        <ArticleCard
-          status={"In Stock"}
-          name={""}
-          calories={""}
-          price={""}
-          rating={0}
-          size="large"
-        ></ArticleCard>
-        <ArticleCard
-          status={"In Stock"}
-          name={""}
-          calories={""}
-          price={""}
-          rating={0}
-          size="large"
-        ></ArticleCard>
+      <View style={{ paddingHorizontal: 16, paddingBlock: 28, gap: 32 , alignItems: 'center'}}>
+      <FlatList data={cafe.menu_items} scrollEnabled={false} 
+          renderItem={({item}) => <ArticleCard 
+                                    name={item.name} 
+                                    price={"$" + item.price} 
+                                    status={item.in_stock? "In Stock" : "Out of Stock"}
+                                    cafeSlug={item.slug}
+                                    rating={4.8}
+                                    calories="350 CALORIES"
+                                    image={item.image_url}
+                                    />} 
+        ItemSeparatorComponent={() => <View style={{ marginBottom: SPACING["md"] }} />} // padding
+        />
       </View>
-
       <CardScrollableLayout
         title="Autres cafés similaires"
         titleMarginTop={SPACING["xl"]}
@@ -491,27 +295,7 @@ export default function CafeScreen() {
           status="open"
           slug="Cafe Tore et Fraction"
         />
-        <CafeCard
-          name="Jean Brillant"
-          location="Pavillon Claire McNicole"
-          priceRange="$$"
-          rating={4.8}
-          status="closing soon"
-        />
-        <CafeCard
-          name="Jean Brillant"
-          location="Pavillon Claire McNicole"
-          priceRange="$$"
-          rating={4.8}
-          status="open"
-        />
-        <CafeCard
-          name="Jean Brillant"
-          location="Pavillon Claire McNicole"
-          priceRange="$$"
-          rating={4.8}
-          status="closed"
-        />
+        
         <CafeCard
           name="Jean Brillant"
           location="Pavillon Claire McNicole"
