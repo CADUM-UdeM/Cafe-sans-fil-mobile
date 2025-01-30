@@ -7,18 +7,17 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Feather from '@expo/vector-icons/Feather';
 import Foundation from '@expo/vector-icons/Foundation';
 import HeaderLayout from "@/components/layouts/HeaderLayout";
-import TYPOGRAPHY from "@/constants/Typography";
-import { Home, Settings, ShoppingBasket } from "lucide-react-native";
-import { Tabs } from 'expo-router';
+import {useRouter} from 'expo-router';
 
 export default function ParametreScreen() {
+  const navigation = useRouter();
   return (
     
     <><HeaderLayout /><ScrollableLayout style={styles.container}>
 
       <SafeAreaView style={styles.safe}>
         <View style={styles.row}>
-          <TouchableOpacity style={styles.category}>
+          <TouchableOpacity style={styles.category} >
             <FontAwesome style={styles.icon} size={24} name="user" color={"black"} />
             <Text style={styles.submenu}>Mon compte</Text>
           </TouchableOpacity>
@@ -64,10 +63,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   category: {
-    flexBasis: '48%',
+    flexBasis: '49%',
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#f9f9f9',
     borderRadius: 8,
     padding: 16,
     marginBottom: 12,
