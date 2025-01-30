@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Redirect, Tabs, useRouter } from "expo-router";
 
 import SPACING from "@/constants/Spacing";
 import COLORS from "@/constants/Colors";
@@ -22,13 +23,14 @@ type HeaderLayoutProps = {
  * HeaderLayout component that renders a header layout with account info and icon button.
  */
 export default function HeaderLayout({fullName, profilePicture}: HeaderLayoutProps) {
+  const navigation = useRouter();
   return (
     <SafeAreaView style={styles.headerContainer} testID="header-container">
       <AccountInfo
         profilePicture={user.profilePicture}
         profileName={user.fullName}
       />
-      <IconButton />
+      <IconButton onPress={() => navigation.push('/(main)/pannier')}/>
     </SafeAreaView>
   );
 }
