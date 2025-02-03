@@ -1,14 +1,40 @@
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Modal, Button, TextInput, Image } from 'react-native'
+import {
+  View,
+  Text,
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Animated,
+  Modal,
+  Button,
+  TextInput,
+} from "react-native";
 import React, { useState } from 'react'
-import ScrollableLayout from '@/components/layouts/ScrollableLayout'
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import Feather from '@expo/vector-icons/Feather';
-import Foundation from '@expo/vector-icons/Foundation';
-import HeaderLayout from "@/components/layouts/HeaderLayout";
+import ScrollableLayout from "@/components/layouts/ScrollableLayout";
+import {
+  ChevronRight,
+  Package,
+  Bell,
+  Settings2,
+  HelpCircle,
+  Info,
+} from "lucide-react-native";
+import COLORS from "@/constants/Colors";
+import SPACING from "@/constants/Spacing";
+import TYPOGRAPHY from "@/constants/Typography";
+import Divider from "@/components/common/Divider";
+
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
+
+// Menu item interface for type safety
+interface MenuItem {
+  icon: React.ReactNode;
+  title: string;
+  subtitle: string;
+  onPress: () => void;
+}
 
 export default function ParametreScreen() {
   const navigation = useRouter();
@@ -52,89 +78,133 @@ export default function ParametreScreen() {
       }
     }
   };
+  const pulseAnim = React.useRef(new Animated.Value(1)).current;
+
+  React.useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.5,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, []);
+
+  // Menu items data with their respective icons and actions
+  const menuItems: MenuItem[] = [
+    {
+      icon: <Package size={26} strokeWidth={2.5} color={COLORS.black} />,
+      title: "Mes commandes",
+      subtitle: "Consultez vos commandes et transactions passées.",
+      onPress:() => setOrdersModalVisible(true),
+    },
+    {
+      icon: <Bell size={26} strokeWidth={2.5} color={COLORS.black} />,
+      title: "Mes notifications",
+      subtitle: "Configurez vos préférences de notification.",
+      onPress: () => console.log("Notifications pressed"),
+    },
+    {
+      icon: <Settings2 size={26} strokeWidth={2.5} color={COLORS.black} />,
+      title: "Mes préférences",
+      subtitle: "Gérez et personnalisez vos préférences.",
+      onPress: () => console.log("Preferences pressed"),
+    },
+    {
+      icon: <HelpCircle size={26} strokeWidth={2.5} color={COLORS.black} />,
+      title: "Aide et support",
+      subtitle: "Obtenez de l'aide et contactez le support.",
+      onPress: () => console.log("Support pressed"),
+    },
+    {
+      icon: <Info size={26} strokeWidth={2.5} color={COLORS.black} />,
+      title: "À propos",
+      subtitle: "En savoir plus sur nous et notre mission.",
+      onPress: () => setModalVisible(true),
+    },
+  ];
+
+  // Render a single menu item
+  const renderMenuItem = ({ icon, title, subtitle, onPress }: MenuItem) => (
+    <TouchableOpacity style={styles.menuItem} onPress={onPress} key={title}>
+      <View style={styles.menuItemLeft}>
+        {icon}
+        <View style={styles.menuItemText}>
+          <Text style={[TYPOGRAPHY.body.large.semiBold, styles.menuItemTitle, { fontSize: 15 }]}>
+            {title}
+          </Text>
+          <Text style={[TYPOGRAPHY.body.small.base, styles.menuItemSubtitle,  { fontSize: 10.6 }]}>
+            {subtitle}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
-    <>
-      <HeaderLayout />
-      <ScrollableLayout style={styles.container}>
-        <SafeAreaView style={styles.safe}>
-          <View style={styles.row}>
-            <TouchableOpacity style={styles.category} onPress={() => setAccountModalVisible(true)}>
-              <FontAwesome style={styles.icon} size={24} name="user" color={"black"} />
-              <Text style={styles.submenu}>Mon compte</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.category} onPress={() => setOrdersModalVisible(true)}>
-              <FontAwesome5 style={styles.icon} name="receipt" size={24} color="black" />
-              <Text style={styles.submenu}>Mes commandes</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.row}>
-            <TouchableOpacity style={styles.category}>
-              <MaterialIcons style={styles.icon2} name="display-settings" size={24} color="black" />
-              <Text style={styles.submenu}>Mes préférences</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.category}>
-              <Feather style={styles.icon2} name="settings" size={24} color="black" />
-              <Text style={styles.submenu}>Paramètres Application</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.row}>
-            <TouchableOpacity style={[styles.category, styles.fullWidth, styles.centered]} onPress={() => setModalVisible(true)}>
-              <Foundation  name="info" size={24} color="black" />
-              <Text style={styles.submenu}>À propos</Text>
-            </TouchableOpacity>
-          </View>
-        </SafeAreaView>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={ordersModalVisible}
-          onRequestClose={() => setOrdersModalVisible(false)}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContainer}>
-              <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>Mes Commandes</Text>
-                <Button title="Fermer" onPress={() => setOrdersModalVisible(false)} />
-              </View>
-              <View style={styles.modalContent}>
-              {orders.map((order) => (
-                <TouchableOpacity key={order.id} style={styles.orderBox} onPress={() => {}}>
-                  <Image source={{ uri: order.image }} style={styles.orderImage} />
-                  <View style={styles.orderDetails}>
-                    <Text style={styles.orderTitle}>{order.title}</Text>
-                    <Text style={styles.orderContent}>{order.content}</Text>
-                    <Text style={styles.orderRestaurant}>{order.restaurant}</Text>
-                  </View>
-                  <Text style={styles.orderPrice}>{order.price}</Text>
-                </TouchableOpacity>
-              ))}
-              </View>
+    <ScrollableLayout>
+      <SafeAreaView style={styles.container}>
+
+        {/* User Profile Section */}
+        <TouchableOpacity style={styles.profileSection} onPress={() => setAccountModalVisible(true)}>
+          <View style={styles.profileLeft}>
+            <Image
+              source={{ uri: "https://i.pravatar.cc/900" }}
+              style={styles.profileImage}
+            />
+            <View style={styles.profileInfo}>
+              <Text
+                style={[TYPOGRAPHY.heading.small.bold, styles.profileName]}
+              >
+                Darlene Robertson
+              </Text>
+              <Text
+                style={[TYPOGRAPHY.body.small.base, styles.profileSubtitle,  { fontSize: 11 }]}
+              >
+                Gérez les informations de votre compte.
+              </Text>
             </View>
           </View>
-        </Modal>
+          <ChevronRight size={24} color={COLORS.black} strokeWidth={2.5} />
+        </TouchableOpacity>
 
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContainer}>
-              <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>À propos</Text>
-                <Button title="Fermer" onPress={() => setModalVisible(false)} />
-              </View>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalText}>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                </Text>
-              </View>
+        {/* Menu Items */}
+        <View style={styles.menuSection}>{menuItems.map(renderMenuItem)}</View>
+
+        <Divider marginTop={16} marginBottom={4}></Divider>
+
+        {/* System Status */}
+        <View style={styles.systemStatus}>
+          <Text style={[TYPOGRAPHY.body.normal.semiBold, styles.systemStatusTitle]}>
+            État du système
+          </Text>
+          <View style={styles.systemStatusIndicator}>
+            <View style={{ position: 'relative' }}>
+              <Animated.View
+                style={[
+                  styles.pulsingDot,
+                  {
+                    transform: [{ scale: pulseAnim }],
+                  },
+                ]}
+              />
+              <View style={styles.statusDot} />
             </View>
+            <Text style={[TYPOGRAPHY.body.small.bold, styles.systemStatusText]}>
+              Opérationnel
+            </Text>
           </View>
-        </Modal>
-
+          <Text style={[TYPOGRAPHY.body.small.base, styles.systemStatusSubtext]}>
+            Le système fonctionne correctement.
+          </Text>
+        </View>
         <Modal
           animationType="slide"
           transparent={true}
@@ -165,65 +235,162 @@ export default function ParametreScreen() {
             </View>
           </View>
         </Modal>
-      </ScrollableLayout>
-    </>
-  )
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>À propos</Text>
+                <Button title="Fermer" onPress={() => setModalVisible(false)} />
+              </View>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalText}>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                </Text>
+              </View>
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={ordersModalVisible}
+          onRequestClose={() => setOrdersModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Mes Commandes</Text>
+                <Button title="Fermer" onPress={() => setOrdersModalVisible(false)} />
+              </View>
+              <View style={styles.modalContent}>
+              {orders.map((order) => (
+                <TouchableOpacity key={order.id} style={styles.orderBox} onPress={() => {}}>
+                  <Image source={{ uri: order.image }} style={styles.orderImage} />
+                  <View style={styles.orderDetails}>
+                    <Text style={styles.orderTitle}>{order.title}</Text>
+                    <Text style={styles.orderContent}>{order.content}</Text>
+                    <Text style={styles.orderRestaurant}>{order.restaurant}</Text>
+                  </View>
+                  <Text style={styles.orderPrice}>{order.price}</Text>
+                </TouchableOpacity>
+              ))}
+              </View>
+            </View>
+          </View>
+        </Modal>
+      </SafeAreaView>
+    </ScrollableLayout>
+  );
 }
 
 const styles = StyleSheet.create({
-  btn: {
-    borderRadius: 15,
-    margin: 10,
-    width: '60%',
-    alignSelf: 'center',
-  },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    padding: 15,
+    padding: SPACING.lg,
   },
-  safe: {
-    flex: 1,
-    padding: 16,
+  profileSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: SPACING.sm,
+    borderBottomWidth: 1,
+    borderTopWidth: 1,
+    borderBottomColor: COLORS.lightGray,
+    borderTopColor: COLORS.lightGray,
+    marginBottom: SPACING.lg,
+    marginTop: 10,
+    paddingHorizontal: SPACING.md,
   },
-  row: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+  profileLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.md,
   },
-  category: {
-    flexBasis: '48%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f8f8f8',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+  profileImage: {
+    width: SPACING["9xl"],
+    height: SPACING["9xl"],
+    borderRadius: 100,
+    borderWidth: 4,
+    // borderColor: "rgba(0, 0, 0, 0.1)", // Not from any university
+    borderColor: "rgba(0, 87, 172, .2)", // From University of Montreal
+    // borderColor: "rgba(237, 27, 47, .2)", // From McGill University
   },
-  icon: {
-    marginRight: 12,
+  profileInfo: {
+    gap: SPACING.xxs,
   },
-  fullWidth: {
-    flexBasis: '100%',
+  profileName: {
+    color: COLORS.black,
   },
-  icon2: {
-    marginRight: 10,
-    marginLeft: -3,
+  profileSubtitle: {
+    color: COLORS.subtuleDark,
   },
-  submenu: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#333',
+  menuSection: {
+    gap: 0,
+    marginHorizontal: 12,
   },
-  centered: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
+  menuItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 14,
+    paddingHorizontal: SPACING.md,
+
+  },
+  menuItemLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.md,
+  },
+  menuItemText: {
+    gap: 5,
+  },
+  menuItemTitle: {
+    color: COLORS.black,
+  },
+  menuItemSubtitle: {
+    color: COLORS.subtuleDark,
+  },
+  systemStatus: {
+    marginTop: SPACING.xl,
+    padding: SPACING.lg,
+    backgroundColor: COLORS.lightGray,
+    borderRadius: 12,
+    gap: SPACING.sm,
+    marginHorizontal: SPACING.md,
+  },
+  systemStatusTitle: {
+    color: COLORS.black,
+  },
+  systemStatusIndicator: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.xs,
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: COLORS.status.green,
+    position: 'relative',
+  },
+  pulsingDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: COLORS.status.green,
+    position: 'absolute',
+    opacity: 0.5,
+  },
+  systemStatusText: {
+    color: COLORS.status.green,
+  },
+  systemStatusSubtext: {
+    color: COLORS.subtuleDark,
   },
   modalOverlay: {
     flex: 1,
@@ -274,6 +441,12 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderWidth: 1,
     borderColor: '#ddd',
+  },
+  btn: {
+    borderRadius: 15,
+    margin: 10,
+    width: '60%',
+    alignSelf: 'center',
   },
   orderBox :{
     flexDirection: 'row',
