@@ -7,7 +7,6 @@ import { Home, Settings, ShoppingBasket, UserRound } from "lucide-react-native";
 
 export default function TabLayout() {
     const { isSignedIn } = useAuth();
-    if (!isSignedIn) return Redirect({ href: "/first-onboarding" });
   return (
       <Tabs
         screenOptions={{

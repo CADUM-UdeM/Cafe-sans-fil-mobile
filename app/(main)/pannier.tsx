@@ -130,7 +130,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 16,
-    textAlign: 'center',
+
+    marginTop: 10,
+
   },
   itemContainer: {
     flexDirection: 'row',
@@ -157,7 +159,7 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   itemImage: {
-    width: 80,
+    width: "",
     height: 80,
     borderRadius: 8,
   },

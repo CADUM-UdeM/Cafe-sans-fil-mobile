@@ -4,6 +4,12 @@ import ScrollableLayout from '@/components/layouts/ScrollableLayout'
 import HeaderLayout from "@/components/layouts/HeaderLayout";
 
 export default function FavorisScreen() {
+  const [favoritesObj, setFavorites] = useState({});
+
+  useEffect(() => {
+    
+  }, []);
+
   return (
     <>
     <HeaderLayout />
