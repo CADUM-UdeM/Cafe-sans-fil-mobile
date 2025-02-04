@@ -10,6 +10,7 @@ import {
   Button,
   TextInput,
 } from "react-native";
+import HeaderProfile from '@/components/layouts/HeaderProfile';
 import { useUser } from "@clerk/clerk-expo";
 import React, { useState } from 'react'
 import ScrollableLayout from "@/components/layouts/ScrollableLayout";
@@ -151,7 +152,7 @@ export default function ParametreScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <>
     {/* User Profile Section */}
     <TouchableOpacity style={styles.profileSection} onPress={() => setAccountModalVisible(true)}>
     <View style={styles.profileLeft}>
@@ -288,7 +289,7 @@ export default function ParametreScreen() {
           </View>
         </Modal>
       </SafeAreaView>
-    </ScrollableLayout></View>
+    </ScrollableLayout></>
   );
 }
 
@@ -307,7 +308,7 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.lightGray,
     borderTopColor: COLORS.white,
     backgroundColor: COLORS.white,
-    marginTop: "10%",
+    paddingTop: SPACING["8xl"], 
     paddingHorizontal: SPACING.md,
   },
   profileLeft: {

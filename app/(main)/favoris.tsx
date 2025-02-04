@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import ScrollableLayout from '@/components/layouts/ScrollableLayout'
 import HeaderLayout from "@/components/layouts/HeaderLayout";
 
