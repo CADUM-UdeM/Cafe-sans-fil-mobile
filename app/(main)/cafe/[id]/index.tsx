@@ -32,6 +32,7 @@ import {
   ScrollView,
   FlatList,
 } from "react-native";
+import { addFavorites } from '../../favoris';
 
 
 export default function CafeScreen() {
@@ -82,7 +83,7 @@ export default function CafeScreen() {
           <View style={styles.cafeHeaderButtonsRight}>
             <IconButton Icon={Search} style={styles.cafeHeaderIconButtons} />
             <IconButton Icon={Locate} style={styles.cafeHeaderIconButtons} />
-            <IconButton Icon={Heart} style={styles.cafeHeaderIconButtons} onPress={() => alert("Favorited")} />
+            <IconButton Icon={Heart} style={styles.cafeHeaderIconButtons} onPress={() => addFavorites(cafe)} />
           </View>
         </View>
 
