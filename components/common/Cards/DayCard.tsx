@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   flatListWrapper: {
-    width: "100%", // Ensure the FlatList takes full width
+    width: 100, // Ensure the FlatList takes full width
   },
   flatListContent: {
     justifyContent: "center", // Center align FlatList items horizontally

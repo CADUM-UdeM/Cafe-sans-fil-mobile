@@ -43,7 +43,6 @@ export default function CafeScreen() {
   // fetch cafe data
   useEffect(() => {
     setIsLoading(true);
-    scrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true });
     
     const fetchCafe = async () => {
         try {
@@ -186,10 +185,10 @@ export default function CafeScreen() {
         scrollGap={SPACING["lg"]}
         dividerBottom
       > */}
-        <FlatList style={{backgroundColor:COLORS.white, padding:"2%"}} 
-          data={cafe.menu_items? [...new Set(cafe.menu_items.map(item => item.category))].sort() : []}
+        <FlatList style={{backgroundColor:COLORS.white, padding:2 }} 
+          data={cafe.menu_items ? [...new Set(cafe.menu_items.map(item => item.category))].sort() : []}
           horizontal renderItem={({item}) => <CategoryCard name={item} icon={CupSoda}/>}
-          ItemSeparatorComponent={() => <View style={{width:"10%"}}></View>}
+          ItemSeparatorComponent={() => <View style={{width:10}}></View>}
         />
         
       {/* </CardScrollableLayout> */}
@@ -311,7 +310,7 @@ export default function CafeScreen() {
 
 const styles = StyleSheet.create({
   cafeBackgroundImage: {
-    width: '100%',  // Fill width
+    width: 100,  // Fill width
     height: 250,    // Fixed height, adjust as needed
     borderBottomLeftRadius: SPACING["7xl"],
     borderBottomRightRadius: SPACING["7xl"],
@@ -324,7 +323,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    width: "100%",
+    width: 100,
     paddingHorizontal: 16,
     marginTop: SPACING["sm"],
   },

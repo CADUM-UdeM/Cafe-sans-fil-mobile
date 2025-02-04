@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 16,
-    marginTop: "10%",
+    marginTop: 10,
     textAlign: 'center',
   },
   itemContainer: {
