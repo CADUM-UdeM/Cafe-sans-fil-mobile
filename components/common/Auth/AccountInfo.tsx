@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   profilePicture: {
     width: SPACING["8xl"],
     height: SPACING["8xl"],
-    borderRadius: "100%",
+    borderRadius: 100,
     borderWidth: 4,
     // borderColor: "rgba(0, 0, 0, 0.1)", // Not from any university
     borderColor: "rgba(0, 87, 172, .4)", // From University of Montreal
