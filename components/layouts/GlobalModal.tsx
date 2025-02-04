@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     position: "absolute",
     bottom: 0,
-    width: 100,
+    width: "100%",
     alignSelf: "center",
     backgroundColor: COLORS.white,
     borderTopRightRadius: SPACING["4xl"],
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.md,
     borderRadius: 10,
-    width: 100,
+    width: "100%",
     justifyContent: "center",
     alignItems: "center",
   },
