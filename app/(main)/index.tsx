@@ -184,15 +184,15 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
-                        <FlatList data={data} renderItem={({item}) => 
-                                <CafeCard
-                                  name={item.name}
-                                  image={item.image_url}
-                                  location={item.location.pavillon}
-                                  priceRange="$$"
-                                  rating={4.8}
-                                  status={item.is_open}
-                                />}
+          <FlatList data={data} renderItem={({item}) => 
+                  <CafeCard
+                    name={item.name}
+                    image={item.image_url}
+                    location={item.location.pavillon}
+                    priceRange="$$"
+                    rating={4.8}
+                    status={item.is_open}
+                  />}
               keyExtractor={item => item.cafe_id}
               horizontal
               ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}

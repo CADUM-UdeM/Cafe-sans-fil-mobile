@@ -1,8 +1,8 @@
-import { View, Text, StyleSheet, Image, Pressable } from "react-native";
+import { View, Text, StyleSheet, Image, Pressable, Animated, Dimensions } from "react-native";
 import { Circle } from "lucide-react-native";
 import { router } from "expo-router";
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import TYPOGRAPHY from "@/constants/Typography";
 import COLORS from "@/constants/Colors";
 import SPACING from "@/constants/Spacing";
@@ -83,10 +83,9 @@ export default function CafeCard({
   size = "medium",
   slug = "INVALID_SLUG",
 }: CafeCardProps) {
-
-
+  
   return (
-    <Pressable
+    <Pressable 
       onPress={() => {router.push(`/cafe/${id}`);
                       console.log(slug);
       }}
@@ -98,7 +97,7 @@ export default function CafeCard({
           source={image ? { uri: image } : cardDimensions[size].image}
           width={cardDimensions[size].width}
           height={cardDimensions[size].height}
-          style={{ borderRadius: SPACING["sm"] }}
+        
           testID="image"
         />
         <Text
