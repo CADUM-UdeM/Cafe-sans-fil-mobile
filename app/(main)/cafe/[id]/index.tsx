@@ -310,7 +310,7 @@ export default function CafeScreen() {
 
 const styles = StyleSheet.create({
   cafeBackgroundImage: {
-    width: 100,  // Fill width
+    width: "100%",  // Fill width
     height: 250,    // Fixed height, adjust as needed
     borderBottomLeftRadius: SPACING["7xl"],
     borderBottomRightRadius: SPACING["7xl"],

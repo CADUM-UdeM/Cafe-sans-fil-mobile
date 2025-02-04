@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   itemImage: {
-    width: 80,
+    width: "",
     height: 80,
     borderRadius: 8,
   },
