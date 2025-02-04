@@ -10,6 +10,7 @@ import {
   Button,
   TextInput,
 } from "react-native";
+import { useUser } from "@clerk/clerk-expo";
 import React, { useState } from 'react'
 import ScrollableLayout from "@/components/layouts/ScrollableLayout";
 import {
@@ -37,6 +38,7 @@ interface MenuItem {
 }
 
 export default function ParametreScreen() {
+  const { user } = useUser();
   const navigation = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
   const [accountModalVisible, setAccountModalVisible] = useState(false);
@@ -149,31 +151,33 @@ export default function ParametreScreen() {
   );
 
   return (
+    <View style={styles.container}>
+    {/* User Profile Section */}
+    <TouchableOpacity style={styles.profileSection} onPress={() => setAccountModalVisible(true)}>
+    <View style={styles.profileLeft}>
+      <Image
+        source={{ uri: "https://i.pravatar.cc/900" }}
+        style={styles.profileImage}
+      />
+      <View style={styles.profileInfo}>
+        <Text
+          style={[TYPOGRAPHY.heading.small.bold, styles.profileName]}
+        >
+          {user?.fullName}
+        </Text>
+        <Text
+          style={[TYPOGRAPHY.body.small.base, styles.profileSubtitle,  { fontSize: 11 }]}
+        >
+          Gérez les informations de votre compte.
+        </Text>
+      </View>
+    </View>
+    <ChevronRight size={24} color={COLORS.black} strokeWidth={2.5} />
+  </TouchableOpacity>
     <ScrollableLayout>
       <SafeAreaView style={styles.container}>
 
-        {/* User Profile Section */}
-        <TouchableOpacity style={styles.profileSection} onPress={() => setAccountModalVisible(true)}>
-          <View style={styles.profileLeft}>
-            <Image
-              source={{ uri: "https://i.pravatar.cc/900" }}
-              style={styles.profileImage}
-            />
-            <View style={styles.profileInfo}>
-              <Text
-                style={[TYPOGRAPHY.heading.small.bold, styles.profileName]}
-              >
-                Darlene Robertson
-              </Text>
-              <Text
-                style={[TYPOGRAPHY.body.small.base, styles.profileSubtitle,  { fontSize: 11 }]}
-              >
-                Gérez les informations de votre compte.
-              </Text>
-            </View>
-          </View>
-          <ChevronRight size={24} color={COLORS.black} strokeWidth={2.5} />
-        </TouchableOpacity>
+        
 
         {/* Menu Items */}
         <View style={styles.menuSection}>{menuItems.map(renderMenuItem)}</View>
@@ -284,14 +288,14 @@ export default function ParametreScreen() {
           </View>
         </Modal>
       </SafeAreaView>
-    </ScrollableLayout>
+    </ScrollableLayout></View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: SPACING.lg,
+    backgroundColor: COLORS.white,
   },
   profileSection: {
     flexDirection: "row",
@@ -301,9 +305,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderTopWidth: 1,
     borderBottomColor: COLORS.lightGray,
-    borderTopColor: COLORS.lightGray,
-    marginBottom: SPACING.lg,
-    marginTop: 10,
+    borderTopColor: COLORS.white,
+    backgroundColor: COLORS.white,
+    marginTop: "10%",
     paddingHorizontal: SPACING.md,
   },
   profileLeft: {
