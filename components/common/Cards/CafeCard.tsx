@@ -1,14 +1,14 @@
-import { View, Text, StyleSheet, Image, Pressable, Animated, Dimensions } from "react-native";
+import { View, Text, StyleSheet, Image, Pressable } from "react-native";
 import { Circle } from "lucide-react-native";
 import { router } from "expo-router";
-import React from "react";
-import { useState, useEffect, useRef } from "react";
+import { Platform } from "react-native";
+
 import TYPOGRAPHY from "@/constants/Typography";
 import COLORS from "@/constants/Colors";
 import SPACING from "@/constants/Spacing";
 
 type CafeCardProps = {
-  status: "open" | "closing soon" | "closed";
+  status?: any;
 
   /** The name of the cafe */
   name: string;
@@ -29,10 +29,7 @@ type CafeCardProps = {
   size?: "medium" | "large";
 
   /** The slug of the cafe */
-  slug?: string;
-
-  /** unique ID of the cafe */
-  id: string;
+  slug: string;
 };
 
 let cardDimensions = {
@@ -79,27 +76,28 @@ export default function CafeCard({
   priceRange,
   rating,
   image,
-  id,
   size = "medium",
   slug = "INVALID_SLUG",
 }: CafeCardProps) {
-  
   return (
-    <Pressable 
-      onPress={() => {router.push(`/cafe/${id}`);
-                      console.log(slug);
+    <Pressable
+      onPress={() => {
+        //console.log(slug);
+        router.push(`/cafe/${slug}`)
       }}
       style={{ width: cardDimensions[size].width }}
       testID="button"
     >
       <View>
-        <Image
-          source={image ? { uri: image } : cardDimensions[size].image}
-          width={cardDimensions[size].width}
-          height={cardDimensions[size].height}
-        
-          testID="image"
-        />
+        <View style={styles.imageShadowBox}>
+          <Image
+            source={image ? { uri: image } : cardDimensions[size].image}
+            width={cardDimensions[size].width}
+            height={cardDimensions[size].height}
+            style={{ borderRadius: SPACING["sm"]}}
+            testID="image"
+          />
+        </View>
         <Text
           style={[
             TYPOGRAPHY.body.small.bold,
@@ -184,4 +182,24 @@ const styles = StyleSheet.create({
     right: SPACING.sm,
     top: SPACING.sm,
   },
+  imageShadowBox : {
+    // For iOS
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 7,
+          height: 7,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 5,
+      },
+
+      // For Android
+      android: {
+        elevation: 5,
+        backgroundColor: '#ffffff'
+      },
+    }),
+  }
 });

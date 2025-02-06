@@ -25,6 +25,7 @@ import ScrollableLayout from "@/components/layouts/ScrollableLayout";
 import FilterModalLayout from "@/components/layouts/FilterModalLayout";
 import CardScrollableLayout from "@/components/layouts/CardScrollableLayout";
 import { useUser } from "@clerk/clerk-expo";
+import COLORS from "@/constants/Colors";
 
 /**
  * Home screen of the app. It allows the user to search for cafes, filter them,
@@ -51,8 +52,9 @@ import { useUser } from "@clerk/clerk-expo";
  * - Horizontal Cafe Cards By Categories: Shows cafe cards categorized by trends, proximity, and promotions.
  * - All Cafes Cards: Lists all available cafes.
  */
+
 export default function HomeScreen() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<Cafe[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // fetch cafe list
@@ -162,17 +164,18 @@ export default function HomeScreen() {
           >
             <FlatList data={data} renderItem={({item}) => 
                                 <CafeCard
+                                  slug={item.slug}
                                   name={item.name}
                                   image={item.image_url}
                                   location={item.location.pavillon}
                                   priceRange="$$"
                                   rating={4.8}
                                   status={item.is_open}
-                                  id={item.cafe_id}
                                 />}
               keyExtractor={item => item.cafe_id}
               horizontal // render honrizontalement
-              ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
+              ItemSeparatorComponent={() => <View style={{ width: SPACING["md"]  }} />} // padding
+              //style={styles.cafeFlatlist}
               scrollEnabled={false}
             />
           </CardScrollableLayout>
@@ -186,6 +189,7 @@ export default function HomeScreen() {
           >
           <FlatList data={data} renderItem={({item}) => 
                   <CafeCard
+                    slug={item.slug}
                     name={item.name}
                     image={item.image_url}
                     location={item.location.pavillon}
@@ -196,6 +200,8 @@ export default function HomeScreen() {
               keyExtractor={item => item.cafe_id}
               horizontal
               ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
+              //style={styles.cafeFlatlist}
+              scrollEnabled={false}
             />
           </CardScrollableLayout>
           <CardScrollableLayout
@@ -206,18 +212,21 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
-                        <FlatList data={data} renderItem={({item}) => 
-                                <CafeCard
-                                  name={item.name}
-                                  image={item.image_url}
-                                  location={item.location.pavillon}
-                                  priceRange="$$"
-                                  rating={4.8}
-                                  status={item.is_open}
-                                />}
+            <FlatList data={data} renderItem={({item}) => 
+                    <CafeCard
+                      slug={item.slug}
+                      name={item.name}
+                      image={item.image_url}
+                      location={item.location.pavillon}
+                      priceRange="$$"
+                      rating={4.8}
+                      status={item.is_open}
+                    />}
               keyExtractor={item => item.cafe_id}
               horizontal
               ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
+              //style={styles.cafeFlatlist}
+              scrollEnabled={false}
             />
           </CardScrollableLayout>
           <CardScrollableLayout
@@ -228,18 +237,21 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
-                        <FlatList data={data} renderItem={({item}) => 
-                                <CafeCard
-                                  name={item.name}
-                                  image={item.image_url}
-                                  location={item.location.pavillon}
-                                  priceRange="$$"
-                                  rating={4.8}
-                                  status={item.is_open}
-                                />}
+            <FlatList data={data} renderItem={({item}) => 
+                    <CafeCard
+                      slug={item.slug}
+                      name={item.name}
+                      image={item.image_url}
+                      location={item.location.pavillon}
+                      priceRange="$$"
+                      rating={4.8}
+                      status={item.is_open}
+                    />}
               keyExtractor={item => item.cafe_id}
               horizontal
               ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
+              //style={styles.cafeFlatlist}
+              scrollEnabled={false}
             />
           </CardScrollableLayout>
         </View>
@@ -327,4 +339,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingRight: SPACING["md"],
   },
+  cafeFlatlist: {
+    marginTop: SPACING["md"],
+    //marginBottom: SPACING["md"],
+    padding:7,
+  }
 });

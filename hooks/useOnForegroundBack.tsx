@@ -19,7 +19,7 @@ export default function useOnForegroundBack(runOnForegroundBack: () => void) {
 
   useEffect(() => {
     // FIXME: Remove this log after testing.
-    console.log("SECOND USE EFFECT");
+    //console.log("SECOND USE EFFECT");
 
     // Function to handle the app state change event.
     const handleAppStateChange = (nextAppState: AppStateStatus) => {

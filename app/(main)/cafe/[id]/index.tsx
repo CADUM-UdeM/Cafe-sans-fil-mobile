@@ -32,33 +32,71 @@ import {
   ScrollView,
   FlatList,
 } from "react-native";
-import { addFavorites } from '../../favoris';
-
+import { 
+  deleteSecurely,
+  fetchSync, 
+  saveFav 
+} from '@/scripts/storage';
+import { createPathConfigForStaticNavigation } from '@react-navigation/native';
+import { sampleFavoris } from '@/constants/type_samples';
 
 export default function CafeScreen() {
+  var favCafe : Favoris[] = [];
   const [isLoading, setIsLoading] = useState(true);
   const { id } = useLocalSearchParams();
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const [cafe, setCafe] = useState({});
+  const [cafe, setCafe] = useState<Cafe | null>(null);
+  const [favorited, setFavorited] = useState(false);
+
+  // handle the saving and deletion of the cafe
+  useEffect(() => {
+    if (cafe != null && id != null){
+      if(favorited == true) {
+        let favObj = sampleFavoris;
+        favObj.cafe_id = cafe.cafe_id;
+        favObj.image_url = cafe.image_url;
+        favObj.faculty = cafe.faculty;
+        favObj.is_open = cafe.is_open;
+        favObj.location = cafe.location;
+        favObj.name = cafe.name;
+        favObj.slug = cafe.slug;
+        favObj.status_message = cafe.status_message;
+        saveFav(favObj);
+        console.log('saved cafe ', id);
+      }
+      else if (favorited == false){
+        // check if already saved
+        let fetchedData = fetchSync('favorited'+id);
+        if (fetchedData){
+          deleteSecurely('favorited'+id);
+          console.log('deleted cafe ', id);
+        }
+      }
+    }
+  }, [favorited])
+
   // fetch cafe data
   useEffect(() => {
     setIsLoading(true);
-    
     const fetchCafe = async () => {
         try {
             const response = await fetch(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}`);
             const json = await response.json();
-            console.log(json.opening_hours);
             setCafe(json);
+            if (fetchSync(id) != null){
+              setFavorited(true);
+            }
+            else{
+              setFavorited(false);
+            }
         } catch (error) {
             console.error('Fetch error:', error);
         } finally {
             setIsLoading(false);
         }
     };
-
-      fetchCafe();
+    fetchCafe();
   }, [id]);
 
   return (
@@ -71,7 +109,7 @@ export default function CafeScreen() {
       <View>
         <Image
           style={styles.cafeBackgroundImage}
-          source={isLoading ? require("@/assets/images/placeholder/image2xl.png") : {uri: cafe.image_url}}
+          source={isLoading ? require("@/assets/images/placeholder/image2xl.png") : {uri: cafe?.image_url}}
         />
         <View style={styles.cafeHeaderButtons}>
           <IconButton
@@ -82,21 +120,24 @@ export default function CafeScreen() {
           <View style={styles.cafeHeaderButtonsRight}>
             <IconButton Icon={Search} style={styles.cafeHeaderIconButtons} />
             <IconButton Icon={Locate} style={styles.cafeHeaderIconButtons} />
-            <IconButton Icon={Heart} style={styles.cafeHeaderIconButtons} onPress={() => addFavorites(cafe)} />
+            <IconButton Icon={Heart} style={[favorited? styles.cafeFavoritedButton : styles.cafeHeaderIconButtons]} 
+              onPress={() => {
+                setFavorited(!favorited);
+              }} />
           </View>
         </View>
 
         <View style={styles.cafeHeaderOpenStatus}>
-          <Tooltip label={"Ouvert"} showChevron={true} status={cafe.is_open ? "green" : "red"} />
+          <Tooltip label={"Ouvert"} showChevron={true} status={cafe?.is_open ? "green" : "red"} />
         </View>
       </View>
 
       <View>
         <Text style={[TYPOGRAPHY.heading.medium.bold, styles.cafeName]}>
-          {isLoading? "..." : cafe.name}
+          {isLoading? "..." : cafe?.name}
         </Text>
         <Text style={[TYPOGRAPHY.body.large.base, styles.cafeDescription]}>
-          {isLoading? "..." : cafe.description}
+          {isLoading? "..." : cafe?.description}
         </Text>
       </View>
       <View
@@ -118,7 +159,7 @@ export default function CafeScreen() {
         >
           Horaires
         </Text>
-        <FlatList data={cafe.opening_hours} horizontal
+        <FlatList data={cafe?.opening_hours} horizontal
           keyExtractor={(item, index) => `${item.day}-${index}`} // Add a keyExtractor to avoid warnings
           renderItem={({ item }) => (
             <DayCard day={item.day} blocks={item.blocks} />
@@ -164,7 +205,7 @@ export default function CafeScreen() {
         dividerBottom
         dividerTop
       >
-        <FlatList data={cafe.menu_items} horizontal scrollEnabled={false} 
+        <FlatList data={cafe?.menu_items} horizontal scrollEnabled={false} 
           renderItem={({item}) => <ArticleCard 
                                     name={item.name} 
                                     price={"$" + item.price} 
@@ -187,7 +228,7 @@ export default function CafeScreen() {
         dividerBottom
       > */}
         <FlatList style={{backgroundColor:COLORS.white, padding:2 }} 
-          data={cafe.menu_items ? [...new Set(cafe.menu_items.map(item => item.category))].sort() : []}
+          data={cafe?.menu_items ? [...new Set(cafe?.menu_items.map(item => item.category))].sort() : []}
           horizontal renderItem={({item}) => <CategoryCard name={item} icon={CupSoda}/>}
           ItemSeparatorComponent={() => <View style={{width:10}}></View>}
         />
@@ -202,7 +243,7 @@ export default function CafeScreen() {
         scrollGap={SPACING["xl"]}
         dividerBottom
       >
-        <FlatList data={cafe.menu_items ? cafe.menu_items.filter((item) => item.category === "Boissons chaudes") : []} // on ne prend que les boissons chaudes
+        <FlatList data={cafe?.menu_items? cafe.menu_items.filter((item) => item.category === "Boissons chaudes") : []} // on ne prend que les boissons chaudes
           horizontal scrollEnabled={false} 
           renderItem={({item}) => <ArticleCard 
                                     name={item.name} 
@@ -266,7 +307,7 @@ export default function CafeScreen() {
         <Text style={TYPOGRAPHY.heading.small.bold}>Tous les articles</Text>
       </View>
       <View style={{ paddingHorizontal: 16, paddingBlock: 28, gap: 32 , alignItems: 'center'}}>
-      <FlatList data={cafe.menu_items} scrollEnabled={false} 
+      <FlatList data={cafe?.menu_items} scrollEnabled={false} 
           renderItem={({item}) => <ArticleCard 
                                     name={item.name} 
                                     price={"$" + item.price} 
@@ -297,6 +338,7 @@ export default function CafeScreen() {
         />
         
         <CafeCard
+          slug="Cafe Tore et Fraction"
           name="Jean Brillant"
           location="Pavillon Claire McNicole"
           priceRange="$$"
@@ -335,6 +377,9 @@ const styles = StyleSheet.create({
   },
   cafeHeaderIconButtons: {
     backgroundColor: "white",
+  },
+  cafeFavoritedButton:{
+    backgroundColor: "pink",
   },
   cafeHeaderOpenStatus: {
     position: "absolute",
