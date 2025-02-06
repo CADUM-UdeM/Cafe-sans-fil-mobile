@@ -31,6 +31,7 @@ import {
   useWindowDimensions,
   ScrollView,
   FlatList,
+  Linking,
 } from "react-native";
 import { addFavorites } from '../../favoris';
 
@@ -41,6 +42,11 @@ export default function CafeScreen() {
   const scrollViewRef = useRef<ScrollView>(null);
 
   const [cafe, setCafe] = useState({social_media: [] }); // set social media as empty array pour ne pas produire d'erreur dans l'utlisation de map après
+
+  const openLink = (url: string) => {
+    Linking.openURL(url).catch(err => console.error("Failed to open URL:", err));
+  };
+
   // fetch cafe data
   useEffect(() => {
     setIsLoading(true);
@@ -104,10 +110,11 @@ export default function CafeScreen() {
 
         <View>
         {cafe.social_media.map((item, index)=> (
-          <Text key={index}>
-            {item.plateform_name}: {item.link}
-
+          <TouchableOpacity key={index} onPress={()=>openLink(item.link)}>
+            <Text>
+              {item.platform_name}
           </Text>
+          </TouchableOpacity>
         ))}
         </View>
 
