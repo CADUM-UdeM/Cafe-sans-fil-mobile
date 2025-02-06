@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Redirect, router } from "expo-router";
 import * as Location from "expo-location";
 import { Star, Vegan } from "lucide-react-native";
-import { View, StyleSheet, Image, Text, FlatList } from "react-native";
+import { View, StyleSheet, Image, Text, FlatList, SafeAreaView} from "react-native";
 
 
 import useLocation from "@/hooks/useLocation";
@@ -25,7 +25,6 @@ import ScrollableLayout from "@/components/layouts/ScrollableLayout";
 import FilterModalLayout from "@/components/layouts/FilterModalLayout";
 import CardScrollableLayout from "@/components/layouts/CardScrollableLayout";
 import { useUser } from "@clerk/clerk-expo";
-
 /**
  * Home screen of the app. It allows the user to search for cafes, filter them,
  * and view them. The screen also displays quick search options and cafe cards
@@ -107,6 +106,8 @@ export default function HomeScreen() {
   }
 
   return (
+  <SafeAreaView>
+    
     <ScrollableLayout>
       <>
         {/* User Location and Search */}
@@ -301,6 +302,7 @@ export default function HomeScreen() {
         </CardScrollableLayout>
       </>
     </ScrollableLayout>
+    </SafeAreaView>
   );
 }
 
