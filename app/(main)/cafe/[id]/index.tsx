@@ -40,7 +40,7 @@ export default function CafeScreen() {
   const { id } = useLocalSearchParams();
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const [cafe, setCafe] = useState({});
+  const [cafe, setCafe] = useState({social_media: [] }); // set social media as empty array pour ne pas produire d'erreur dans l'utlisation de map après
   // fetch cafe data
   useEffect(() => {
     setIsLoading(true);
@@ -98,6 +98,19 @@ export default function CafeScreen() {
         <Text style={[TYPOGRAPHY.body.large.base, styles.cafeDescription]}>
           {isLoading? "..." : cafe.description}
         </Text>
+        <Text>
+          Social medial
+        </Text>
+
+        <View>
+        {cafe.social_media.map((item, index)=> (
+          <Text key={index}>
+            {item.plateform_name}: {item.link}
+
+          </Text>
+        ))}
+        </View>
+
       </View>
       <View
         style={{
