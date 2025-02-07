@@ -61,6 +61,14 @@ export default function CafeScreen() {
       fetchCafe();
   }, [id]);
 
+  function getCafeCats(menuItemList){
+    let menuCatSet = new Set();
+      for(let i = 0; i<menuItemList.length; i++){
+        menuCatSet.add(menuItemList[i].category);
+      }
+      return Array.from(menuCatSet);
+  }
+
   return (
     <SafeAreaView>
     <ScrollView
@@ -216,6 +224,35 @@ export default function CafeScreen() {
         ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
         />
       </CardScrollableLayout>
+
+      <FlatList
+        data={cafe.menu_items ? getCafeCats(cafe.menu_items):[]}
+        renderItem={({item})=>
+        <CardScrollableLayout
+        title={item}
+        titleMarginTop={SPACING["xl"]}
+        scrollMarginTop={SPACING["xs"]}
+        scrollMarginBottom={SPACING["md"]}
+        scrollGap={SPACING["xl"]}
+        dividerBottom
+        >
+          <FlatList data={cafe.menu_items ? cafe.menu_items.filter((menuItem) => menuItem.category== item) : []} // on ne prend que les boissons chaudes
+          horizontal scrollEnabled={false} 
+          renderItem={({item}) => <ArticleCard 
+                                    name={item.name} 
+                                    price={"$" + item.price} 
+                                    status={item.in_stock? "In Stock" : "Out of Stock"}
+                                    cafeSlug={cafe.slug}
+                                    slug={item.slug}
+                                    rating={4.8}
+                                    calories="350 CALORIES"
+                                    image={item.image_url}
+                                    />}
+          ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
+          />
+        </CardScrollableLayout>}
+        keyExtractor={item => item}
+      />
 
       <CardScrollableLayout
         title="Snacks"
