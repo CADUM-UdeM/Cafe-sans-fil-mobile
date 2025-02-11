@@ -216,7 +216,8 @@ export default function CafeScreen() {
                                     name={item.name} 
                                     price={"$" + item.price} 
                                     status={item.in_stock? "In Stock" : "Out of Stock"}
-                                    cafeSlug={item.slug}
+                                    cafeSlug={cafe.slug}
+                                    slug={item.slug}
                                     rating={4.8}
                                     calories="350 CALORIES"
                                     image={item.image_url}
