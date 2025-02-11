@@ -20,6 +20,10 @@ import {
   Locate,
   Sandwich,
   Search,
+  Facebook,
+  Instagram,
+  Twitter,
+  HelpCircle,
 } from "lucide-react-native";
 import {
   View,
@@ -31,6 +35,7 @@ import {
   useWindowDimensions,
   ScrollView,
   FlatList,
+  Linking,
 } from "react-native";
 import { addFavorites } from '../../favoris';
 
@@ -40,7 +45,23 @@ export default function CafeScreen() {
   const { id } = useLocalSearchParams();
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const [cafe, setCafe] = useState({});
+  const [cafe, setCafe] = useState({social_media: [] }); // set social media as empty array pour ne pas produire d'erreur dans l'utlisation de map après
+
+  // Have an openable link
+  const openLink = (url: string) => {
+    Linking.openURL(url).catch(err => console.error("Failed to open URL:", err));
+  };
+
+  // Getting icons depending on platform names
+  const getIcon = (platform) => {
+    const icons = {
+      Twitter: Twitter,
+      Instagram: Instagram,
+      Facebook: Facebook,
+    };
+    return icons[platform] || HelpCircle;
+  }; 
+
   // fetch cafe data
   useEffect(() => {
     setIsLoading(true);
@@ -106,6 +127,34 @@ export default function CafeScreen() {
         <Text style={[TYPOGRAPHY.body.large.base, styles.cafeDescription]}>
           {isLoading? "..." : cafe.description}
         </Text>
+        {/* <Text style={[
+            TYPOGRAPHY.body.large.semiBold,
+            { color: COLORS.subtuleDark, textAlign: "center" },
+          ]}>
+          Média sociaux
+        </Text> */}
+
+        {cafe.social_media?.length > 0 && (
+          <View style={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: 20,
+            gap: 10,
+          }}>
+             {cafe.social_media.map((item, index) => (
+                <Tooltip 
+                label={item.platform_name} 
+                onPress={()=>openLink(item.link)} 
+                Icon={getIcon(item.platform_name)}
+                showChevron={false} color="white" />
+              )) }
+          </View>
+        )}
+        
+        
+
       </View>
       <View
         style={{
