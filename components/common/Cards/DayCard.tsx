@@ -16,12 +16,15 @@ export default function DayCard({ day, blocks }: DayCardProps) {
           keyExtractor={(item, index) => `${item.start}-${index}`}
           horizontal
           contentContainerStyle={styles.flatListContent}
+          style={{alignSelf: 'center', marginBottom: "5%"}}
           renderItem={({ item }) => (
             <View style={styles.blockContainer}>
               <Text style={styles.blockText}>{item.start}</Text>
               <Text style={styles.blockText}>{item.end}</Text>
             </View>
           )}
+          ItemSeparatorComponent={() => 
+            <View style={{flex: 1, borderWidth: 2, borderColor: 'black'}}></View>}
         />
       </View>
     </View>
