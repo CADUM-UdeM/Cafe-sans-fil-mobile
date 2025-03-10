@@ -112,7 +112,7 @@ export default function CafeScreen() {
       <View>
         <Image
           style={styles.cafeBackgroundImage}
-          source={isLoading ? require("@/assets/images/placeholder/image2xl.png") : {uri: cafe.image_url}}
+          source={isLoading ? require("@/assets/images/placeholder/image2xl.png") : {uri: cafe.banner_url}}
         />
         <View style={styles.cafeHeaderButtons}>
           <IconButton
@@ -139,7 +139,7 @@ export default function CafeScreen() {
         <Text style={[TYPOGRAPHY.body.large.base, styles.cafeDescription]}>
           {isLoading? "..." : cafe.description}
         </Text>
-        
+
         {/*Média sociaux*/}
           <View style={{
             flexDirection: "row",
