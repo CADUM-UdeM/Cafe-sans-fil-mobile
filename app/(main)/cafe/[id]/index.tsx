@@ -139,15 +139,8 @@ export default function CafeScreen() {
         <Text style={[TYPOGRAPHY.body.large.base, styles.cafeDescription]}>
           {isLoading? "..." : cafe.description}
         </Text>
-        {/* <Text style={[
-            TYPOGRAPHY.body.large.semiBold,
-            { color: COLORS.subtuleDark, textAlign: "center" },
-          ]}>
-          Média sociaux
-        </Text>*/}
-
-        {// convertie le json {plateform: link} à un tableau [plateform, link]}
-        cafe.social_media && Object.entries(cafe.social_media).map(([plateform, link]) => ( link ? (
+        
+        {/*Média sociaux*/}
           <View style={{
             flexDirection: "row",
             flexWrap: "wrap",
@@ -156,37 +149,15 @@ export default function CafeScreen() {
             marginTop: 20,
             gap: 10,}}>
 
-              <Tooltip
-              label={plateform.charAt(0).toUpperCase() + plateform.slice(1)}
-              onPress={() => openLink(link)}
-              Icon={getIcon(plateform)}
-              showChevron={false} color='white'/>
-
+              {// convertie le json {plateform: link} à un tableau [plateform, link]
+              cafe.social_media && Object.entries(cafe.social_media).map(([plateform, link]) => ( link ? (
+                <Tooltip
+                label={plateform.charAt(0).toUpperCase() + plateform.slice(1)}
+                onPress={() => openLink(link)}
+                Icon={getIcon(plateform)}
+                showChevron={false} color='white'/>
+              ) : null ))}
           </View>
-        ) : null
-        ))}
-
-
-        {/* cafe.social_media?.length > 0 && (
-          <View style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            alignItems: "center",
-            justifyContent: "center",
-            marginTop: 20,
-            gap: 10,
-          }}>
-             {cafe.social_media.map((item, index) => (
-                <Tooltip 
-                label={item.platform_name} 
-                onPress={()=>openLink(item.link)} 
-                Icon={getIcon(item.platform_name)}
-                showChevron={false} color="white" />
-              ))}
-          </View>
-        )*/}
-        
-        
 
       </View>
       <View
