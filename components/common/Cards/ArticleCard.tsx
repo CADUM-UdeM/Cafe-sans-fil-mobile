@@ -92,7 +92,7 @@ export default function ArticleCard({
             overflow: "hidden",
           }}
         >
-          <View style={{ gap: 10, width: "50%" }}>
+          <View style={{ gap: 10, width: 50 }}>
             <View style={{ gap: 8 }}>
               <Text style={TYPOGRAPHY.body.large.semiBold}>
                 Croissant au chocolat
