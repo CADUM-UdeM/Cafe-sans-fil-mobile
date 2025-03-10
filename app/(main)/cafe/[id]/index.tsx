@@ -45,19 +45,30 @@ export default function CafeScreen() {
   const { id } = useLocalSearchParams();
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const [cafe, setCafe] = useState({social_media: [] }); // set social media as empty array pour ne pas produire d'erreur dans l'utlisation de map après
+  const [cafe, setCafe] = useState({ social_media:{} }); // set social media as empty array pour ne pas produire d'erreur dans l'utlisation de map après
 
   // Have an openable link
   const openLink = (url: string) => {
     Linking.openURL(url).catch(err => console.error("Failed to open URL:", err));
   };
 
+  // function qui donne la plateform et le lien
+  // const getSocialMediaLinks = (socialMediaObjet) => {
+  //   if (!socialMediaObjet) return [];
+
+  //   return Object.entries(socialMediaObjet).map(([plateform, link]) => ({
+  //     name: plateform,
+  //     link: link,
+  //   }) );
+  // };
+  
+
   // Getting icons depending on platform names
   const getIcon = (platform) => {
     const icons = {
-      Twitter: Twitter,
-      Instagram: Instagram,
-      Facebook: Facebook,
+      x: Twitter,
+      instagram: Instagram,
+      facebook: Facebook,
     };
     return icons[platform] || HelpCircle;
   }; 
@@ -70,6 +81,7 @@ export default function CafeScreen() {
         try {
             const response = await fetch(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}`);
             const json = await response.json();
+            console.log("Social media: ", json.social_media)
             console.log(json.opening_hours);
             setCafe(json);
         } catch (error) {
@@ -132,9 +144,30 @@ export default function CafeScreen() {
             { color: COLORS.subtuleDark, textAlign: "center" },
           ]}>
           Média sociaux
-        </Text> */}
+        </Text>*/}
 
-        {cafe.social_media?.length > 0 && (
+        {// convertie le json {plateform: link} à un tableau [plateform, link]}
+        cafe.social_media && Object.entries(cafe.social_media).map(([plateform, link]) => ( link ? (
+          <View style={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: 20,
+            gap: 10,}}>
+
+              <Tooltip
+              label={plateform.charAt(0).toUpperCase() + plateform.slice(1)}
+              onPress={() => openLink(link)}
+              Icon={getIcon(plateform)}
+              showChevron={false} color='white'/>
+
+          </View>
+        ) : null
+        ))}
+
+
+        {/* cafe.social_media?.length > 0 && (
           <View style={{
             flexDirection: "row",
             flexWrap: "wrap",
@@ -149,9 +182,9 @@ export default function CafeScreen() {
                 onPress={()=>openLink(item.link)} 
                 Icon={getIcon(item.platform_name)}
                 showChevron={false} color="white" />
-              )) }
+              ))}
           </View>
-        )}
+        )*/}
         
         
 

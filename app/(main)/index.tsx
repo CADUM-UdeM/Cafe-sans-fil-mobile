@@ -59,7 +59,8 @@ export default function HomeScreen() {
     fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
       .then((response) => response.json())
       .then((json) => {
-        setData(json);
+        setData(json.items);
+        // console.log(json)
       })
       .catch((error) => console.error(error))
       .finally(() => setIsLoading(false));;
@@ -161,17 +162,18 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
-            <FlatList data={data} renderItem={({item}) => 
+            <FlatList data={data} renderItem={({item}) =>
+                              
                                 <CafeCard
                                   name={item.name}
-                                  image={item.image_url}
+                                  image={item.banner_url}
                                   location={item.location.pavillon}
                                   priceRange="$$"
                                   rating={4.8}
                                   status={item.is_open}
-                                  id={item.cafe_id}
-                                />}
-              keyExtractor={item => item.cafe_id}
+                                  id={item.id}
+                                /> }
+              keyExtractor={item => item.id}
               horizontal // render honrizontalement
               ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
               scrollEnabled={false}
