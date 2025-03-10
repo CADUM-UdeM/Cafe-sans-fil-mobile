@@ -9,7 +9,7 @@ type DayCardProps = {
 export default function DayCard({ day, blocks }: DayCardProps) {
   return (
     <View style={styles.cardContainer}>
-      <Text style={styles.dayText}>{day}</Text>
+      <Text style={styles.dayText}>{day.charAt(0) + day.slice(1).toLowerCase()}</Text>
       <View style={styles.flatListWrapper}>
         <FlatList
           data={blocks}
@@ -19,8 +19,7 @@ export default function DayCard({ day, blocks }: DayCardProps) {
           style={{alignSelf: "center"}}
           renderItem={({ item }) => (
             <View style={styles.blockContainer}>
-              <Text style={styles.blockText}>{item.start}</Text>
-              <Text style={styles.blockText}>{item.end}</Text>
+              <Text style={styles.blockText}>{item.start} - {item.end}</Text>
             </View>
           )}
         />

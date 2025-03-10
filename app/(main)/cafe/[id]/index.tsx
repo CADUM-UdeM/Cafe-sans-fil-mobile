@@ -165,9 +165,7 @@ export default function CafeScreen() {
           marginHorizontal: 16,
           marginTop: 40,
           backgroundColor: COLORS.lightGray,
-          borderRadius: 10,
           paddingBlock: 28,
-          paddingHorizontal: 28,
         }}
       >
 
@@ -181,11 +179,14 @@ export default function CafeScreen() {
         </Text>
         <FlatList data={cafe.opening_hours} horizontal
           keyExtractor={(item, index) => `${item.day}-${index}`} // Add a keyExtractor to avoid warnings
+          
           renderItem={({ item }) => (
-            <DayCard day={item.day} blocks={item.blocks} />
+            <View style={{flex: 1}}>
+              <DayCard day={item.day} blocks={item.blocks} />
+            </View>
           )}
         />
-        <Text
+        {/* <Text
           style={[
             TYPOGRAPHY.body.large.semiBold,
             { color: COLORS.subtuleDark, textAlign: "center" },
@@ -212,7 +213,7 @@ export default function CafeScreen() {
             color="black"
             textColor="white"
           />
-        </View>
+        </View> */}
       </View>
 
       <CardScrollableLayout
