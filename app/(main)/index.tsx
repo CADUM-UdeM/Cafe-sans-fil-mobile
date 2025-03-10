@@ -62,7 +62,7 @@ export default function HomeScreen() {
     fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
       .then((response) => response.json())
       .then((json) => {
-        setData(json);
+        setData(json.items);
       })
       .catch((error) => console.error(error))
       .finally(() => setIsLoading(false));;

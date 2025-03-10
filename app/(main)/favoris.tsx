@@ -11,31 +11,39 @@ import { sampleFavoris } from '@/constants/type_samples';
 
 export default function FavorisScreen() {
   const [data, setData] = useState<Favoris[]>([]);
-  // fetch favorites cafe
-  useEffect(() => {
-    //console.log('Favorites reloaded!')
+
+  const loadFavorites = () => {
     let fetchData = fetchSync('favorites');
-    setData(JSON.parse(fetchData));
-    //console.log(fetchData, 'Favorites found')
-  }, [])
+    if (fetchData) {
+      setData(JSON.parse(fetchData));
+    }
+  };
+
+  // fetch favorites cafe
+  useFocusEffect(
+    useCallback(() => {
+      loadFavorites();
+    }, [])
+  );
 
   return (
     <ScrollableLayout>
       <SafeAreaView>
         <View>
-        <TouchableOpacity
-        onPress={() => deleteSecurely('favorites')}>
-              <Text>Wipe</Text>
-        </TouchableOpacity>
+          <TouchableOpacity onPress={() => { 
+            deleteSecurely('favorites');
+            setData([]); // Clear the state after deleting
+          }}>
+            <Text>Wipe</Text>
+          </TouchableOpacity>
           <CardScrollableLayout
-            title="Vos cafes favoris"
+            title="Vos cafés favoris"
             titleMarginTop={SPACING["xl"]}
-            scrollMarginTop={SPACING["xs"]}
+            scrollMarginTop={SPACING["lg"]}
             scrollMarginBottom={SPACING["md"]}
-            scrollGap={SPACING["md"]}
-            dividerBottom
+            scrollGap={SPACING["2xl"]}
+            scroll={false}
           >
-            
             <FlatList
               data={data}
               renderItem={({ item }) => (
@@ -50,8 +58,9 @@ export default function FavorisScreen() {
                 />
               )}
               keyExtractor={(item) => item.cafe_id}
+              horizontal
               ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
-              scrollEnabled={false}
+              scrollEnabled={true}
             />
           </CardScrollableLayout>
         </View>
