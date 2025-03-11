@@ -22,6 +22,7 @@ export default function DayCard({ day, blocks }: DayCardProps) {
               <Text style={styles.blockText}>{item.start} - {item.end}</Text>
             </View>
           )}
+          
         />
       </View>
     </View>
@@ -30,8 +31,9 @@ export default function DayCard({ day, blocks }: DayCardProps) {
 
 const styles = StyleSheet.create({
   cardContainer: {
-    margin: 16,
+    marginVertical: 16,
     alignItems: "center", // Center align the day and FlatList
+    width:110
   },
   dayText: {
     fontSize: 18,
@@ -44,14 +46,17 @@ const styles = StyleSheet.create({
   },
   flatListContent: {
     justifyContent: "center", // Center align FlatList items horizontally
+    width:100
   },
   blockContainer: {
     marginHorizontal: 8,
     backgroundColor: "#f2f2f2",
-    padding: 8,
     borderRadius: 8,
+    paddingVertical:8,
     justifyContent: "center",
     alignItems: "center",
+    width:100
+
   },
   blockText: {
     fontSize: 14,

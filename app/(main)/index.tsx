@@ -187,8 +187,10 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
+          {/* Tendences du momemt */}
           <FlatList data={data} renderItem={({item}) => 
                   <CafeCard
+                    id={item.id}
                     name={item.name}
                     image={item.image_url}
                     location={item.location.pavillon}

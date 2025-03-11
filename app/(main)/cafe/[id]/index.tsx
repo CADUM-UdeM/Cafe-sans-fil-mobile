@@ -171,17 +171,19 @@ export default function CafeScreen() {
 
         <Text
           style={[
-            TYPOGRAPHY.body.large.semiBold,
-            { color: COLORS.subtuleDark, textAlign: "center" },
+            TYPOGRAPHY.heading.medium.bold,
+            { color: "black", textAlign: "center", marginBottom:8},
           ]}
         >
           Horaires
         </Text>
         <FlatList data={cafe.opening_hours} horizontal
           keyExtractor={(item, index) => `${item.day}-${index}`} // Add a keyExtractor to avoid warnings
-          
+          ItemSeparatorComponent={() => 
+            <View 
+              style={{margin:10, borderColor: "black", borderWidth: 0.5}}></View>}
           renderItem={({ item }) => (
-            <View style={{flex: 1}}>
+            <View>
               <DayCard day={item.day} blocks={item.blocks} />
             </View>
           )}
