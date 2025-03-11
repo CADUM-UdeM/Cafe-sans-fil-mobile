@@ -5,8 +5,6 @@ import CafeCard from "@/components/common/Cards/CafeCard";
 import DayCard from "@/components/common/Cards/DayCard";
 import CategoryCard from "@/components/common/Cards/CategoryCard";
 import Tooltip from "@/components/common/Tooltip";
-import CardScrollableLayout from "@/components/layouts/CardScrollableLayout";
-import ScrollableLayout from "@/components/layouts/ScrollableLayout";
 import COLORS from "@/constants/Colors";
 import SPACING from "@/constants/Spacing";
 import TYPOGRAPHY from "@/constants/Typography";
@@ -178,14 +176,13 @@ export default function CafeScreen() {
           Horaires
         </Text>
         <FlatList data={cafe.opening_hours} horizontal
-          keyExtractor={(item, index) => `${item.day}-${index}`} // Add a keyExtractor to avoid warnings
+          keyExtractor={item => item.id}
           ItemSeparatorComponent={() => 
             <View 
-              style={{margin:10, borderColor: "black", borderWidth: 0.5}}></View>}
+              style={{margin:10, borderColor: "black", borderWidth: 0.5}}></View>
+          }
           renderItem={({ item }) => (
-            <View>
               <DayCard day={item.day} blocks={item.blocks} />
-            </View>
           )}
         />
         {/* <Text
@@ -218,17 +215,15 @@ export default function CafeScreen() {
         </View> */}
       </View>
 
-      <CardScrollableLayout
-        outerMarginTop={40}
-        title="Tendances actuelles"
-        titleMarginTop={SPACING["xl"]}
-        scrollMarginTop={SPACING["xs"]}
-        scrollMarginBottom={SPACING["md"]}
-        scrollGap={SPACING["xl"]}
-        dividerBottom
-        dividerTop
-      >
-        <FlatList data={cafe.menu_items} horizontal scrollEnabled={false} 
+      <Text 
+        style={{
+          marginVertical: SPACING["xl"], 
+          marginHorizontal: SPACING["md"], 
+          ...TYPOGRAPHY.heading.small.bold
+        }}>Tendances actuelles
+        </Text>
+        <FlatList data={cafe.menu_items} horizontal 
+          keyExtractor={item => item.id}
           renderItem={({item}) => <ArticleCard 
                                     name={item.name} 
                                     price={"$" + item.price} 
@@ -240,34 +235,39 @@ export default function CafeScreen() {
                                     />} 
         ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
         />
-      </CardScrollableLayout>
 
-      {/* <CardScrollableLayout
-        title="Catégories"
-        titleMarginTop={SPACING["xl"]}
-        scrollMarginTop={SPACING["xs"]}
-        scrollMarginBottom={SPACING["md"]}
-        scrollGap={SPACING["lg"]}
-        dividerBottom
-      > */}
+        <Text 
+          style={{
+            marginVertical: SPACING["xl"], 
+            marginHorizontal: SPACING["md"], 
+            ...TYPOGRAPHY.heading.small.bold
+          }}>
+          Catégories 
+        </Text>
         <FlatList style={{backgroundColor:COLORS.white, padding:2 }} 
-          data={cafe.menu_items ? [...new Set(cafe.menu_items.map(item => item.category))].sort() : []}
-          horizontal renderItem={({item}) => <CategoryCard name={item} icon={CupSoda}/>}
+          data={
+            cafe.menu_items ? 
+              [...new Set(cafe.menu_items.map(item => item.category))].sort() 
+              : 
+              []
+            }
+          horizontal 
+          renderItem={({item}) => <CategoryCard name={item} icon={CupSoda}/>}
           ItemSeparatorComponent={() => <View style={{width:10}}></View>}
+          keyExtractor={item => item.id}
         />
         
-      {/* </CardScrollableLayout> */}
 
-      <CardScrollableLayout
-        title="Boissons"
-        titleMarginTop={SPACING["xl"]}
-        scrollMarginTop={SPACING["xs"]}
-        scrollMarginBottom={SPACING["md"]}
-        scrollGap={SPACING["xl"]}
-        dividerBottom
-      >
+      <Text 
+        style={{
+          marginVertical: SPACING["xl"], 
+          marginHorizontal: SPACING["md"], 
+          ...TYPOGRAPHY.heading.small.bold
+        }}>
+          Boissons 
+        </Text>
         <FlatList data={cafe.menu_items ? cafe.menu_items.filter((item) => item.category === "Boissons chaudes") : []} // on ne prend que les boissons chaudes
-          horizontal scrollEnabled={false} 
+          horizontal  
           renderItem={({item}) => <ArticleCard 
                                     name={item.name} 
                                     price={"$" + item.price} 
@@ -279,74 +279,44 @@ export default function CafeScreen() {
                                     image={item.image_url}
                                     />}
         ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
+        keyExtractor={item => item.id}
         />
-      </CardScrollableLayout>
 
       <FlatList
-        data={cafe.menu_items ? getCafeCats(cafe.menu_items):[]}
-        renderItem={({item})=>
-        <CardScrollableLayout
-        title={item}
-        titleMarginTop={SPACING["xl"]}
-        scrollMarginTop={SPACING["xs"]}
-        scrollMarginBottom={SPACING["md"]}
-        scrollGap={SPACING["xl"]}
-        dividerBottom
-        >
-          <FlatList data={cafe.menu_items ? cafe.menu_items.filter((menuItem) => menuItem.category== item) : []} // on ne prend que les boissons chaudes
-          horizontal scrollEnabled={false} 
-          renderItem={({item}) => <ArticleCard 
-                                    name={item.name} 
-                                    price={"$" + item.price} 
-                                    status={item.in_stock? "In Stock" : "Out of Stock"}
-                                    cafeSlug={cafe.slug}
-                                    slug={item.slug}
-                                    rating={4.8}
-                                    calories="350 CALORIES"
-                                    image={item.image_url}
-                                    />}
+        data={cafe.menu_items ? cafe.menu_items.filter((menuItem) => menuItem.category== item) : []}
+        horizontal
+        keyExtractor={item => item.id}
+        renderItem={({item})=> (
+          <ArticleCard 
+            name={item.name} 
+            price={"$" + item.price} 
+            status={item.in_stock? "In Stock" : "Out of Stock"}
+            cafeSlug={cafe.slug}
+            slug={item.slug}
+            rating={4.8}
+            calories="350 CALORIES"
+            image={item.image_url}
+          />)}
           ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
           />
-        </CardScrollableLayout>}
-        keyExtractor={item => item}
-      />
 
-      <CardScrollableLayout
-        title="Snacks"
-        titleMarginTop={SPACING["xl"]}
-        scrollMarginTop={SPACING["xs"]}
-        scrollMarginBottom={SPACING["md"]}
-        scrollGap={SPACING["xl"]}
-        dividerBottom
-      >
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-        
-      </CardScrollableLayout>
+      <Text 
+        style={{
+          marginVertical: SPACING["xl"], 
+          marginHorizontal: SPACING["md"], 
+          ...TYPOGRAPHY.heading.small.bold
+        }}>
+          Snacks 
+        </Text>
 
-      <CardScrollableLayout
-        title="Patisserie"
-        titleMarginTop={SPACING["xl"]}
-        scrollMarginTop={SPACING["xs"]}
-        scrollMarginBottom={SPACING["md"]}
-        scrollGap={SPACING["xl"]}
-        dividerBottom
-      >
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-      </CardScrollableLayout>
+        <Text 
+        style={{
+          marginVertical: SPACING["xl"], 
+          marginHorizontal: SPACING["md"], 
+          ...TYPOGRAPHY.heading.small.bold
+        }}>
+          Pâtisserie 
+        </Text>
 
       <View
         style={{
@@ -361,43 +331,33 @@ export default function CafeScreen() {
       </View>
       <View style={{ paddingHorizontal: 16, paddingBlock: 28, gap: 32 , alignItems: 'center'}}>
       <FlatList data={cafe.menu_items} scrollEnabled={false} 
-          renderItem={({item}) => <ArticleCard 
-                                    name={item.name} 
-                                    price={"$" + item.price} 
-                                    status={item.in_stock? "In Stock" : "Out of Stock"}
-                                    cafeSlug={item.slug}
-                                    rating={4.8}
-                                    calories="350 CALORIES"
-                                    image={item.image_url}
-                                    />} 
+        keyExtractor={item => item.id}
+        horizontal
+        renderItem={({item}) => 
+            <ArticleCard 
+              name={item.name} 
+              price={"$" + item.price} 
+              status={item.in_stock? "In Stock" : "Out of Stock"}
+              cafeSlug={item.slug}
+              rating={4.8}
+              calories="350 CALORIES"
+              image={item.image_url}
+              />
+          } 
         ItemSeparatorComponent={() => <View style={{ marginBottom: SPACING["md"] }} />} // padding
         />
       </View>
-      <CardScrollableLayout
-        title="Autres cafés similaires"
-        titleMarginTop={SPACING["xl"]}
-        scrollMarginTop={SPACING["xs"]}
-        scrollMarginBottom={SPACING["md"]}
-        scrollGap={SPACING["md"]}
-        dividerTop
-      >
-        <CafeCard
-          name="Jean Brillant"
-          location="Pavillon Claire McNicole"
-          priceRange="$$"
-          rating={4.8}
-          status="open"
-          slug="Cafe Tore et Fraction"
-        />
-        
-        <CafeCard
-          name="Jean Brillant"
-          location="Pavillon Claire McNicole"
-          priceRange="$$"
-          rating={4.8}
-          status="open"
-        />
-      </CardScrollableLayout>
+      <Text 
+        style={{
+          marginVertical: SPACING["xl"], 
+          marginHorizontal: SPACING["md"], 
+          ...TYPOGRAPHY.heading.small.bold
+        }}>
+          Autres cafés similaire 
+        </Text>
+
+        {/* TODO: IMPLÉMENTER LA FLATLIST */}
+
     </ScrollView>
     </SafeAreaView>
   );

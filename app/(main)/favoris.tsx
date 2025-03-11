@@ -1,105 +1,69 @@
-import { View, SafeAreaView, FlatList, AppState } from 'react-native';
+import { View, SafeAreaView, FlatList, AppState, TouchableOpacity, Text } from 'react-native';
 import React, { useState, useEffect, useCallback } from 'react';
 import ScrollableLayout from '@/components/layouts/ScrollableLayout';
-import CardScrollableLayout from '@/components/layouts/CardScrollableLayout';
 import SPACING from '@/constants/Spacing';
 import CafeCard from '@/components/common/Cards/CafeCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
-
-let favoritesTest = {};
-
-export function addFavorites(item) {
-  if (favoritesTest[item.cafe_id]) {
-    console.log("Item already in favorites");
-    return;
-  }
-
-  favoritesTest[item.cafe_id] = item;
-  console.log(`Added to favorites: ${item.name}`);
-
-  AsyncStorage.setItem('favorites', JSON.stringify(favoritesTest))
-    .then(() => {
-      console.log("Favorites saved");
-    })
-    .catch((err) => console.error("Error saving favorites", err));
-}
-
-export function clearFavorites() {
-  favoritesTest = {};
-  AsyncStorage.removeItem('favorites')
-    .then(() => {
-      console.log("Favorites reset");
-    })
-    .catch((err) => console.error("Error clearing favorites", err));
-}
+import { fetchSync, deleteSecurely } from "@/script/storage";
+import { sampleFavoris } from "@/constants/type_samples";
+import TYPOGRAPHY from "@/constants/Typography";
 
 export default function FavorisScreen() {
-  const [favoritesObj, setFavorites] = useState([]);
+  const [data, setData] = useState<Favoris[]>([]);
 
-  const loadFavorites = useCallback(() => {
-    AsyncStorage.getItem('favorites')
-      .then((storedFavorites) => {
-        if (storedFavorites) {
-          favoritesTest = JSON.parse(storedFavorites);
-          setFavorites(Object.values(favoritesTest));
-        } else {
-          setFavorites([]);
-        }
-      })
-      .catch((err) => console.error("Error loading favorites", err));
-  }, []);
+  const loadFavorites = () => {
+    let fetchData = fetchSync('favorites');
+    if (fetchData) {
+      setData(JSON.parse(fetchData));
+    }
+  };
 
-  useEffect(() => {
-    clearFavorites();  // Clear favorites on app start
-    loadFavorites();  // Load favorites after clearing
-  }, [loadFavorites]);
-
+  // fetch favorites cafe
   useFocusEffect(
     useCallback(() => {
       loadFavorites();
-    }, [loadFavorites])
+    }, [])
   );
 
-  const handleAddFavorite = (item) => {
-    addFavorites(item);
-    setFavorites(Object.values(favoritesTest));
-  };
-
   return (
-    <ScrollableLayout>
-      <SafeAreaView>
+    <SafeAreaView>
+      <ScrollableLayout>
         <View>
-          <CardScrollableLayout
-            title="Vos cafes favoris"
-            titleMarginTop={SPACING["xl"]}
-            scrollMarginTop={SPACING["xs"]}
-            scrollMarginBottom={SPACING["md"]}
-            scrollGap={SPACING["md"]}
-            dividerBottom
-          >
+          <TouchableOpacity onPress={() => { 
+            deleteSecurely('favorites');
+            setData([]); // Clear the state after deleting
+          }}>
+            <Text>Wipe</Text>
+          </TouchableOpacity>
+          <Text 
+            style={{
+              marginVertical: SPACING["xl"], 
+              marginHorizontal: SPACING["md"], 
+              ...TYPOGRAPHY.heading.small.bold
+            }}
+            >Vos cafés favoris</Text>
             <FlatList
-              data={favoritesObj}
+              data={data}
               renderItem={({ item }) => (
                 <CafeCard
+                  id={item.id}
                   name={item.name}
                   image={item.image_url}
                   location={item.location.pavillon}
                   priceRange="$$"
                   rating={4.8}
                   status={item.is_open}
-                  id={item.cafe_id}
-                  addFavorite={handleAddFavorite}
+                  slug={item.slug}
                 />
               )}
-              keyExtractor={(item) => item.cafe_id}
+              keyExtractor={item => item.id}
               horizontal
               ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
-              scrollEnabled={false}
+              scrollEnabled={true}
             />
-          </CardScrollableLayout>
         </View>
-      </SafeAreaView>
-    </ScrollableLayout>
+      </ScrollableLayout>
+    </SafeAreaView>
   );
 }

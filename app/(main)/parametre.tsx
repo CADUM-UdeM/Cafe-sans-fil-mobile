@@ -4,10 +4,10 @@ import ScrollableLayout from '@/components/layouts/ScrollableLayout'
 
 export default function ParametreScreen() {
   return (
-    <ScrollableLayout>
-      <SafeAreaView>
+    <SafeAreaView>
+      <ScrollableLayout>
         <Text>ParametreScreen</Text>
-      </SafeAreaView>
-    </ScrollableLayout>
+      </ScrollableLayout>
+    </SafeAreaView>
   )
 }

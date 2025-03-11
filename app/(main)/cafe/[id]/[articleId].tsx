@@ -3,8 +3,6 @@ import IconButton from "@/components/common/Buttons/IconButton";
 import ArticleCard from "@/components/common/Cards/ArticleCard";
 import Counter from "@/components/common/Inputs/Counter";
 import Tooltip from "@/components/common/Tooltip";
-import CardScrollableLayout from "@/components/layouts/CardScrollableLayout";
-import ScrollableLayout from "@/components/layouts/ScrollableLayout";
 import COLORS from "@/constants/Colors";
 import SPACING from "@/constants/Spacing";
 import TYPOGRAPHY from "@/constants/Typography";
@@ -194,55 +192,15 @@ export default function ArticleScreen() {
         </View>
       </View>
 
-      <CardScrollableLayout
-        title="Tendances actuelles"
-        titleMarginTop={SPACING["xl"]}
-        scrollMarginTop={SPACING["xs"]}
-        scrollMarginBottom={SPACING["md"]}
-        scrollGap={SPACING["xl"]}
-      >
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          cafeSlug="Cafe Tore et Fraction"
-          slug="1"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-      </CardScrollableLayout>
+      <Text 
+        style={{
+          marginVertical: SPACING["xl"], 
+          marginHorizontal: SPACING["md"], 
+          ...TYPOGRAPHY.heading.small.bold
+        }}>
+          Tendances actuelles
+        </Text>
+      
 
     </ScrollView>
     </KeyboardAvoidingView>

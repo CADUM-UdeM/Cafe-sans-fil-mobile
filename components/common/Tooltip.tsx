@@ -21,7 +21,7 @@ type TooltipProps = {
   label: string;
 
   /** Optional status indicator to determine the icon's color and behavior */
-  status?: "green" | "orange" | "red";
+  status?: string;
 
   /** Optional custom icon to display at the start of the tooltip */
   Icon?: LucideIcon;
@@ -96,7 +96,7 @@ export default function Tooltip({
   children,
   label,
   status,
-  Icon = status && Circle, // Default to Circle if a status is provided
+  Icon = status? Circle : Circle, // Default to Circle if a status is provided
   showChevron = true,
   color,
   textColor,

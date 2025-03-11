@@ -89,7 +89,7 @@ export default function CafeCard({
       onPress={() => {router.push(`/cafe/${id}`);
                       console.log(slug);
       }}
-      style={{ width: cardDimensions[size].width }}
+      style={{ width: cardDimensions[size].width}}
       testID="button"
     >
       <View>
