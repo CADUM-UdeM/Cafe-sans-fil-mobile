@@ -83,6 +83,12 @@ export default function HomeScreen() {
   // Get the modal context for opening and closing modals.
   const modalContext = useModal();
 
+  // Const for the commander en ligne filter
+  const [showOnlyOrder, setShowOnlyOrder] = useState(false);
+
+   // Get cafes that have the feature to ORDER on line if commander en ligne filter is on
+   const cafesWithOrder = showOnlyOrder ? data.filter((cafe) => cafe.features.includes("ORDER")) : data;
+
   // Get the open and close modal functions from the modal context.
   const openModal = modalContext ? modalContext.openModal : () => {};
   const closeModal = modalContext ? modalContext.closeModal : () => {};
@@ -141,6 +147,12 @@ export default function HomeScreen() {
             showChevron={false}
             changeColorOnPress
           />
+          <Tooltip
+            label="Commander en ligne"
+            onPress={() => setShowOnlyOrder(!showOnlyOrder)} // fonction qui va afficher les cafés où on peut order en ligne
+            showChevron={false}
+            changeColorOnPress
+          />
           <Tooltip label="Diététique" Icon={Vegan} changeColorOnPress></Tooltip>
           <Tooltip label="Prix" changeColorOnPress></Tooltip>
           <Tooltip
@@ -162,8 +174,7 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
-            <FlatList data={data} renderItem={({item}) =>
-                              
+            <FlatList data={cafesWithOrder} renderItem={({item}) =>           
                                 <CafeCard
                                   name={item.name}
                                   image={item.banner_url}
@@ -187,16 +198,16 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
-          <FlatList data={data} renderItem={({item}) => 
+          <FlatList data={cafesWithOrder} renderItem={({item}) => 
                   <CafeCard
                     name={item.name}
-                    image={item.image_url}
+                    image={item.banner_url}
                     location={item.location.pavillon}
                     priceRange="$$"
                     rating={4.8}
                     status={item.is_open}
                   />}
-              keyExtractor={item => item.cafe_id}
+              keyExtractor={item => item.id}
               horizontal
               ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
             />
@@ -209,16 +220,16 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
-                        <FlatList data={data} renderItem={({item}) => 
+                        <FlatList data={cafesWithOrder} renderItem={({item}) => 
                                 <CafeCard
                                   name={item.name}
-                                  image={item.image_url}
+                                  image={item.banner_url}
                                   location={item.location.pavillon}
                                   priceRange="$$"
                                   rating={4.8}
                                   status={item.is_open}
                                 />}
-              keyExtractor={item => item.cafe_id}
+              keyExtractor={item => item.id}
               horizontal
               ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
             />
@@ -231,16 +242,16 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
-                        <FlatList data={data} renderItem={({item}) => 
+                        <FlatList data={cafesWithOrder} renderItem={({item}) => 
                                 <CafeCard
                                   name={item.name}
-                                  image={item.image_url}
+                                  image={item.banner_url}
                                   location={item.location.pavillon}
                                   priceRange="$$"
                                   rating={4.8}
                                   status={item.is_open}
                                 />}
-              keyExtractor={item => item.cafe_id}
+              keyExtractor={item => item.id}
               horizontal
               ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
             />
@@ -254,9 +265,25 @@ export default function HomeScreen() {
           scrollMarginTop={SPACING["lg"]}
           scrollMarginBottom={SPACING["md"]}
           scrollGap={SPACING["2xl"]}
-          scroll={false}
         >
-          <CafeCard
+          {/* Not affected by filters? Good idea or not? */}
+          <FlatList data={data} renderItem={({item}) =>           
+                                <CafeCard
+                                  name={item.name}
+                                  image={item.banner_url}
+                                  location={item.location.pavillon}
+                                  priceRange="$$"
+                                  rating={4.8}
+                                  status={item.is_open}
+                                  id={item.id}
+                                /> }
+              keyExtractor={item => item.id}
+              horizontal // render honrizontalement
+              ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
+              scrollEnabled={false}
+            />
+
+          {/*<CafeCard
             status={"open"}
             name={"Jean Brillant"}
             location={"Pavillon Claire McNicole"}
@@ -300,7 +327,7 @@ export default function HomeScreen() {
             rating={4.5}
             size={"large"}
             slug="5"
-          />
+          /> */}
         </CardScrollableLayout>
       </>
     </ScrollableLayout>

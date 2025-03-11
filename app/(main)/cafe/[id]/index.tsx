@@ -45,7 +45,7 @@ export default function CafeScreen() {
   const { id } = useLocalSearchParams();
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const [cafe, setCafe] = useState({ social_media:{} }); // set social media as empty array pour ne pas produire d'erreur dans l'utlisation de map après
+  const [cafe, setCafe] = useState({ social_media:{} }); // set social media as empty object
 
   // Have an openable link
   const openLink = (url: string) => {
@@ -81,7 +81,7 @@ export default function CafeScreen() {
         try {
             const response = await fetch(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}`);
             const json = await response.json();
-            console.log("Social media: ", json.social_media)
+            // console.log("Social media: ", json.social_media)
             console.log(json.opening_hours);
             setCafe(json);
         } catch (error) {
