@@ -45,7 +45,7 @@ export default function CafeScreen() {
   const { id } = useLocalSearchParams();
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const [cafe, setCafe] = useState({ social_media:{} }); // set social media as empty object
+  const [cafe, setCafe] = useState({}); // set social media as empty object
 
   // Have an openable link
   const openLink = (url: string) => {
@@ -93,6 +93,11 @@ export default function CafeScreen() {
 
       fetchCafe();
   }, [id]);
+
+  // Tableau des média sociaux des cafés 
+  // convertie le json {plateform: link} à un tableau [plateform, link]
+  const socialMediaTab = cafe.social_media ? Object.entries(cafe.social_media).map(([plateform, link]) =>
+    ({plateform, link})) : [] ;
 
   function getCafeCats(menuItemList){
     let menuCatSet = new Set();
@@ -149,8 +154,7 @@ export default function CafeScreen() {
             marginTop: 20,
             gap: 10,}}>
 
-              {// convertie le json {plateform: link} à un tableau [plateform, link]
-              cafe.social_media && Object.entries(cafe.social_media).map(([plateform, link]) => ( link ? (
+              {socialMediaTab.map(({plateform, link}) => ( link ? (
                 <Tooltip
                 label={plateform.charAt(0).toUpperCase() + plateform.slice(1)}
                 onPress={() => openLink(link)}
