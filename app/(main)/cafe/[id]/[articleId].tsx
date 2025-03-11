@@ -21,6 +21,8 @@ import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, KeyboardAvoidin
   Platform,
   ScrollView, } from "react-native";
 
+import { Item } from "@/constants/types/GET_item";
+
 export default function ArticleScreen() {
   const { id, articleId } = useLocalSearchParams();
   console.log("Café Id", id);
@@ -28,7 +30,7 @@ export default function ArticleScreen() {
 
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const [menuItem, setMenuItem] = useState({});
+  const [menuItem, setMenuItem] = useState<Item | any>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

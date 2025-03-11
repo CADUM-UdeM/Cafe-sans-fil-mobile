@@ -15,6 +15,7 @@ import {
   type PavillonCoordinate,
 } from "@/constants/Coordinates";
 import TYPOGRAPHY from "@/constants/Typography";
+import { allCafe } from "@/constants/types/GET_list_cafe";
 
 import Tooltip from "@/components/common/Tooltip";
 import Search from "@/components/common/Inputs/Search";
@@ -51,7 +52,7 @@ import { useUser } from "@clerk/clerk-expo";
  * - All Cafes Cards: Lists all available cafes.
  */
 export default function HomeScreen() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<allCafe | any>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // fetch cafe list

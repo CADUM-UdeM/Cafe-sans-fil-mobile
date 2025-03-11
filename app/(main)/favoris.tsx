@@ -6,7 +6,7 @@ import CafeCard from '@/components/common/Cards/CafeCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { fetchSync, deleteSecurely } from "@/script/storage";
-import { sampleFavoris } from "@/constants/type_samples";
+import { sampleFavoris } from "@/constants/types/type_samples";
 import TYPOGRAPHY from "@/constants/Typography";
 
 export default function FavorisScreen() {

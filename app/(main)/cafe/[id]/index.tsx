@@ -35,15 +35,14 @@ import {
   FlatList,
   Linking,
 } from "react-native";
-import { addFavorites } from '../../favoris';
-
+import { Cafe } from "@/constants/types/GET_cafe";
 
 export default function CafeScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const { id } = useLocalSearchParams();
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const [cafe, setCafe] = useState({ social_media:{} }); // set social media as empty array pour ne pas produire d'erreur dans l'utlisation de map après
+  const [cafe, setCafe] = useState<Cafe | any>({ social_media:{} }); // set social media as empty array pour ne pas produire d'erreur dans l'utlisation de map après
 
   // Have an openable link
   const openLink = (url: string) => {
@@ -62,7 +61,7 @@ export default function CafeScreen() {
   
 
   // Getting icons depending on platform names
-  const getIcon = (platform) => {
+  const getIcon = (platform : any) => {
     const icons = {
       x: Twitter,
       instagram: Instagram,
@@ -92,7 +91,7 @@ export default function CafeScreen() {
       fetchCafe();
   }, [id]);
 
-  function getCafeCats(menuItemList){
+  function getCafeCats(menuItemList : any){
     let menuCatSet = new Set();
       for(let i = 0; i<menuItemList.length; i++){
         menuCatSet.add(menuItemList[i].category);
@@ -121,7 +120,7 @@ export default function CafeScreen() {
           <View style={styles.cafeHeaderButtonsRight}>
             <IconButton Icon={Search} style={styles.cafeHeaderIconButtons} />
             <IconButton Icon={Locate} style={styles.cafeHeaderIconButtons} />
-            <IconButton Icon={Heart} style={styles.cafeHeaderIconButtons} onPress={() => addFavorites(cafe)} />
+            <IconButton Icon={Heart} style={styles.cafeHeaderIconButtons} />
           </View>
         </View>
 
@@ -148,10 +147,11 @@ export default function CafeScreen() {
             gap: 10,}}>
 
               {// convertie le json {plateform: link} à un tableau [plateform, link]
-              cafe.social_media && Object.entries(cafe.social_media).map(([plateform, link]) => ( link ? (
-                <Tooltip
+            cafe.social_media && Object.entries(cafe.social_media).map(([plateform, link]) => ( link ? (
+            <Tooltip
+                key={plateform}
                 label={plateform.charAt(0).toUpperCase() + plateform.slice(1)}
-                onPress={() => openLink(link)}
+                onPress={() => openLink(link.toString())}
                 Icon={getIcon(plateform)}
                 showChevron={false} color='white'/>
               ) : null ))}
