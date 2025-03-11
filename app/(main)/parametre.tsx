@@ -26,10 +26,9 @@ import COLORS from "@/constants/Colors";
 import SPACING from "@/constants/Spacing";
 import TYPOGRAPHY from "@/constants/Typography";
 import Divider from "@/components/common/Divider"; 
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6'; // icone de discord
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import AntDesign from '@expo/vector-icons/AntDesign';  // icone de Instagram
 import FontAwesome from '@expo/vector-icons/FontAwesome'; // icone de user-secret 
-// 'npm i' sur terminal pour dabord areter lexecution et ensuite mettre les symboles
 
 
 import { useRouter } from 'expo-router';
@@ -283,6 +282,7 @@ export default function ParametreScreen() {
                 <Button title="Fermer" onPress={() => setModalVisible(false)} />
               </View>
               <ScrollView style={styles.modalContent}>
+              <View style={{borderColor:"black", borderWidth:1,borderRadius:10}}>
                <Text style={styles.modalText}>
                 <Text style={styles.boldText}>Bienvenue! {"\n"}</Text>
                 Avez-vous déjà rêvé d’utiliser une application mobile pour pouvoir commander un bon repas? 
@@ -290,32 +290,33 @@ export default function ParametreScreen() {
                 Notre club, du nom de CADUM, est justement à la charge de cela. Ce club vise à développer des applications mobiles pour améliorer la vie des étudiants des différentes universités. 
                 Si vous avez tendance à avoir le manque d'énergie de tout le temps commander de la nourriture, nous sommes justement là pour vous. Soyez la bienvenue!
                </Text>
+               </View>
 
+              <View style={styles.textContainer}>
                <Text style={styles.clubText}>
                 <Text style={styles.boldText}>Club {"\n"}</Text>
                 L'idée de ce club est venue en hiver 2024. Les étudiants de l'Université de Montréal dans le programme d'informatique voulaient appliquer leurs connaissances acquises dans les cours d'informatique dans la vie réelle.
                 Pour cela, ils ont voulu créer un club sur le développement d'applications mobiles pour s'ouvrir à des technologies de pointe.
                 Grâce à cela, l'idée a été mise au point en automne 2024. À l'automne 2024, les étudiants ont décidé de développer une application mobile sur la commande de repas à partir des cafétérias de votre université.
                </Text>
+              </View>
 
+              <View style={styles.textContainer}>
                <Text style={styles.socialText}>
                 <Text style={styles.boldText}>Réseaux sociaux {"\n"}</Text>
                 Comme toute autre compagnie, nous sommes aussi présents sur les réseaux sociaux. Là-bas, vous pouvez suivre toutes les nouvelles dont des activités et même des nouveautés sur l'application mobile en soi.
-                Les réseaux sociaux que nous sommes présents sont Instagram et Discord. Cependant, si vous voulez voir les nouveautés qui viennent de sortir, allez sur Discord. N'oubliez pas d'activer les notifications pour d'autres types de nouveautés.
-                <FontAwesome6 name="user-secret" size={24} color="black" />
+                Les réseaux sociaux que nous sommes présents sont Instagram et Discord. Cependant, si vous voulez voir les nouveautés qui viennent de sortir, allez sur Discord. N'oubliez pas d'activer les notifications pour d'autres types de nouveautés.    <FontAwesome6 name="discord" size={24} color="black" style={{ marginTop: 10 }}/>
                </Text>    
-              
+              </View>
+
+              <View style={styles.textContainer}>
                <Text style={styles.policyText}>
                 <Text style={styles.boldText}>Politiques et confidentalité {"\n"}</Text>
                 En termes de politique et de confidentalité, nous respectons la vie privée de chaque individu. Donc, les informations personnelles comme les mots de passe sont confidentielles. 
                 Aucun utilisateur peut avoir accès aux informations personnelles de d'autres utilisateurs et même chose avec les développeurs de l'application mobile. 
-                En cas de fuites de données ou de piratage de votre compte, veuillez directement nous avertir via les réseaux sociaux.
-                <FontAwesome name="user-secret" size={24} color="black" />
+                En cas de fuites de données ou de piratage de votre compte, veuillez nous contacter immédiatement.   <FontAwesome name="user-secret" size={24} color="black" />
                </Text> 
-
-               <Text style={{ fontWeight: 'bold' }}> 
-                Envie de decouvrir notre service? Installez, inscrivez-vous et profitez dès maintenant. 
-               </Text>
+              </View>
 
               </ScrollView>
             </View>
@@ -492,9 +493,16 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
+  textContainer: {
+    borderColor: "black",
+    borderWidth: 1,
+    borderRadius:10,
+  },
   modalText: {
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: 17, // taille de texte plus grande
+    fontFamily: 'Arial', // police Calibri
+    textAlign: 'justify',
+    padding: 5,
   },
   input: {
     height: 40,

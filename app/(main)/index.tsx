@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Redirect, router } from "expo-router";
 import * as Location from "expo-location";
 import { Star, Vegan } from "lucide-react-native";
-import { View, StyleSheet, Image, Text, FlatList } from "react-native";
+import { View, StyleSheet, Image, Text, FlatList, SafeAreaView} from "react-native";
 
 
 import useLocation from "@/hooks/useLocation";
@@ -25,7 +25,6 @@ import ScrollableLayout from "@/components/layouts/ScrollableLayout";
 import FilterModalLayout from "@/components/layouts/FilterModalLayout";
 import CardScrollableLayout from "@/components/layouts/CardScrollableLayout";
 import { useUser } from "@clerk/clerk-expo";
-
 /**
  * Home screen of the app. It allows the user to search for cafes, filter them,
  * and view them. The screen also displays quick search options and cafe cards
@@ -60,7 +59,8 @@ export default function HomeScreen() {
     fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
       .then((response) => response.json())
       .then((json) => {
-        setData(json);
+        setData(json.items);
+        // console.log(json)
       })
       .catch((error) => console.error(error))
       .finally(() => setIsLoading(false));;
@@ -107,6 +107,8 @@ export default function HomeScreen() {
   }
 
   return (
+  <SafeAreaView>
+    
     <ScrollableLayout>
       <>
         {/* User Location and Search */}
@@ -160,17 +162,18 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
-            <FlatList data={data} renderItem={({item}) => 
+            <FlatList data={data} renderItem={({item}) =>
+                              
                                 <CafeCard
                                   name={item.name}
-                                  image={item.image_url}
+                                  image={item.banner_url}
                                   location={item.location.pavillon}
                                   priceRange="$$"
                                   rating={4.8}
                                   status={item.is_open}
-                                  id={item.cafe_id}
-                                />}
-              keyExtractor={item => item.cafe_id}
+                                  id={item.id}
+                                /> }
+              keyExtractor={item => item.id}
               horizontal // render honrizontalement
               ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
               scrollEnabled={false}
@@ -301,6 +304,7 @@ export default function HomeScreen() {
         </CardScrollableLayout>
       </>
     </ScrollableLayout>
+    </SafeAreaView>
   );
 }
 
