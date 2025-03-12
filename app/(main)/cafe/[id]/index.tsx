@@ -224,39 +224,29 @@ export default function CafeScreen() {
             textColor="white"
           />
         </View>
-        
-        <View
-          style={{
-          flexDirection: "row",
-          flexWrap: "wrap",
-          alignItems: "center",
-          justifyContent: "center",
-          marginTop: 20,
-          gap: 10,
-          }}>
-          
+
         {/* Section payement */}
-        <Text
-          style={[
-            TYPOGRAPHY.body.large.semiBold,
-            { color: COLORS.subtuleDark, textAlign: "center" },
-          ]}
-        >
-          Payement
-        </Text>
-        <View
+          <Text
+            style={[
+              TYPOGRAPHY.body.large.semiBold,
+              { color: COLORS.subtuleDark, textAlign: "center" },
+              { marginTop: 20},
+            ]}
+          >
+            Payement
+          </Text>
+          <View
           style={{
-          flexDirection: "row",
-          flexWrap: "wrap",
-          alignItems: "center",
-          justifyContent: "center",
-          marginTop: 20,
-          gap: 10,
-        }}>
-          {paymentDetails.map(({method, minimum}) => ( minimum ? (
-          <Text>{method} MIN: {minimum}</Text> ) : <Text>{method}</Text> ))}
-        </View>
-        
+            flexDirection: "row",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: 20,
+            gap: 10,
+          }}
+        >
+            {paymentDetails.map(({method, minimum}) => ( minimum ? (
+            <Text>{method} MIN: {minimum}</Text> ) : <Text>{method}</Text> ))}
         </View>
       </View>
 
