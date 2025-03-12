@@ -225,7 +225,7 @@ export default function CafeScreen() {
           />
         </View>
 
-        {/* Section payement */}
+        {/* Section paiement */}
           <Text
             style={[
               TYPOGRAPHY.body.large.semiBold,
@@ -233,7 +233,7 @@ export default function CafeScreen() {
               { marginTop: 20},
             ]}
           >
-            Payement
+            Paiement
           </Text>
           <View
           style={{
