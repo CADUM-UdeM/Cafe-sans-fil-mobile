@@ -83,6 +83,7 @@ export default function CafeScreen() {
             const json = await response.json();
             // console.log("Social media: ", json.social_media)
             console.log(json.opening_hours);
+            // console.log("Payment détails: ", json.payment_details)
             setCafe(json);
         } catch (error) {
             console.error('Fetch error:', error);
@@ -94,10 +95,16 @@ export default function CafeScreen() {
       fetchCafe();
   }, [id]);
 
-  // Tableau des média sociaux des cafés 
-  // convertie le json {plateform: link} à un tableau [plateform, link]
+  // Tableau des média sociaux des cafés : convertie le json {plateform: link} à un tableau [plateform, link]
   const socialMediaTab = cafe.social_media ? Object.entries(cafe.social_media).map(([plateform, link]) =>
     ({plateform, link})) : [] ;
+
+  // Tableau? des détails de payements
+  const paymentDetails = cafe.payment_details ? cafe.payment_details.map(({method, minimum}) => ({
+    method, minimum })) : [];
+  
+
+  console.log(paymentDetails);
 
   function getCafeCats(menuItemList){
     let menuCatSet = new Set();
@@ -216,6 +223,40 @@ export default function CafeScreen() {
             color="black"
             textColor="white"
           />
+        </View>
+        
+        <View
+          style={{
+          flexDirection: "row",
+          flexWrap: "wrap",
+          alignItems: "center",
+          justifyContent: "center",
+          marginTop: 20,
+          gap: 10,
+          }}>
+          
+        {/* Section payement */}
+        <Text
+          style={[
+            TYPOGRAPHY.body.large.semiBold,
+            { color: COLORS.subtuleDark, textAlign: "center" },
+          ]}
+        >
+          Payement
+        </Text>
+        <View
+          style={{
+          flexDirection: "row",
+          flexWrap: "wrap",
+          alignItems: "center",
+          justifyContent: "center",
+          marginTop: 20,
+          gap: 10,
+        }}>
+          {paymentDetails.map(({method, minimum}) => ( minimum ? (
+          <Text>{method} MIN: {minimum}</Text> ) : <Text>{method}</Text> ))}
+        </View>
+        
         </View>
       </View>
 
