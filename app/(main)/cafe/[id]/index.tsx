@@ -24,6 +24,8 @@ import {
   Instagram,
   Twitter,
   HelpCircle,
+  DollarSign,
+  CreditCard,
 } from "lucide-react-native";
 import {
   View,
@@ -99,12 +101,21 @@ export default function CafeScreen() {
   const socialMediaTab = cafe.social_media ? Object.entries(cafe.social_media).map(([plateform, link]) =>
     ({plateform, link})) : [] ;
 
+  // Méthode pour traduire en français
+  const translationPaymentMethod = (method) => {
+    const methodTranslated = {
+      CREDIT : "Crédit",
+      DEBIT : "Débit",
+      CASH : "Cash",
+    };
+    return methodTranslated[method] || method;
+  };
+
   // Tableau? des détails de payements
   const paymentDetails = cafe.payment_details ? cafe.payment_details.map(({method, minimum}) => ({
-    method, minimum })) : [];
-  
+    method : translationPaymentMethod(method), minimum })) : [];
 
-  console.log(paymentDetails);
+console.log(paymentDetails);
 
   function getCafeCats(menuItemList){
     let menuCatSet = new Set();
@@ -246,7 +257,18 @@ export default function CafeScreen() {
           }}
         >
             {paymentDetails.map(({method, minimum}) => ( minimum ? (
-            <Text>{method} MIN: {minimum}</Text> ) : <Text>{method}</Text> ))}
+              <Tooltip
+              label={`${method} Min : ${minimum}`}
+              showChevron={false}
+              color="white"
+              Icon={CreditCard}
+              /> ) : 
+              <Tooltip
+              label={method}
+              showChevron={false}
+              color="white"
+              Icon={DollarSign}/>
+            /* <Text>{method} MIN: {minimum}</Text> ) : <Text>{method}</Text> */ ))}
         </View>
       </View>
 
