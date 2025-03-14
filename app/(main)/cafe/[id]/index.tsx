@@ -250,9 +250,9 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
           Horaires
         </Text>
         <FlatList data={cafe.opening_hours} horizontal
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.day}
           ItemSeparatorComponent={() => 
-            <View 
+            <View
               style={{margin:10, borderColor: "black", borderWidth: 0.5}}></View>
           }
           renderItem={({ item }) => (
@@ -285,11 +285,12 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignContent:'center', justifyContent: 'center'}}>
             {cafe.menu? [
               ...cafe.menu.categories.map((item : Category) => (
-                <TouchableOpacity 
+                <View 
                   key={item.id} 
                   style={{marginRight: SPACING["sm"], marginTop: SPACING["sm"]}}
                 >
                   <Tooltip
+                    key={item.id}
                     label={item.name}
                     showChevron={false}
                     color="white"
@@ -297,7 +298,7 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
                     status={activeFilter == item.name ? "black" : "white"}
                     onPress={() => setItemList(filterMenu(item.name))}
                   />
-                </TouchableOpacity>
+                </View>
               )),
               <TouchableOpacity 
                   key={"all"} 
@@ -320,13 +321,14 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
       <FlatList 
       data={itemList? itemList : []}  
       keyExtractor={item => item.id}
-      renderItem={({item}) => <ArticleCard 
+      renderItem={({item}) => <ArticleCard
                                 name={item.name} 
                                 price={"$" + item.price} 
                                 status={item.in_stock? "In Stock" : "Out of Stock"}
                                 image={item.image_url}
                                 style={{alignItems: 'center'}}
-                              />} 
+                              />
+                              } 
       ItemSeparatorComponent={() => <View style={{ marginTop: SPACING["md"]}} />} // padding
       scrollEnabled={false}
       style={{marginTop: SPACING['md']}}
