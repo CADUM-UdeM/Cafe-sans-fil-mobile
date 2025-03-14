@@ -104,7 +104,7 @@ export default function CafeScreen() {
 
 
   
-  const [activeFilter, setActiveFilter] = useState("");
+  const [activeFilter, setActiveFilter] = useState("Tous");
 
   // filter the menu based on argument filter
 function filterMenu(filter?: string, menuData?: any): Item[] {
@@ -122,7 +122,7 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
       }
     }
   } else {
-    setActiveFilter("");
+    setActiveFilter("Tous");
     // loop through each individual category...
     for (let i = 0; i < menu.length; i++) {
       let itemsInCat: Item[] = menu[i].items;
@@ -200,41 +200,15 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
                   showChevron={false} color='white'/>
               </View>
                 ) : null ))}
+                {/* Order possible */}
+                <Tooltip label="Order" showChevron={false} color="white" status={cafe.features?.includes("ORDER")? "green" : "red"} />
           </View>
-          {/* Tags */}
-        <Text
-          style={[
-            TYPOGRAPHY.body.large.semiBold,
-            { color: COLORS.subtuleDark, textAlign: "center", marginTop: SPACING["md"] },
-          ]}
-        >
-          Spécificités
-        </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            alignItems: "center",
-            justifyContent: "center",
-            marginTop: 20,
-            gap: 10,
-          }}
-        >
-          <Tooltip label="Micro-ondes" showChevron={false} color="white" />
-          <Tooltip label="Presse Panini" showChevron={false} color="white" />
-          <Tooltip label="Machine à café" showChevron={false} color="white" />
-          <Tooltip
-            label="Voir plus"
-            showChevron={false}
-            color="black"
-            textColor="white"
-          />
-        </View>
+
       </View>
       <View
         style={{
           marginHorizontal: 16,
-          marginTop: 40,
+          marginTop: 20,
           backgroundColor: COLORS.lightGray,
           paddingBlock: 28,
         }}
@@ -305,10 +279,11 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
                   style={{marginRight: SPACING["sm"], marginTop: SPACING["sm"]}}
                 >
                   <Tooltip
-                    label={"Clear"}
+                    label={"Tous"}
                     showChevron={false}
                     color="white"
                     textColor="black"
+                    status={activeFilter == "Tous" ? "black" : "white"}
                     onPress={() => setItemList(filterMenu())}
                   />
                 </TouchableOpacity>
