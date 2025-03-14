@@ -87,7 +87,6 @@ export default function CafeScreen() {
         );
         const json = await response.json();
         console.log("Social media: ", json.social_media);
-        console.log(json.opening_hours);
         setCafe(json);
 
         // After setting the cafe data, filter the menu items
@@ -106,7 +105,6 @@ export default function CafeScreen() {
   const [activeFilter, setActiveFilter] = useState("");
   function filterMenu(filter? : string) : Item[] {
     if (cafe.menu){
-      console.log(filter);
       let menu = cafe.menu.categories
       let itemList : Item[] = [];
 
