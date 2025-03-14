@@ -90,7 +90,8 @@ export default function CafeScreen() {
         setCafe(json);
 
         // After setting the cafe data, filter the menu items
-        const filteredItems = filterMenu();
+        // Directly use 'json' instead of 'cafe'
+        const filteredItems = filterMenu("", json.menu.categories);
         setItemList(filteredItems);
       } catch (error) {
         console.error("Fetch error:", error);
@@ -101,44 +102,43 @@ export default function CafeScreen() {
     fetchCafe();
   }, [id]);
 
-  // filter the menu based on argument filter
-  const [activeFilter, setActiveFilter] = useState("");
-  function filterMenu(filter? : string) : Item[] {
-    if (cafe.menu){
-      let menu = cafe.menu.categories
-      let itemList : Item[] = [];
 
-      // if no filter --> all items to be displayed
-      if (filter) {
-        setActiveFilter(filter)
-        for (let i = 0; i < menu.length; i++) {
-          // search for the filter
-          if (menu[i].name == filter){
-            itemList = menu[i].items;
-            break
-          }
-        }
+  
+  const [activeFilter, setActiveFilter] = useState("");
+
+  // filter the menu based on argument filter
+function filterMenu(filter?: string, menuData?: any): Item[] {
+  let menu = menuData ? menuData : ((cafe && cafe.menu) ? cafe.menu.categories : []);
+  let itemList: Item[] = [];
+
+  // if no filter --> all items to be displayed
+  if (filter) {
+    setActiveFilter(filter)
+    for (let i = 0; i < menu.length; i++) {
+      // search for the filter
+      if (menu[i].name == filter) {
+        itemList = menu[i].items;
+        break;
       }
-      else{
-        setActiveFilter("")
-        // loop through each individual category...
-        for (let i = 0; i < menu.length; i++){
-          let itemsInCat : Item[] = menu[i].items;
-          // loop through each item for that category...
-          for (let j = 0; j < itemsInCat.length; j++){
-            // push the item to the list
-            let item = itemsInCat[j];
-            itemList.push(item);
-          }
-        }
-      }
-      // update state variable
-      return itemList;
     }
-    else {
-      return [];
+  } else {
+    setActiveFilter("");
+    // loop through each individual category...
+    for (let i = 0; i < menu.length; i++) {
+      let itemsInCat: Item[] = menu[i].items;
+      // loop through each item for that category...
+      for (let j = 0; j < itemsInCat.length; j++) {
+        // push the item to the list
+        let item = itemsInCat[j];
+        itemList.push(item);
+      }
     }
   }
+
+  // update state variable
+  return itemList;
+}
+
 
 
 
@@ -323,113 +323,21 @@ export default function CafeScreen() {
                                 price={"$" + item.price} 
                                 status={item.in_stock? "In Stock" : "Out of Stock"}
                                 image={item.image_url}
-                                style={{alignContent: 'center', justifyContent: 'center'}}
+                                style={{alignItems: 'center'}}
                               />} 
-      ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
-      contentContainerStyle={{
-        flexGrow: 1,
-        justifyContent: 'center',
-      }}
+      ItemSeparatorComponent={() => <View style={{ marginTop: SPACING["md"]}} />} // padding
       scrollEnabled={false}
+      style={{marginTop: SPACING['md']}}
       />      
 
+      {/* Cafés similaires */}
       <Text 
         style={{
           marginVertical: SPACING["xl"], 
           marginHorizontal: SPACING["md"], 
           ...TYPOGRAPHY.heading.small.bold
         }}>
-          Grilled Cheese 
-        </Text>
-        <FlatList data={cafe.menu ? cafe.menu.categories[0].items : []}
-          horizontal  
-          renderItem={({item}) => <ArticleCard 
-                                    name={item.name} 
-                                    price={"$" + item.price} 
-                                    status={item.in_stock? "In Stock" : "Out of Stock"}
-                                    cafeSlug={cafe.slug}
-                                    slug={item.slug}
-                                    rating={4.8}
-                                    calories="350 CALORIES"
-                                    image={item.image_url}
-                                    />}
-        ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
-        keyExtractor={item => item.id}
-        style={{paddingHorizontal: SPACING["md"], paddingBottom: SPACING["md"]}}
-        />
-
-      <FlatList
-        data={cafe.menu_items ? cafe.menu_items.filter((menuItem) => menuItem.category == item) : []}
-        horizontal
-        keyExtractor={item => item.id}
-        renderItem={({item})=> (
-          <ArticleCard 
-            name={item.name} 
-            price={"$" + item.price} 
-            status={item.in_stock? "In Stock" : "Out of Stock"}
-            cafeSlug={cafe.slug}
-            slug={item.slug}
-            rating={4.8}
-            calories="350 CALORIES"
-            image={item.image_url}
-          />)}
-          ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
-          />
-
-      <Text 
-        style={{
-          marginVertical: SPACING["xl"], 
-          marginHorizontal: SPACING["md"], 
-          ...TYPOGRAPHY.heading.small.bold
-        }}>
-          Snacks 
-        </Text>
-
-        <Text 
-        style={{
-          marginVertical: SPACING["xl"], 
-          marginHorizontal: SPACING["md"], 
-          ...TYPOGRAPHY.heading.small.bold
-        }}>
-          Pâtisserie 
-        </Text>
-
-      <View
-        style={{
-          borderTopWidth: 1,
-          borderBottomWidth: 2,
-          paddingHorizontal: 16,
-          paddingVertical: 20,
-          borderBlockColor: COLORS.lightGray,
-        }}
-      >
-        <Text style={TYPOGRAPHY.heading.small.bold}>Tous les articles</Text>
-      </View>
-      <View style={{ paddingHorizontal: 16, paddingBlock: 28, gap: 32 , alignItems: 'center'}}>
-      <FlatList data={cafe.menu_items} scrollEnabled={false} 
-        keyExtractor={item => item.id}
-        horizontal
-        renderItem={({item}) => 
-            <ArticleCard 
-              name={item.name} 
-              price={"$" + item.price} 
-              status={item.in_stock? "In Stock" : "Out of Stock"}
-              cafeSlug={item.slug}
-              rating={4.8}
-              calories="350 CALORIES"
-              image={item.image_url}
-              />
-          } 
-        ItemSeparatorComponent={() => <View style={{ marginBottom: SPACING["md"] }} />} // padding
-        />
-      </View>
-      <Text 
-        style={{
-          marginVertical: SPACING["xl"], 
-          marginHorizontal: SPACING["md"], 
-          ...TYPOGRAPHY.heading.small.bold
-        }}>
-          Autres cafés similaire 
+          Autres cafés similaires
         </Text>
 
         {/* TODO: IMPLÉMENTER LA FLATLIST */}

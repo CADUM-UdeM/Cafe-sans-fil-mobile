@@ -88,7 +88,7 @@ export default function ArticleCard({
   style,
 }: ArticleCardProps) {
   return (
-    <View style={[styles.wrapper, style]}>
+    <View style={[style]}>
       {size === "large" ? (
         <Pressable onPress={() => router.push(`/cafe/${cafeSlug}/${slug}`)}
           style={{
@@ -119,7 +119,7 @@ export default function ArticleCard({
               source={require("@/assets/images/placeholder/imagexs.png")}
               width={160}
               height={108}
-              style={{ borderRadius: SPACING["sm"] }}
+              style={[{ borderRadius: SPACING["sm"] }]}
             ></Image>
             <Text
               style={[TYPOGRAPHY.body.small.bold, styles.rating]}
@@ -155,12 +155,12 @@ export default function ArticleCard({
           testID="button"
         >
           <>
-            <View>
+            <View style={styles.wrapper}>
               <Image
                 source={image ? { uri: image } : cardDimensions[size].image}
                 width={cardDimensions[size].width}
                 height={cardDimensions[size].height}
-                style={{ borderRadius: SPACING["sm"] }}
+                style={[{ borderRadius: SPACING["sm"] }]}
                 testID="image"
               />
               <Text
