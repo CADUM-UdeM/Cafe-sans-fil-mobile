@@ -54,14 +54,14 @@ export type Cafe = {
     }
 }
 
-type Category = {
+export type Category = {
     id: string;
     name: string;
     description: string;
     items: Item[];
 };
 
-type Item = {
+export type Item = {
     id: string;
     name: string;
     description: string;
