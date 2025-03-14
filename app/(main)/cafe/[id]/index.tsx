@@ -191,13 +191,15 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
 
               {// convertie le json {plateform: link} à un tableau [plateform, link]
             cafe.social_media && Object.entries(cafe.social_media).map(([plateform, link]) => ( link ? (
-            <Tooltip
-                key={plateform}
-                label={plateform.charAt(0).toUpperCase() + plateform.slice(1)}
-                onPress={() => openLink(link.toString())}
-                Icon={getIcon(plateform)}
-                showChevron={false} color='white'/>
-              ) : null ))}
+            <View key={plateform}>
+              <Tooltip
+                  key={plateform}
+                  label={plateform.charAt(0).toUpperCase() + plateform.slice(1)}
+                  onPress={() => openLink(link.toString())}
+                  Icon={getIcon(plateform)}
+                  showChevron={false} color='white'/>
+              </View>
+                ) : null ))}
           </View>
           {/* Tags */}
         <Text
