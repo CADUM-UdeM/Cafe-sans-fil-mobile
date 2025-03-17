@@ -282,7 +282,7 @@ export default function ParametreScreen() {
                 <Button title="Fermer" onPress={() => setModalVisible(false)} />
               </View>
               <ScrollView style={styles.modalContent}>
-              <View style={{borderColor:"black", borderWidth:1,borderRadius:10,marginVertical:10,padding:10}}>
+              <View style={{borderColor:"black", borderWidth:1, borderRadius:10, marginVertical:10, padding:10}}>
                <Text style={styles.modalText}>
                 <Text style={styles.boldText}>Bienvenue! {"\n"}</Text>
                 Avez-vous déjà rêvé d’utiliser une application mobile pour pouvoir commander un bon repas? 
@@ -292,7 +292,7 @@ export default function ParametreScreen() {
                </Text>
                </View>
 
-              <View style={styles.textContainer}>
+              <View style={{borderColor:"black", borderWidth:1, borderRadius:10, marginVertical:10, padding:10}}>
                <Text style={styles.clubText}>
                 <Text style={styles.boldText}>Club {"\n"}</Text>
                 L'idée de ce club est venue en hiver 2024. Les étudiants de l'Université de Montréal dans le programme d'informatique voulaient appliquer leurs connaissances acquises dans les cours d'informatique dans la vie réelle.
@@ -301,7 +301,7 @@ export default function ParametreScreen() {
                </Text>
               </View>
 
-              <View style={styles.textContainer}>
+              <View style={{borderColor:"black", borderWidth:1, borderRadius:10, marginVertical:10, padding:10}}>
                <Text style={styles.socialText}>
                 <Text style={styles.boldText}>Réseaux sociaux {"\n"}</Text>
                 Comme toute autre compagnie, nous sommes aussi présents sur les réseaux sociaux. Là-bas, vous pouvez suivre toutes les nouvelles dont des activités et même des nouveautés sur l'application mobile en soi.
@@ -309,7 +309,7 @@ export default function ParametreScreen() {
                </Text>    
               </View>
 
-              <View style={styles.textContainer}>
+              <View style={{borderColor:"black", borderWidth:1, borderRadius:10, marginVertical:20, padding:10}}>
                <Text style={styles.policyText}>
                 <Text style={styles.boldText}>Politiques et confidentalité {"\n"}</Text>
                 En termes de politique et de confidentalité, nous respectons la vie privée de chaque individu. Donc, les informations personnelles comme les mots de passe sont confidentielles. 
@@ -497,7 +497,8 @@ const styles = StyleSheet.create({
     margin: 10,
     borderColor: "black",
     borderWidth: 1,
-    borderRadius:10,
+    borderRadius: 10,
+    marginVertical: 10,
   },
   modalText: {
     fontSize: 17, // taille de texte plus grande
