@@ -39,7 +39,7 @@ export default function ThirdOnboardingScreen() {
 
       <View style={styles.buttonContainer}>
         <Button onPress={() => router.navigate("/sign-in")}>Suivant</Button>
-        <Button onPress={() => {}} type="secondary">
+        <Button onPress={() => router.push("/sign-in")} type="secondary">
           Sauter
         </Button>
       </View>

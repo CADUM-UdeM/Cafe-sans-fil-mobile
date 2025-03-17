@@ -22,6 +22,8 @@ import {
   Instagram,
   Twitter,
   HelpCircle,
+  DollarSign,
+  CreditCard,
 } from "lucide-react-native";
 import {
   View,
@@ -44,11 +46,14 @@ export default function CafeScreen() {
   const scrollViewRef = useRef<ScrollView>(null);
 
   // data for the café returned by the API
-  const [cafe, setCafe] = useState<Cafe | any>({ social_media:{} }); // set social media as empty array pour ne pas produire d'erreur dans l'utlisation de map après
+  // const [cafe, setCafe] = useState<Cafe | any>({ social_media:{} }); // set social media as empty array pour ne pas produire d'erreur dans l'utlisation de map après
   
   // list of items to display
   const [itemList, setItemList] = useState<Item[]>();
-  
+
+  const [cafe, setCafe] = useState({}); // set social media as empty object
+
+
   // Have an openable link
   const openLink = (url: string) => {
     Linking.openURL(url).catch(err => console.error("Failed to open URL:", err));
@@ -81,6 +86,7 @@ export default function CafeScreen() {
     setIsLoading(true);
 
     const fetchCafe = async () => {
+
       try {
         const response = await fetch(
           `https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}`
@@ -101,8 +107,6 @@ export default function CafeScreen() {
     };
     fetchCafe();
   }, [id]);
-
-
   
   const [activeFilter, setActiveFilter] = useState("Tous");
 
@@ -131,6 +135,31 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
         // push the item to the list
         let item = itemsInCat[j];
         itemList.push(item);
+
+  // Tableau des média sociaux des cafés : convertie le json {plateform: link} à un tableau [plateform, link]
+  const socialMediaTab = cafe.social_media ? Object.entries(cafe.social_media).map(([plateform, link]) =>
+    ({plateform, link})) : [] ;
+
+  // Méthode pour traduire en français
+  const translationPaymentMethod = (method) => {
+    const methodTranslated = {
+      CREDIT : "Crédit",
+      DEBIT : "Débit",
+      CASH : "Cash",
+    };
+    return methodTranslated[method] || method;
+  };
+
+  // Tableau? des détails de payements
+  const paymentDetails = cafe.payment_details ? cafe.payment_details.map(({method, minimum}) => ({
+    method : translationPaymentMethod(method), minimum })) : [];
+
+console.log(paymentDetails);
+
+  function getCafeCats(menuItemList){
+    let menuCatSet = new Set();
+      for(let i = 0; i<menuItemList.length; i++){
+        menuCatSet.add(menuItemList[i].category);
       }
     }
   }
@@ -189,19 +218,13 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
             marginTop: 20,
             gap: 10,}}>
 
-              {// convertie le json {plateform: link} à un tableau [plateform, link]
-            cafe.social_media && Object.entries(cafe.social_media).map(([plateform, link]) => ( link ? (
-            <View key={plateform}>
-              <Tooltip
-                  key={plateform}
-                  label={plateform.charAt(0).toUpperCase() + plateform.slice(1)}
-                  onPress={() => openLink(link.toString())}
-                  Icon={getIcon(plateform)}
-                  showChevron={false} color='white'/>
-              </View>
-                ) : null ))}
-                {/* Order possible */}
-                <Tooltip label="Order" showChevron={false} color="white" status={cafe.features?.includes("ORDER")? "green" : "red"} />
+              {socialMediaTab.map(({plateform, link}) => ( link ? (
+                <Tooltip
+                label={plateform.charAt(0).toUpperCase() + plateform.slice(1)}
+                onPress={() => openLink(link)}
+                Icon={getIcon(plateform)}
+                showChevron={false} color='white'/>
+              ) : null ))}
           </View>
 
       </View>
@@ -291,6 +314,43 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
           </View>
 
         </View>
+
+        {/* Section paiement */}
+          <Text
+            style={[
+              TYPOGRAPHY.body.large.semiBold,
+              { color: COLORS.subtuleDark, textAlign: "center" },
+              { marginTop: 20},
+            ]}
+          >
+            Paiement
+          </Text>
+          <View
+          style={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: 20,
+            gap: 10,
+          }}
+        >
+            {paymentDetails.map(({method, minimum}) => ( minimum ? (
+              <Tooltip
+              label={`${method} Min : ${minimum}`}
+              showChevron={false}
+              color="white"
+              Icon={CreditCard}
+              /> ) : 
+              <Tooltip
+              label={method}
+              showChevron={false}
+              color="white"
+              Icon={DollarSign}/>
+            /* <Text>{method} MIN: {minimum}</Text> ) : <Text>{method}</Text> */ ))}
+        </View>
+      </View>
+
 
       {/* Menu */}
       <FlatList 

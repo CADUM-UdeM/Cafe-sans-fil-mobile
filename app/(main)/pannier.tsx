@@ -9,6 +9,7 @@ import {
   Alert
 } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
+import HeaderLayout from "@/components/layouts/HeaderLayout";
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 const Panier = () => {
@@ -68,8 +69,10 @@ const Panier = () => {
     );
   };
 
-  return (
+  return (<>
+    <HeaderLayout />
     <View style={styles.container}>
+      
       <Text style={styles.title}>Panier des items sélectionnés</Text>
 
       {items.length > 0 ? (
@@ -112,7 +115,7 @@ const Panier = () => {
       ) : (
         <Text style={styles.emptyCartText}>Votre panier est vide.</Text>
       )}
-    </View>
+    </View></>
   );
 };
 
@@ -126,7 +129,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 16,
-    marginTop: 10,
     textAlign: 'center',
   },
   itemContainer: {
@@ -154,7 +156,7 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   itemImage: {
-    width: "",
+    width: 80,
     height: 80,
     borderRadius: 8,
   },

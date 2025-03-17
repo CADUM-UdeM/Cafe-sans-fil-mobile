@@ -3,7 +3,7 @@ import { SignedIn, useAuth, useOAuth } from "@clerk/clerk-expo";
 import TYPOGRAPHY from "@/constants/Typography";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import HeaderLayout from "@/components/layouts/HeaderLayout";
-import { Home, Settings, ShoppingBasket } from "lucide-react-native";
+import { Home, Settings, ShoppingBasket, UserRound} from "lucide-react-native";
 import { SafeAreaView } from "react-native";
 import { Platform } from "react-native";
 
@@ -55,9 +55,9 @@ export default function TabLayout() {
         <Tabs.Screen
           name="parametre"
           options={{
-            title: "Settings",
+            title: "Compte",
             headerShown: false,
-            tabBarIcon: ({ color }) => <Settings size={28} color={color} />,
+            tabBarIcon: ({ color }) => <UserRound size={28} color={color} />,
             tabBarLabelStyle: TYPOGRAPHY.body.small.bold,
           }}
         />
