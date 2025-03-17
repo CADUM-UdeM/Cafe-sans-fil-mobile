@@ -225,6 +225,7 @@ export default function HomeScreen() {
                     priceRange="$$"
                     rating={4.8}
                     status={item.is_open}
+                    id={item.id}
                   />}
               keyExtractor={item => item.id}
               horizontal
@@ -247,6 +248,7 @@ export default function HomeScreen() {
                                   priceRange="$$"
                                   rating={4.8}
                                   status={item.is_open}
+                                  id={item.id}
                                 />}
               keyExtractor={item => item.id}
               horizontal
@@ -269,6 +271,7 @@ export default function HomeScreen() {
                                   priceRange="$$"
                                   rating={4.8}
                                   status={item.is_open}
+                                  id={item.id}
                                 />}
               keyExtractor={item => item.id}
               horizontal
