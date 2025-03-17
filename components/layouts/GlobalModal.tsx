@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.md,
     borderRadius: 10,
-    width: 100,
+    width: "100%",
     justifyContent: "center",
     alignItems: "center",
   },

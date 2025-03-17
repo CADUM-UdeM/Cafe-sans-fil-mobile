@@ -16,6 +16,7 @@ export default function DayCard({ day, blocks }: DayCardProps) {
           keyExtractor={(item, index) => `${item.start}-${index}`}
           horizontal
           contentContainerStyle={styles.flatListContent}
+          style={{alignSelf: "center"}}
           renderItem={({ item }) => (
             <View style={styles.blockContainer}>
               <Text style={styles.blockText}>{item.start}</Text>
@@ -55,6 +56,5 @@ const styles = StyleSheet.create({
   },
   blockText: {
     fontSize: 14,
-    textAlign: "center",
   },
 });

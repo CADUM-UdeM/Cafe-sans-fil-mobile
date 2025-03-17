@@ -20,6 +20,12 @@ import {
   Locate,
   Sandwich,
   Search,
+  Facebook,
+  Instagram,
+  Twitter,
+  HelpCircle,
+  DollarSign,
+  CreditCard,
 } from "lucide-react-native";
 import {
   View,
@@ -31,7 +37,9 @@ import {
   useWindowDimensions,
   ScrollView,
   FlatList,
+  Linking,
 } from "react-native";
+import { addFavorites } from '../../favoris';
 
 
 export default function CafeScreen() {
@@ -39,7 +47,34 @@ export default function CafeScreen() {
   const { id } = useLocalSearchParams();
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const [cafe, setCafe] = useState({});
+  const [cafe, setCafe] = useState({}); // set social media as empty object
+
+  // Have an openable link
+  const openLink = (url: string) => {
+    Linking.openURL(url).catch(err => console.error("Failed to open URL:", err));
+  };
+
+  // function qui donne la plateform et le lien
+  // const getSocialMediaLinks = (socialMediaObjet) => {
+  //   if (!socialMediaObjet) return [];
+
+  //   return Object.entries(socialMediaObjet).map(([plateform, link]) => ({
+  //     name: plateform,
+  //     link: link,
+  //   }) );
+  // };
+  
+
+  // Getting icons depending on platform names
+  const getIcon = (platform) => {
+    const icons = {
+      x: Twitter,
+      instagram: Instagram,
+      facebook: Facebook,
+    };
+    return icons[platform] || HelpCircle;
+  }; 
+
   // fetch cafe data
   useEffect(() => {
     setIsLoading(true);
@@ -48,7 +83,9 @@ export default function CafeScreen() {
         try {
             const response = await fetch(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}`);
             const json = await response.json();
+            // console.log("Social media: ", json.social_media)
             console.log(json.opening_hours);
+            // console.log("Payment détails: ", json.payment_details)
             setCafe(json);
         } catch (error) {
             console.error('Fetch error:', error);
@@ -60,6 +97,34 @@ export default function CafeScreen() {
       fetchCafe();
   }, [id]);
 
+  // Tableau des média sociaux des cafés : convertie le json {plateform: link} à un tableau [plateform, link]
+  const socialMediaTab = cafe.social_media ? Object.entries(cafe.social_media).map(([plateform, link]) =>
+    ({plateform, link})) : [] ;
+
+  // Méthode pour traduire en français
+  const translationPaymentMethod = (method) => {
+    const methodTranslated = {
+      CREDIT : "Crédit",
+      DEBIT : "Débit",
+      CASH : "Cash",
+    };
+    return methodTranslated[method] || method;
+  };
+
+  // Tableau? des détails de payements
+  const paymentDetails = cafe.payment_details ? cafe.payment_details.map(({method, minimum}) => ({
+    method : translationPaymentMethod(method), minimum })) : [];
+
+console.log(paymentDetails);
+
+  function getCafeCats(menuItemList){
+    let menuCatSet = new Set();
+      for(let i = 0; i<menuItemList.length; i++){
+        menuCatSet.add(menuItemList[i].category);
+      }
+      return Array.from(menuCatSet);
+  }
+
   return (
     <SafeAreaView>
     <ScrollView
@@ -70,7 +135,7 @@ export default function CafeScreen() {
       <View>
         <Image
           style={styles.cafeBackgroundImage}
-          source={isLoading ? require("@/assets/images/placeholder/image2xl.png") : {uri: cafe.image_url}}
+          source={isLoading ? require("@/assets/images/placeholder/image2xl.png") : {uri: cafe.banner_url}}
         />
         <View style={styles.cafeHeaderButtons}>
           <IconButton
@@ -81,7 +146,7 @@ export default function CafeScreen() {
           <View style={styles.cafeHeaderButtonsRight}>
             <IconButton Icon={Search} style={styles.cafeHeaderIconButtons} />
             <IconButton Icon={Locate} style={styles.cafeHeaderIconButtons} />
-            <IconButton Icon={Heart} style={styles.cafeHeaderIconButtons} onPress={() => alert("Favorited")} />
+            <IconButton Icon={Heart} style={styles.cafeHeaderIconButtons} onPress={() => addFavorites(cafe)} />
           </View>
         </View>
 
@@ -97,6 +162,25 @@ export default function CafeScreen() {
         <Text style={[TYPOGRAPHY.body.large.base, styles.cafeDescription]}>
           {isLoading? "..." : cafe.description}
         </Text>
+
+        {/*Média sociaux*/}
+          <View style={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: 20,
+            gap: 10,}}>
+
+              {socialMediaTab.map(({plateform, link}) => ( link ? (
+                <Tooltip
+                label={plateform.charAt(0).toUpperCase() + plateform.slice(1)}
+                onPress={() => openLink(link)}
+                Icon={getIcon(plateform)}
+                showChevron={false} color='white'/>
+              ) : null ))}
+          </View>
+
       </View>
       <View
         style={{
@@ -150,6 +234,41 @@ export default function CafeScreen() {
             color="black"
             textColor="white"
           />
+        </View>
+
+        {/* Section paiement */}
+          <Text
+            style={[
+              TYPOGRAPHY.body.large.semiBold,
+              { color: COLORS.subtuleDark, textAlign: "center" },
+              { marginTop: 20},
+            ]}
+          >
+            Paiement
+          </Text>
+          <View
+          style={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: 20,
+            gap: 10,
+          }}
+        >
+            {paymentDetails.map(({method, minimum}) => ( minimum ? (
+              <Tooltip
+              label={`${method} Min : ${minimum}`}
+              showChevron={false}
+              color="white"
+              Icon={CreditCard}
+              /> ) : 
+              <Tooltip
+              label={method}
+              showChevron={false}
+              color="white"
+              Icon={DollarSign}/>
+            /* <Text>{method} MIN: {minimum}</Text> ) : <Text>{method}</Text> */ ))}
         </View>
       </View>
 
@@ -207,7 +326,8 @@ export default function CafeScreen() {
                                     name={item.name} 
                                     price={"$" + item.price} 
                                     status={item.in_stock? "In Stock" : "Out of Stock"}
-                                    cafeSlug={item.slug}
+                                    cafeSlug={cafe.slug}
+                                    slug={item.slug}
                                     rating={4.8}
                                     calories="350 CALORIES"
                                     image={item.image_url}
@@ -215,6 +335,35 @@ export default function CafeScreen() {
         ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
         />
       </CardScrollableLayout>
+
+      <FlatList
+        data={cafe.menu_items ? getCafeCats(cafe.menu_items):[]}
+        renderItem={({item})=>
+        <CardScrollableLayout
+        title={item}
+        titleMarginTop={SPACING["xl"]}
+        scrollMarginTop={SPACING["xs"]}
+        scrollMarginBottom={SPACING["md"]}
+        scrollGap={SPACING["xl"]}
+        dividerBottom
+        >
+          <FlatList data={cafe.menu_items ? cafe.menu_items.filter((menuItem) => menuItem.category== item) : []} // on ne prend que les boissons chaudes
+          horizontal scrollEnabled={false} 
+          renderItem={({item}) => <ArticleCard 
+                                    name={item.name} 
+                                    price={"$" + item.price} 
+                                    status={item.in_stock? "In Stock" : "Out of Stock"}
+                                    cafeSlug={cafe.slug}
+                                    slug={item.slug}
+                                    rating={4.8}
+                                    calories="350 CALORIES"
+                                    image={item.image_url}
+                                    />}
+          ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
+          />
+        </CardScrollableLayout>}
+        keyExtractor={item => item}
+      />
 
       <CardScrollableLayout
         title="Snacks"

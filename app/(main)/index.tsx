@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Redirect, router } from "expo-router";
 import * as Location from "expo-location";
 import { Star, Vegan } from "lucide-react-native";
-import { View, StyleSheet, Image, Text, FlatList } from "react-native";
+import { View, StyleSheet, Image, Text, FlatList, SafeAreaView} from "react-native";
 
 
 import useLocation from "@/hooks/useLocation";
@@ -25,7 +25,6 @@ import ScrollableLayout from "@/components/layouts/ScrollableLayout";
 import FilterModalLayout from "@/components/layouts/FilterModalLayout";
 import CardScrollableLayout from "@/components/layouts/CardScrollableLayout";
 import { useUser } from "@clerk/clerk-expo";
-
 /**
  * Home screen of the app. It allows the user to search for cafes, filter them,
  * and view them. The screen also displays quick search options and cafe cards
@@ -60,7 +59,8 @@ export default function HomeScreen() {
     fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
       .then((response) => response.json())
       .then((json) => {
-        setData(json);
+        setData(json.items);
+        // console.log(json)
       })
       .catch((error) => console.error(error))
       .finally(() => setIsLoading(false));;
@@ -82,6 +82,31 @@ export default function HomeScreen() {
 
   // Get the modal context for opening and closing modals.
   const modalContext = useModal();
+
+  // Const for the commander en ligne filter
+  const [showOnlyOrder, setShowOnlyOrder] = useState(false);
+
+  // Const for Ouvert filter
+  const [showOpen, setShowOpen] = useState(false)
+
+  // Make a fonction that filters depending on filter button pressed
+  const filterCafes = (cafes) => {
+    let filteredCafes = cafes;
+
+    if (showOnlyOrder) {
+      filteredCafes = filteredCafes.filter(cafe => cafe.features.includes("ORDER"));
+    }
+
+    if (showOpen) {
+      filteredCafes = filteredCafes.filter(cafe => cafe.is_open == true);
+    }
+
+    return filteredCafes;
+
+  };
+
+   // Get cafes that have the feature to ORDER on line if commander en ligne filter is on
+   // const cafesWithOrder = showOnlyOrder ? data.filter((cafe) => cafe.features.includes("ORDER")) : data;
 
   // Get the open and close modal functions from the modal context.
   const openModal = modalContext ? modalContext.openModal : () => {};
@@ -107,6 +132,8 @@ export default function HomeScreen() {
   }
 
   return (
+  <SafeAreaView>
+    
     <ScrollableLayout>
       <>
         {/* User Location and Search */}
@@ -135,7 +162,13 @@ export default function HomeScreen() {
           <Tooltip
             label="Ouvert"
             status="green"
-            onPress={() => console.log("PRESSED")}
+            onPress={() => setShowOpen(!showOpen)}
+            showChevron={false}
+            changeColorOnPress
+          />
+          <Tooltip
+            label="Commander en ligne"
+            onPress={() => setShowOnlyOrder(!showOnlyOrder)} // fonction qui va afficher les cafés où on peut order en ligne
             showChevron={false}
             changeColorOnPress
           />
@@ -160,17 +193,17 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
-            <FlatList data={data} renderItem={({item}) => 
+            <FlatList data={filterCafes(data)} renderItem={({item}) =>           
                                 <CafeCard
                                   name={item.name}
-                                  image={item.image_url}
+                                  image={item.banner_url}
                                   location={item.location.pavillon}
                                   priceRange="$$"
                                   rating={4.8}
                                   status={item.is_open}
-                                  id={item.cafe_id}
-                                />}
-              keyExtractor={item => item.cafe_id}
+                                  id={item.id}
+                                /> }
+              keyExtractor={item => item.id}
               horizontal // render honrizontalement
               ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
               scrollEnabled={false}
@@ -184,16 +217,17 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
-          <FlatList data={data} renderItem={({item}) => 
+          <FlatList data={filterCafes(data)} renderItem={({item}) => 
                   <CafeCard
                     name={item.name}
-                    image={item.image_url}
+                    image={item.banner_url}
                     location={item.location.pavillon}
                     priceRange="$$"
                     rating={4.8}
                     status={item.is_open}
+                    id={item.id}
                   />}
-              keyExtractor={item => item.cafe_id}
+              keyExtractor={item => item.id}
               horizontal
               ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
             />
@@ -206,16 +240,17 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
-                        <FlatList data={data} renderItem={({item}) => 
+                        <FlatList data={filterCafes(data)} renderItem={({item}) => 
                                 <CafeCard
                                   name={item.name}
-                                  image={item.image_url}
+                                  image={item.banner_url}
                                   location={item.location.pavillon}
                                   priceRange="$$"
                                   rating={4.8}
                                   status={item.is_open}
+                                  id={item.id}
                                 />}
-              keyExtractor={item => item.cafe_id}
+              keyExtractor={item => item.id}
               horizontal
               ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
             />
@@ -228,16 +263,17 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
-                        <FlatList data={data} renderItem={({item}) => 
+                        <FlatList data={filterCafes(data)} renderItem={({item}) => 
                                 <CafeCard
                                   name={item.name}
-                                  image={item.image_url}
+                                  image={item.banner_url}
                                   location={item.location.pavillon}
                                   priceRange="$$"
                                   rating={4.8}
                                   status={item.is_open}
+                                  id={item.id}
                                 />}
-              keyExtractor={item => item.cafe_id}
+              keyExtractor={item => item.id}
               horizontal
               ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
             />
@@ -251,9 +287,25 @@ export default function HomeScreen() {
           scrollMarginTop={SPACING["lg"]}
           scrollMarginBottom={SPACING["md"]}
           scrollGap={SPACING["2xl"]}
-          scroll={false}
         >
-          <CafeCard
+          {/* Not affected by filters? Good idea or not? */}
+          <FlatList data={data} renderItem={({item}) =>           
+                                <CafeCard
+                                  name={item.name}
+                                  image={item.banner_url}
+                                  location={item.location.pavillon}
+                                  priceRange="$$"
+                                  rating={4.8}
+                                  status={item.is_open}
+                                  id={item.id}
+                                /> }
+              keyExtractor={item => item.id}
+              horizontal // render honrizontalement
+              ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
+              scrollEnabled={false}
+            />
+
+          {/*<CafeCard
             status={"open"}
             name={"Jean Brillant"}
             location={"Pavillon Claire McNicole"}
@@ -297,10 +349,11 @@ export default function HomeScreen() {
             rating={4.5}
             size={"large"}
             slug="5"
-          />
+          /> */}
         </CardScrollableLayout>
       </>
     </ScrollableLayout>
+    </SafeAreaView>
   );
 }
 
