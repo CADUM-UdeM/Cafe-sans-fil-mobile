@@ -359,11 +359,26 @@ export default function ParametreScreen() {
           visible={ordersModalVisible}
           onRequestClose={() => setOrdersModalVisible(false)}
         >
-          <View>
-
-
-
-
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Aide et support</Text>
+                <Button title="Fermer" onPress={() => setOrdersModalVisible(false)} />
+              </View>
+              <View style={styles.modalContent}>
+              {orders.map((order) => (
+                <TouchableOpacity key={order.id} style={styles.orderBox} onPress={() => {}}>
+                  <Image source={{ uri: order.image }} style={styles.orderImage} />
+                  <View style={styles.orderDetails}>
+                    <Text style={styles.orderTitle}>{order.title}</Text>
+                    <Text style={styles.orderContent}>{order.content}</Text>
+                    <Text style={styles.orderRestaurant}>{order.restaurant}</Text>
+                  </View>
+                  <Text style={styles.orderPrice}>{order.price}</Text>
+                </TouchableOpacity>
+              ))}
+              </View>
+            </View>
           </View>
 
 
