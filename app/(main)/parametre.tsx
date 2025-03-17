@@ -282,7 +282,7 @@ export default function ParametreScreen() {
                 <Button title="Fermer" onPress={() => setModalVisible(false)} />
               </View>
               <ScrollView style={styles.modalContent}>
-              <View style={{borderColor:"black", borderWidth:1,borderRadius:10}}>
+              <View style={{borderColor:"black", borderWidth:1,borderRadius:10,marginVertical:10,padding:10}}>
                <Text style={styles.modalText}>
                 <Text style={styles.boldText}>Bienvenue! {"\n"}</Text>
                 Avez-vous déjà rêvé d’utiliser une application mobile pour pouvoir commander un bon repas? 
@@ -494,6 +494,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   textContainer: {
+    margin: 10,
     borderColor: "black",
     borderWidth: 1,
     borderRadius:10,
@@ -502,7 +503,7 @@ const styles = StyleSheet.create({
     fontSize: 17, // taille de texte plus grande
     fontFamily: 'Arial', // police Calibri
     textAlign: 'justify',
-    padding: 5,
+    padding: 10,
   },
   input: {
     height: 40,
