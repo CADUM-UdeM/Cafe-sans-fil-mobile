@@ -353,6 +353,23 @@ export default function ParametreScreen() {
           </View>
         </Modal>
 
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={ordersModalVisible}
+          onRequestClose={() => setOrdersModalVisible(false)}
+        >
+          <View>
+
+
+
+
+          </View>
+
+
+
+
+        </Modal>
         
       </SafeAreaView>
     </ScrollableLayout></>
