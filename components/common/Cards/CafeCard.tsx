@@ -8,7 +8,7 @@ import COLORS from "@/constants/Colors";
 import SPACING from "@/constants/Spacing";
 
 type CafeCardProps = {
-  status: "open" | "closing soon" | "closed";
+  status: boolean;
 
   /** The name of the cafe */
   name: string;
@@ -97,7 +97,7 @@ export default function CafeCard({
           source={image ? { uri: image } : cardDimensions[size].image}
           width={cardDimensions[size].width}
           height={cardDimensions[size].height}
-        
+          style={{borderRadius:10}}
           testID="image"
         />
         <Text
@@ -120,18 +120,10 @@ export default function CafeCard({
               height={12}
               strokeWidth={1}
               color={
-                status === "open"
-                  ? COLORS.status.green
-                  : status === "closing soon"
-                  ? COLORS.status.orange
-                  : COLORS.status.red
+                status ? COLORS.status.green : COLORS.status.red
               }
               fill={
-                status === "open"
-                  ? COLORS.status.green
-                  : status === "closing soon"
-                  ? COLORS.status.orange
-                  : COLORS.status.red
+                status ? COLORS.status.green : COLORS.status.red
               }
               testID="tooltip-icon"
             />

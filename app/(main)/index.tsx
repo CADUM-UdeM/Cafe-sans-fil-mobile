@@ -86,8 +86,27 @@ export default function HomeScreen() {
   // Const for the commander en ligne filter
   const [showOnlyOrder, setShowOnlyOrder] = useState(false);
 
+  // Const for Ouvert filter
+  const [showOpen, setShowOpen] = useState(false)
+
+  // Make a fonction that filters depending on filter button pressed
+  const filterCafes = (cafes) => {
+    let filteredCafes = cafes;
+
+    if (showOnlyOrder) {
+      filteredCafes = filteredCafes.filter(cafe => cafe.features.includes("ORDER"));
+    }
+
+    if (showOpen) {
+      filteredCafes = filteredCafes.filter(cafe => cafe.is_open == true);
+    }
+
+    return filteredCafes;
+
+  };
+
    // Get cafes that have the feature to ORDER on line if commander en ligne filter is on
-   const cafesWithOrder = showOnlyOrder ? data.filter((cafe) => cafe.features.includes("ORDER")) : data;
+   // const cafesWithOrder = showOnlyOrder ? data.filter((cafe) => cafe.features.includes("ORDER")) : data;
 
   // Get the open and close modal functions from the modal context.
   const openModal = modalContext ? modalContext.openModal : () => {};
@@ -143,7 +162,7 @@ export default function HomeScreen() {
           <Tooltip
             label="Ouvert"
             status="green"
-            onPress={() => console.log("PRESSED")}
+            onPress={() => setShowOpen(!showOpen)}
             showChevron={false}
             changeColorOnPress
           />
@@ -174,7 +193,7 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
-            <FlatList data={cafesWithOrder} renderItem={({item}) =>           
+            <FlatList data={filterCafes(data)} renderItem={({item}) =>           
                                 <CafeCard
                                   name={item.name}
                                   image={item.banner_url}
@@ -198,7 +217,7 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
-          <FlatList data={cafesWithOrder} renderItem={({item}) => 
+          <FlatList data={filterCafes(data)} renderItem={({item}) => 
                   <CafeCard
                     name={item.name}
                     image={item.banner_url}
@@ -220,7 +239,7 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
-                        <FlatList data={cafesWithOrder} renderItem={({item}) => 
+                        <FlatList data={filterCafes(data)} renderItem={({item}) => 
                                 <CafeCard
                                   name={item.name}
                                   image={item.banner_url}
@@ -242,7 +261,7 @@ export default function HomeScreen() {
             scrollGap={SPACING["md"]}
             dividerBottom
           >
-                        <FlatList data={cafesWithOrder} renderItem={({item}) => 
+                        <FlatList data={filterCafes(data)} renderItem={({item}) => 
                                 <CafeCard
                                   name={item.name}
                                   image={item.banner_url}
