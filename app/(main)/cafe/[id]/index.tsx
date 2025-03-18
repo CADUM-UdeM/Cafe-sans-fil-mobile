@@ -135,7 +135,11 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
         // push the item to the list
         let item = itemsInCat[j];
         itemList.push(item);
-
+      }
+    }
+  }
+  return itemList;
+}
   // Tableau des média sociaux des cafés : convertie le json {plateform: link} à un tableau [plateform, link]
   const socialMediaTab = cafe.social_media ? Object.entries(cafe.social_media).map(([plateform, link]) =>
     ({plateform, link})) : [] ;
@@ -162,11 +166,10 @@ console.log(paymentDetails);
         menuCatSet.add(menuItemList[i].category);
       }
     }
-  }
+  
 
-  // update state variable
-  return itemList;
-}
+  
+
 
 
 
@@ -226,6 +229,41 @@ console.log(paymentDetails);
                 showChevron={false} color='white'/>
               ) : null ))}
           </View>
+
+        {/* Section paiement */}
+          <Text
+            style={[
+              TYPOGRAPHY.body.large.semiBold,
+              { color: COLORS.subtuleDark, textAlign: "center" },
+              { marginTop: 20},
+            ]}
+          >
+            Paiement
+          </Text>
+          <View
+          style={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: 20,
+            gap: 10,
+          }}
+        >
+          {paymentDetails.map(({method, minimum}) => ( minimum ? (
+            <Tooltip
+              label={`${method} Min : ${minimum}`}
+              showChevron={false}
+              color="white"
+              Icon={CreditCard}
+              /> ) : 
+              (<Tooltip
+              label={method}
+              showChevron={false}
+              color="white"
+              Icon={DollarSign}/>)
+            /* <Text>{method} MIN: {minimum}</Text> ) : <Text>{method}</Text> */ ))}
+        </View>
 
       </View>
       <View
@@ -314,43 +352,6 @@ console.log(paymentDetails);
           </View>
 
         </View>
-
-        {/* Section paiement */}
-          <Text
-            style={[
-              TYPOGRAPHY.body.large.semiBold,
-              { color: COLORS.subtuleDark, textAlign: "center" },
-              { marginTop: 20},
-            ]}
-          >
-            Paiement
-          </Text>
-          <View
-          style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            alignItems: "center",
-            justifyContent: "center",
-            marginTop: 20,
-            gap: 10,
-          }}
-        >
-            {paymentDetails.map(({method, minimum}) => ( minimum ? (
-              <Tooltip
-              label={`${method} Min : ${minimum}`}
-              showChevron={false}
-              color="white"
-              Icon={CreditCard}
-              /> ) : 
-              <Tooltip
-              label={method}
-              showChevron={false}
-              color="white"
-              Icon={DollarSign}/>
-            /* <Text>{method} MIN: {minimum}</Text> ) : <Text>{method}</Text> */ ))}
-        </View>
-      </View>
-
 
       {/* Menu */}
       <FlatList 
