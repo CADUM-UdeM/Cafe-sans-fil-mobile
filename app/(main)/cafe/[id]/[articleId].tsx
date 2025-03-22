@@ -40,7 +40,7 @@ export default function ArticleScreen() {
         //console.log(`test cafe slug${id}`);
         //console.log(`article slug${articleId}`);
         //console.log(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}/menu/${articleId}`);
-        const response = await fetch(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}/menu/${articleId}`);
+        const response = await fetch(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}/menu/items/${articleId}`);
         const json = await response.json();
         console.log(json.image_url);
         setMenuItem(json);

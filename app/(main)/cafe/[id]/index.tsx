@@ -34,6 +34,7 @@ import {
   ScrollView,
   FlatList,
   Linking,
+  ActivityIndicator
 } from "react-native";
 import { Cafe, Category, Item } from "@/constants/types/GET_cafe";
 
@@ -140,7 +141,16 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
 }
 
 
-
+  if(isLoading){
+    return(
+      <ActivityIndicator size={'large'}
+      style={{backgroundColor: COLORS.white,
+              flex: 1,
+              alignContent: 'center',
+              justifyContent: 'center'
+      }} />
+    )
+  }
 
   return (
     <SafeAreaView>
@@ -297,13 +307,15 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
       data={itemList? itemList : []}  
       keyExtractor={item => item.id}
       renderItem={({item}) => <ArticleCard
+                                cafeSlug={cafe.slug}
+                                slug={item.id}
                                 name={item.name} 
                                 price={"$" + item.price} 
                                 status={item.in_stock? "In Stock" : "Out of Stock"}
                                 image={item.image_url}
                                 style={{alignItems: 'center'}}
                               />
-                              } 
+                              }
       ItemSeparatorComponent={() => <View style={{ marginTop: SPACING["md"]}} />} // padding
       scrollEnabled={false}
       style={{marginTop: SPACING['md']}}

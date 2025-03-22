@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Redirect, router } from "expo-router";
 import * as Location from "expo-location";
 import { Star, Vegan } from "lucide-react-native";
-import { View, StyleSheet, Image, Text, FlatList, SafeAreaView} from "react-native";
+import { View, StyleSheet, Image, Text, FlatList, SafeAreaView, ActivityIndicator} from "react-native";
 
 
 import useLocation from "@/hooks/useLocation";
@@ -26,6 +26,7 @@ import { useModal } from "@/components/layouts/GlobalModal";
 import ScrollableLayout from "@/components/layouts/ScrollableLayout";
 import FilterModalLayout from "@/components/layouts/FilterModalLayout";
 import { useUser } from "@clerk/clerk-expo";
+import COLORS from "@/constants/Colors";
 /**
  * Home screen of the app. It allows the user to search for cafes, filter them,
  * and view them. The screen also displays quick search options and cafe cards
@@ -54,9 +55,15 @@ import { useUser } from "@clerk/clerk-expo";
 export default function HomeScreen() {
   const [data, setData] = useState<allCafe | any>([]);
   const [isLoading, setIsLoading] = useState(true);
+  // Const for the commander en ligne filter
+  const [showOnlyOrder, setShowOnlyOrder] = useState(false);
+
+  // Const for Ouvert filter
+  const [showOpen, setShowOpen] = useState(false)
 
   // fetch cafe list
   useEffect(() => {
+    setIsLoading(true);
     fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
       .then((response) => response.json())
       .then((json) => {
@@ -107,6 +114,17 @@ export default function HomeScreen() {
     );
   }
 
+  if(isLoading){
+    return(
+      <ActivityIndicator size={'large'}
+      style={{backgroundColor: COLORS.white,
+              flex: 1,
+              alignContent: 'center',
+              justifyContent: 'center'
+      }} />
+    )
+  }
+
   return (
   <SafeAreaView>
     
@@ -121,21 +139,13 @@ export default function HomeScreen() {
           <Search onSearch={handleSearch} onFilter={handleFilter} />
         </View>
 
-        {/* Announcement Image */}
-        {/* <Image
-          width={361}
-          height={210}
-          style={styles.announcementImage}
-          source={require("@/assets/images/placeholder/imagexl.png")}
-        /> */}
-
         {/* Quick Search Section with Tooltips */}
         {/* TODO: IMPLEMENT FILTERS USING TOOLTIPS */}
         
         {/* Horizontal Cafe Cards By Categories */}
         <View>
         {/* Tendences du momemt */}
-        <Text 
+        <Text
             style={{
               marginVertical: SPACING["xl"], 
               marginHorizontal: SPACING["md"], 
