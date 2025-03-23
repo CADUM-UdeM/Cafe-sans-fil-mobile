@@ -46,10 +46,12 @@ export default function ParametreScreen() {
   const { user } = useUser();
   const navigation = useRouter();
   const [notifModal,setNotifModal] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
+  //const [modalVisible, setModalVisible] = useState(false);
   const [accountModalVisible, setAccountModalVisible] = useState(false);
   const [ordersModalVisible, setOrdersModalVisible] = useState(false);
-  const [prferencesModalVisible, setPreferencesModalVisible] = useState(false);
+  const [preferencesModalVisible, setPreferencesModalVisible] = useState(false);
+
+  const [ modalVisible , setModalVisible] = useState(-1);
   
 
   const orders = [
@@ -157,7 +159,7 @@ export default function ParametreScreen() {
       icon: <Info size={26} strokeWidth={2.5} color={COLORS.black} />,
       title: "À propos",
       subtitle: "En savoir plus sur nous et notre mission.",
-      onPress: () => setModalVisible(true),
+      onPress: () => setModalVisible(1),
     },
   ];
 
@@ -241,7 +243,7 @@ export default function ParametreScreen() {
         <Modal
           animationType="slide"
           transparent={true}
-          visible={accountModalVisible}
+          visible={modalVisible == 1}
           onRequestClose={() => setAccountModalVisible(false)}
         >
           <View style={styles.modalOverlay}>
@@ -353,37 +355,40 @@ export default function ParametreScreen() {
           </View>
         </Modal>
 
-        <Modal
-          animationType="slide"
-          transparent={true}
+        <Modal                                                                                // ce code ne fonctionne pas, car il a un probleme (aide et support)
+          animationType="slide"                                                                // refaire tout ce modal
+          transparent={true}                                                                  
           visible={ordersModalVisible}
-          onRequestClose={() => setOrdersModalVisible(false)}
+          onRequestClose={() => setPreferencesModalVisible(false)}
         >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
-              <View style={styles.modalHeader}>
+              <View style={styles.modalHeader}>    
                 <Text style={styles.modalTitle}>Aide et support</Text>
-                <Button title="Fermer" onPress={() => setOrdersModalVisible(false)} />
+                <Button title="Fermer" onPress={() => setPreferencesModalVisible(false)} />
               </View>
-              <View style={styles.modalContent}>
-              {orders.map((order) => (
-                <TouchableOpacity key={order.id} style={styles.orderBox} onPress={() => {}}>
-                  <Image source={{ uri: order.image }} style={styles.orderImage} />
-                  <View style={styles.orderDetails}>
-                    <Text style={styles.orderTitle}>{order.title}</Text>
-                    <Text style={styles.orderContent}>{order.content}</Text>
-                    <Text style={styles.orderRestaurant}>{order.restaurant}</Text>
-                  </View>
-                  <Text style={styles.orderPrice}>{order.price}</Text>
-                </TouchableOpacity>
-              ))}
+              <ScrollView style={styles.modalContent}>
+              <View style={{borderColor:"black", borderWidth:1, borderRadius:10, marginVertical:10, padding:10}}>
+                <Text style={styles.modal}>
+                  <Text> 
+                    
+
+
+
+                  </Text>
+
+                </Text>
               </View>
+              <View style={{borderColor:"black", borderWidth:1, borderRadius:10, marginVertical:10, padding:10}}>
+
+
+              </View>
+              <View style={{borderColor:"black", borderWidth:1, borderRadius:10, marginVertical:10, padding:10}}>
+                
+              </View> 
+              </ScrollView>
             </View>
           </View>
-
-
-
-
         </Modal>
         
       </SafeAreaView>
