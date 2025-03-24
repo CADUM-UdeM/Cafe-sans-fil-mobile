@@ -69,6 +69,7 @@ interface Cafe {
     name: string;
     slug: string;
     previous_slugs: string[];
+    features: string[];
     description: string;
     image_url: string;
     faculty: string;
@@ -82,4 +83,8 @@ interface Cafe {
     additional_info: AdditionalInfo[];
     staff: Staff[];
     menu_items: MenuItems[];
+    affiliation : {
+        university : string;
+        faculty : string;
+    }
 };

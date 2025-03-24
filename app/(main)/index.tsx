@@ -89,7 +89,7 @@ export default function HomeScreen() {
   >(location, pavillonCoordinates, "lat", "lng", "pavillon");
 
   // Make a fonction that filters depending on filter button pressed
-  const filterCafes = (cafes) => {
+  const filterCafes = (cafes : Cafe[]) => {
     let filteredCafes = cafes;
 
     if (showOnlyOrder) {
@@ -124,7 +124,7 @@ export default function HomeScreen() {
           return;
         }
 
-        const filteredCafes = allCafes.filter((cafe) =>
+        const filteredCafes = allCafes.filter((cafe : Cafe) =>
           cafe.name.toLowerCase().includes(text.toLowerCase()) || 
           cafe.location.pavillon.toLowerCase().includes(text.toLowerCase()) ||
           cafe.location.local.toLowerCase().includes(text.toLowerCase()) ||
