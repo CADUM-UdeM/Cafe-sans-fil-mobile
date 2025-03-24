@@ -51,7 +51,7 @@ export default function CafeScreen() {
   // list of items to display
   const [itemList, setItemList] = useState<Item[]>();
 
-  const [cafe, setCafe] = useState({}); // set social media as empty object
+  const [cafe, setCafe] = useState<Cafe>(); // set social media as empty object
 
 
   // Have an openable link
@@ -141,7 +141,7 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
   return itemList;
 }
   // Tableau des média sociaux des cafés : convertie le json {plateform: link} à un tableau [plateform, link]
-  const socialMediaTab = cafe.social_media ? Object.entries(cafe.social_media).map(([plateform, link]) =>
+  const socialMediaTab = cafe?.social_media ? Object.entries(cafe.social_media).map(([plateform, link]) =>
     ({plateform, link})) : [] ;
 
   // Méthode pour traduire en français
@@ -155,17 +155,10 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
   };
 
   // Tableau? des détails de payements
-  const paymentDetails = cafe.payment_details ? cafe.payment_details.map(({method, minimum}) => ({
+  const paymentDetails = cafe?.payment_details ? cafe.payment_details.map(({method, minimum}) => ({
     method : translationPaymentMethod(method), minimum })) : [];
 
 console.log(paymentDetails);
-
-  function getCafeCats(menuItemList){
-    let menuCatSet = new Set();
-      for(let i = 0; i<menuItemList.length; i++){
-        menuCatSet.add(menuItemList[i].category);
-      }
-    }
   
 
   
@@ -175,7 +168,9 @@ console.log(paymentDetails);
 
 
   return (
-    <SafeAreaView>
+
+    <SafeAreaView style={{backgroundColor: "#000"}}>
+      
     <ScrollView
       ref={scrollViewRef}
       showsVerticalScrollIndicator={false}
@@ -184,7 +179,7 @@ console.log(paymentDetails);
       <View>
         <Image
           style={styles.cafeBackgroundImage}
-          source={isLoading ? require("@/assets/images/placeholder/image2xl.png") : {uri: cafe.banner_url}}
+          source={isLoading ? require("@/assets/images/placeholder/image2xl.png") : {uri: cafe?.banner_url}}
         />
         <View style={styles.cafeHeaderButtons}>
           <IconButton
@@ -200,16 +195,16 @@ console.log(paymentDetails);
         </View>
 
         <View style={styles.cafeHeaderOpenStatus}>
-          <Tooltip label={"Ouvert"} showChevron={true} status={cafe.is_open ? "green" : "red"} />
+          <Tooltip label={"Ouvert"} showChevron={true} status={cafe?.is_open ? "green" : "red"} />
         </View>
       </View>
 
       <View>
         <Text style={[TYPOGRAPHY.heading.medium.bold, styles.cafeName]}>
-          {isLoading? "..." : cafe.name}
+          {isLoading? "..." : cafe?.name}
         </Text>
         <Text style={[TYPOGRAPHY.body.large.base, styles.cafeDescription]}>
-          {isLoading? "..." : cafe.description}
+          {isLoading? "..." : cafe?.description}
         </Text>
 
         {/*Média sociaux*/}
@@ -252,8 +247,8 @@ console.log(paymentDetails);
         >
           {paymentDetails.map(({method, minimum}) => ( minimum ? (
             <Tooltip
-              label={`${method} Min : ${minimum}`}
-              showChevron={false}
+              label={`${method} MIN : ${minimum}`}
+              showChevron={true}
               color="white"
               Icon={CreditCard}
               /> ) : 
@@ -284,7 +279,7 @@ console.log(paymentDetails);
         >
           Horaires
         </Text>
-        <FlatList data={cafe.opening_hours} horizontal
+        <FlatList data={cafe?.opening_hours} horizontal
           keyExtractor={item => item.day}
           ItemSeparatorComponent={() => 
             <View
@@ -318,7 +313,7 @@ console.log(paymentDetails);
             Filtres 
           </Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignContent:'center', justifyContent: 'center'}}>
-            {cafe.menu? [
+            {cafe? [
               ...cafe.menu.categories.map((item : Category) => (
                 <View 
                   key={item.id} 
@@ -363,6 +358,8 @@ console.log(paymentDetails);
                                 status={item.in_stock? "In Stock" : "Out of Stock"}
                                 image={item.image_url}
                                 style={{alignItems: 'center'}}
+                                cafeSlug={cafe?.slug}
+                                slug={item.id}
                               />
                               } 
       ItemSeparatorComponent={() => <View style={{ marginTop: SPACING["md"]}} />} // padding
@@ -391,22 +388,26 @@ const styles = StyleSheet.create({
   cafeBackgroundImage: {
     width: "100%",  // Fill width
     height: 250,    // Fixed height, adjust as needed
-    borderBottomLeftRadius: SPACING["7xl"],
-    borderBottomRightRadius: SPACING["7xl"],
-    borderTopLeftRadius: SPACING["7xl"],
-    borderTopRightRadius: SPACING["7xl"],
-    
   },
   cafeHeaderButtons: {
     position: "absolute",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    width: 100,
+    width: "100%",
     paddingHorizontal: 16,
     marginTop: SPACING["sm"],
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   cafeHeaderButtonsRight: {
+    
     flexDirection: "row",
     gap: 8,
     alignItems: "center",
