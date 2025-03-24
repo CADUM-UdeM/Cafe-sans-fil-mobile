@@ -28,7 +28,6 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import TYPOGRAPHY from "@/constants/Typography";
 
 import Divider from "@/components/common/Divider"; 
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import AntDesign from '@expo/vector-icons/AntDesign';  // icone de Instagram
 import FontAwesome from '@expo/vector-icons/FontAwesome'; // icone de user-secret 
 
@@ -245,7 +244,7 @@ export default function ParametreScreen() {
           animationType="slide"
           transparent={true}
           visible={modalVisible == 1}
-          onRequestClose={() => setAccountModalVisible(false)}
+          onRequestClose={() => setModalVisible(1)}
         >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
@@ -275,46 +274,46 @@ export default function ParametreScreen() {
         <Modal
           animationType="slide"
           transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}
+          visible={modalVisible == 2}
+          onRequestClose={() => setModalVisible(2)}
         >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
               <View style={styles.modalHeader}>
                 <Text style={styles.modalTitle}>À propos</Text>
-                <Button title="Fermer" onPress={() => setModalVisible(false)} />
+                <Button title="Fermer" onPress={() => setModalVisible(-1)} />
               </View>
               <ScrollView style={styles.modalContent}>
 
               <View style={{borderColor:"black", borderWidth:1, borderRadius:10, marginVertical:10, padding:10}}>
-               <Text style={styles.modalText}>
-                <Text style={styles.boldText}>Bienvenue! {"\n"}</Text>
-                Avez-vous déjà rêvé d’utiliser une application mobile pour pouvoir commander un bon repas? 
-                C’est exactement ce qui a poussé notre équipe à créer une application de ce type. 
-                Notre club, du nom de CADUM, est justement à la charge de cela. Ce club vise à développer des applications mobiles pour améliorer la vie des étudiants des différentes universités. 
-                Si vous avez tendance à avoir le manque d'énergie de tout le temps commander de la nourriture, nous sommes justement là pour vous. Soyez la bienvenue!
-               </Text>
-               </View>
+                <Text style={styles.modalText}>
+                  <Text style={styles.boldText}>Bienvenue! {"\n"}</Text>
+                  Avez-vous déjà rêvé d’utiliser une application mobile pour pouvoir commander un bon repas? 
+                  C’est exactement ce qui a poussé notre équipe à créer une application de ce type. 
+                  Notre club, du nom de CADUM, est justement à la charge de cela. Ce club vise à développer des applications mobiles pour améliorer la vie des étudiants des différentes universités. 
+                  Si vous avez tendance à avoir le manque d'énergie de tout le temps commander de la nourriture, nous sommes justement là pour vous. Soyez la bienvenue!
+                </Text>
+              </View>
 
               <View style={{borderColor:"black", borderWidth:1, borderRadius:10, marginVertical:10, padding:10}}>
-               <Text style={styles.clubText}>
+                <Text style={styles.clubText}>
                 <Text style={styles.boldText}>Club {"\n"}</Text>
                 L'idée de ce club est venue en hiver 2024. Les étudiants de l'Université de Montréal dans le programme d'informatique voulaient appliquer leurs connaissances acquises dans les cours d'informatique dans la vie réelle.
                 Pour cela, ils ont voulu créer un club sur le développement d'applications mobiles pour s'ouvrir à des technologies de pointe.
                 Grâce à cela, l'idée a été mise au point en automne 2024. À l'automne 2024, les étudiants ont décidé de développer une application mobile sur la commande de repas à partir des cafétérias de votre université.
-               </Text>
+                </Text>
               </View>
 
               <View style={{borderColor:"black", borderWidth:1, borderRadius:10, marginVertical:10, padding:10}}>
-               <Text style={styles.socialText}>
+                <Text style={styles.socialText}>
                 <Text style={styles.boldText}>Réseaux sociaux {"\n"}</Text>
                 Comme toute autre compagnie, nous sommes aussi présents sur les réseaux sociaux. Là-bas, vous pouvez suivre toutes les nouvelles dont des activités et même des nouveautés sur l'application mobile en soi.
                 Les réseaux sociaux que nous sommes présents sont Instagram et Discord. Cependant, si vous voulez voir les nouveautés qui viennent de sortir, allez sur Discord. N'oubliez pas d'activer les notifications pour d'autres types de nouveautés.    <FontAwesome6 name="discord" size={24} color="black" style={{ marginTop: 10 }}/>
-               </Text>    
+                </Text>    
               </View>
 
               <View style={{borderColor:"black", borderWidth:1, borderRadius:10, marginVertical:20, padding:10}}>
-               <Text style={styles.policyText}>
+                <Text style={styles.policyText}>
                 <Text style={styles.boldText}>Politiques et confidentalité {"\n"}</Text>
                 En termes de politique et de confidentalité, nous respectons la vie privée de chaque individu. Donc, les informations personnelles comme les mots de passe sont confidentielles. 
                 Aucun utilisateur peut avoir accès aux informations personnelles de d'autres utilisateurs et même chose avec les développeurs de l'application mobile. 
@@ -331,14 +330,14 @@ export default function ParametreScreen() {
         <Modal
           animationType="slide"
           transparent={true}
-          visible={ordersModalVisible}
-          onRequestClose={() => setOrdersModalVisible(false)}
+          visible={modalVisible == 3}
+          onRequestClose={() => setModalVisible(3)}
         >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
               <View style={styles.modalHeader}>
                 <Text style={styles.modalTitle}>Mes Commandes</Text>
-                <Button title="Fermer" onPress={() => setOrdersModalVisible(false)} />
+                <Button title="Fermer" onPress={() => setModalVisible(-1)} />
               </View>
               <View style={styles.modalContent}>
               {orders.map((order) => (
@@ -399,6 +398,9 @@ export default function ParametreScreen() {
 }
 
 const styles = StyleSheet.create({
+  modal: {
+
+  },
   container: {
     flex: 1,
     backgroundColor: COLORS.white,

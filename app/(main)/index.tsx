@@ -27,7 +27,6 @@ import ScrollableLayout from "@/components/layouts/ScrollableLayout";
 import FilterModalLayout from "@/components/layouts/FilterModalLayout";
 import { useUser } from "@clerk/clerk-expo";
 import COLORS from "@/constants/Colors";
-
 /**
  * Home screen of the app. It allows the user to search for cafes, filter them,
  * and view them. The screen also displays quick search options and cafe cards
@@ -115,7 +114,25 @@ export default function HomeScreen() {
   // Mock implementation of search and filter functions.
   // FIXME: Implement actual search and filter functions.
   function handleSearch(text: string): void {
-    console.warn("Search `Search` function not implemented.");
+    fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
+      .then((response) => response.json())
+      .then((json) => {
+        const allCafes = json.items;
+
+        if (text.trim() === "") {
+          setData(allCafes);
+          return;
+        }
+
+        const filteredCafes = allCafes.filter((cafe) =>
+          cafe.name.toLowerCase().includes(text.toLowerCase()) || 
+          cafe.location.pavillon.toLowerCase().includes(text.toLowerCase()) ||
+          cafe.location.local.toLowerCase().includes(text.toLowerCase()) ||
+          cafe.affiliation.faculty.toLowerCase().includes(text.toLowerCase())
+        );
+        setData(filteredCafes);
+      })
+      .catch((error) => console.error(error));
   }
 
   // Mock implementation of search and filter functions.
@@ -152,7 +169,6 @@ export default function HomeScreen() {
             />
             <Search onSearch={handleSearch} onFilter={handleFilter} />
           </View>
-
 
           {/* Announcement Image */}
           {/* <Image
@@ -211,51 +227,24 @@ export default function HomeScreen() {
             style={{paddingHorizontal: SPACING["sm"], paddingBottom: SPACING["md"]}}
           />
 
-        {/* Horizontal Cafe Cards By Categories */}
-        <View>
-          <CardScrollableLayout
-            title="Tendances du moment"
-            titleMarginTop={SPACING["xl"]}
-            scrollMarginTop={SPACING["xs"]}
-            scrollMarginBottom={SPACING["md"]}
-            scrollGap={SPACING["md"]}
-            dividerBottom
-          >
-            <FlatList data={data} renderItem={({item}) =>
-                              
-                                <CafeCard
-                                  name={item.name}
-                                  image={item.banner_url}
-                                  location={item.location.pavillon}
-                                  priceRange="$$"
-                                  rating={4.8}
-                                  status={item.is_open}
-                                  id={item.id}
-                                /> }
+          <Text 
+            style={{
+              marginVertical: SPACING["xl"], 
+              marginHorizontal: SPACING["md"], 
+              ...TYPOGRAPHY.heading.small.bold
+            }}>Proches de vous
+          </Text>
+          <FlatList data={filterCafes(data)} renderItem={({item}) =>
+              <CafeCard
+                name={item.name}
+                image={item.banner_url}
+                location={item.location.pavillon}
+                priceRange="$$"
+                rating={4.8}
+                status={item.is_open}
+                id={item.id}
+              /> }
               keyExtractor={item => item.id}
-              horizontal // render honrizontalement
-              ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
-              scrollEnabled={false}
-            />
-          </CardScrollableLayout>
-          <CardScrollableLayout
-            title="Proches de vous"
-            titleMarginTop={SPACING["xl"]}
-            scrollMarginTop={SPACING["xs"]}
-            scrollMarginBottom={SPACING["md"]}
-            scrollGap={SPACING["md"]}
-            dividerBottom
-          >
-          <FlatList data={data} renderItem={({item}) => 
-                  <CafeCard
-                    name={item.name}
-                    image={item.image_url}
-                    location={item.location.pavillon}
-                    priceRange="$$"
-                    rating={4.8}
-                    status={item.is_open}
-                  />}
-              keyExtractor={item => item.cafe_id}
               horizontal
               ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
               style={{paddingHorizontal: SPACING["sm"], paddingBottom: SPACING["md"]}}
@@ -334,11 +323,9 @@ export default function HomeScreen() {
                 paddingBottom: SPACING["md"],
               }}
           />
-
-        </CardScrollableLayout>
-      </>
-    </ScrollableLayout>
-    </SafeAreaView>
+        </>
+      </ScrollableLayout>
+      </SafeAreaView>
   );
 }
 
