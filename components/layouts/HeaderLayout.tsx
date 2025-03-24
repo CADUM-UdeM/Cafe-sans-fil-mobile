@@ -8,6 +8,8 @@ import {Swipeable} from "react-native-gesture-handler";
 import SPACING from "@/constants/Spacing";
 import COLORS from "@/constants/Colors";
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { GestureHandlerRootView } from "react-native-gesture-handler"; // Import GestureHandlerRootView
+
 import {
   ChevronRight,
   Package,
@@ -160,7 +162,7 @@ export default function HeaderLayout({fullName, profilePicture}: HeaderLayoutPro
                   <Text style={styles.noNotificationsText}>Aucune notification</Text>
                 ) : (
               notifs.map((notif) => (
-                <Swipeable key={notif.id} renderLeftActions={(progress, dragX) => renderLeftActions(dragX, notif.id)} renderRightActions={(progress, dragX) => renderRightActions(dragX, notif.id)} ref={(ref) => swipeableRefs.current.set(notif.id, ref)}>
+                //<Swipeable key={notif.id} renderLeftActions={(progress, dragX) => renderLeftActions(dragX, notif.id)} renderRightActions={(progress, dragX) => renderRightActions(dragX, notif.id)} ref={(ref) => swipeableRefs.current.set(notif.id, ref)}>
                 <View style={styles.orderBox} >
                   <View style={styles.orderDetails}>
                     <Text style={styles.orderTitle}>{notif.title}</Text>
@@ -175,7 +177,7 @@ export default function HeaderLayout({fullName, profilePicture}: HeaderLayoutPro
                     </View>
                   </View>
                 </View>
-                </Swipeable>
+                //</Swipeable>
               )))}
               
             </View>
