@@ -1,9 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Redirect, router } from "expo-router";
 import * as Location from "expo-location";
-import { Star, Vegan } from "lucide-react-native";
-import { View, StyleSheet, Image, Text } from "react-native";
-
+import { Activity, Star, Vegan } from "lucide-react-native";
+import { View, StyleSheet, Image, Text, FlatList, SafeAreaView, ActivityIndicator} from "react-native";
 
 import useLocation from "@/hooks/useLocation";
 import useOnForegroundBack from "@/hooks/useOnForegroundBack";
@@ -14,18 +13,20 @@ import {
   pavillonCoordinates,
   type PavillonCoordinate,
 } from "@/constants/Coordinates";
+import TYPOGRAPHY from "@/constants/Typography";
+import { allCafe } from "@/constants/types/GET_list_cafe";
 
 import Tooltip from "@/components/common/Tooltip";
 import Search from "@/components/common/Inputs/Search";
 import CafeCard from "@/components/common/Cards/CafeCard";
 import SelectLocalisation from "@/components/common/SelectLocalisation";
+import CardScrollableLayout from "@/components/layouts/CardScrollableLayout";
 
 import { useModal } from "@/components/layouts/GlobalModal";
 import ScrollableLayout from "@/components/layouts/ScrollableLayout";
 import FilterModalLayout from "@/components/layouts/FilterModalLayout";
-import CardScrollableLayout from "@/components/layouts/CardScrollableLayout";
 import { useUser } from "@clerk/clerk-expo";
-
+import COLORS from "@/constants/Colors";
 /**
  * Home screen of the app. It allows the user to search for cafes, filter them,
  * and view them. The screen also displays quick search options and cafe cards
@@ -52,6 +53,27 @@ import { useUser } from "@clerk/clerk-expo";
  * - All Cafes Cards: Lists all available cafes.
  */
 export default function HomeScreen() {
+  const [data, setData] = useState<allCafe | any>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  // Const for the commander en ligne filter
+  const [showOnlyOrder, setShowOnlyOrder] = useState(false);
+
+  // Const for Ouvert filter
+  const [showOpen, setShowOpen] = useState(false)
+
+  // fetch cafe list
+  useEffect(() => {
+    setIsLoading(true);
+    fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
+      .then((response) => response.json())
+      .then((json) => {
+        setData(json.items);
+        // console.log(json)
+      })
+      .catch((error) => console.error(error))
+      .finally(() => setIsLoading(false));;
+  }, []);
+
   // Get the user's current location
   const [location, getCurrentLocation] = useLocation();
 
@@ -66,6 +88,22 @@ export default function HomeScreen() {
     "pavillon"
   >(location, pavillonCoordinates, "lat", "lng", "pavillon");
 
+  // Make a fonction that filters depending on filter button pressed
+  const filterCafes = (cafes : Cafe[]) => {
+    let filteredCafes = cafes;
+
+    if (showOnlyOrder) {
+      filteredCafes = filteredCafes.filter(cafe => cafe.features.includes("ORDER"));
+    }
+
+    if (showOpen) {
+      filteredCafes = filteredCafes.filter(cafe => cafe.is_open == true);
+    }
+
+    return filteredCafes;
+
+  };
+
   // Get the modal context for opening and closing modals.
   const modalContext = useModal();
 
@@ -76,7 +114,25 @@ export default function HomeScreen() {
   // Mock implementation of search and filter functions.
   // FIXME: Implement actual search and filter functions.
   function handleSearch(text: string): void {
-    console.warn("Search `Search` function not implemented.");
+    fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
+      .then((response) => response.json())
+      .then((json) => {
+        const allCafes = json.items;
+
+        if (text.trim() === "") {
+          setData(allCafes);
+          return;
+        }
+
+        const filteredCafes = allCafes.filter((cafe : Cafe) =>
+          cafe.name.toLowerCase().includes(text.toLowerCase()) || 
+          cafe.location.pavillon.toLowerCase().includes(text.toLowerCase()) ||
+          cafe.location.local.toLowerCase().includes(text.toLowerCase()) ||
+          cafe.affiliation.faculty.toLowerCase().includes(text.toLowerCase())
+        );
+        setData(filteredCafes);
+      })
+      .catch((error) => console.error(error));
   }
 
   // Mock implementation of search and filter functions.
@@ -92,27 +148,39 @@ export default function HomeScreen() {
     );
   }
 
+  if (isLoading) {
+    return(
+      <View style={{ flex:1, justifyContent: 'center', alignContent: 'center'}}>
+        <ActivityIndicator size={'large'} />
+      </View>
+    )
+  }
+
   return (
-    <ScrollableLayout>
-      <>
-        {/* User Location and Search */}
-        <View style={styles.locationAndSearchContainer}>
-          <SelectLocalisation
-            currentLocalisation={sortedPavillons[0]}
-            location={location as Location.LocationObject}
-          />
-          <Search onSearch={handleSearch} onFilter={handleFilter} />
-        </View>
+    <SafeAreaView>
+      
+      <ScrollableLayout>
+        <>
+          {/* User Location and Search */}
+          <View style={styles.locationAndSearchContainer}>
+            <SelectLocalisation
+              currentLocalisation={sortedPavillons[0]}
+              location={location as Location.LocationObject}
+            />
+            <Search onSearch={handleSearch} onFilter={handleFilter} />
+          </View>
 
-        {/* Announcement Image */}
-        <Image
-          width={361}
-          height={210}
-          style={styles.announcementImage}
-          source={require("@/assets/images/placeholder/imagexl.png")}
-        />
+          {/* Announcement Image */}
+          {/* <Image
+            width={361}
+            height={210}
+            style={styles.announcementImage}
+            source={require("@/assets/images/placeholder/imagexl.png")}
+          /> */}
 
-        {/* Quick Search Section with Tooltips */}
+          {/* Quick Search Section with Tooltips */}
+          {/* TODO: IMPLEMENT FILTERS USING TOOLTIPS */}
+          {/* Quick Search Section with Tooltips */}
         <CardScrollableLayout
           scrollMarginTop={SPACING["md"]}
           scrollMarginBottom={SPACING["sm"]}
@@ -121,259 +189,143 @@ export default function HomeScreen() {
           <Tooltip
             label="Ouvert"
             status="green"
-            onPress={() => console.log("PRESSED")}
+            onPress={() => setShowOpen(!showOpen)}
             showChevron={false}
             changeColorOnPress
           />
-          <Tooltip label="Diététique" Icon={Vegan} changeColorOnPress></Tooltip>
-          <Tooltip label="Prix" changeColorOnPress></Tooltip>
           <Tooltip
-            label="Bientôt fermé"
-            status="orange"
+            label="Commander en ligne"
+            onPress={() => setShowOnlyOrder(!showOnlyOrder)} // fonction qui va afficher les cafés où on peut order en ligne
             showChevron={false}
             changeColorOnPress
           />
-          <Tooltip label="Rating" Icon={Star} changeColorOnPress />
         </CardScrollableLayout>
+          
+          {/* Horizontal Cafe Cards By Categories */}
+          <View>
+          {/* Tendences du momemt */}
+          <Text 
+              style={{
+                marginVertical: SPACING["xl"], 
+                marginHorizontal: SPACING["md"], 
+                ...TYPOGRAPHY.heading.small.bold
+              }}>Tendances du moment
+          </Text>
+          <FlatList data={filterCafes(data)} renderItem={({item}) =>
+              <CafeCard
+                name={item.name}
+                image={item.banner_url}
+                location={item.location.pavillon}
+                priceRange="$$"
+                rating={4.8}
+                status={item.is_open}
+                id={item.id}
+              /> }
+            keyExtractor={item => item.id}
+            horizontal // render honrizontalement
+            ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
+            style={{paddingHorizontal: SPACING["sm"], paddingBottom: SPACING["md"]}}
+          />
 
-        {/* Horizontal Cafe Cards By Categories */}
-        <View>
-          <CardScrollableLayout
-            title="Tendances du moment"
-            titleMarginTop={SPACING["xl"]}
-            scrollMarginTop={SPACING["xs"]}
-            scrollMarginBottom={SPACING["md"]}
-            scrollGap={SPACING["md"]}
-            dividerBottom
-          >
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
-              slug="Cafe Tore et Fraction"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="closing soon"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="closed"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
-            />
-          </CardScrollableLayout>
-          <CardScrollableLayout
-            title="Proches de vous"
-            titleMarginTop={SPACING["xl"]}
-            scrollMarginTop={SPACING["xs"]}
-            scrollMarginBottom={SPACING["md"]}
-            scrollGap={SPACING["md"]}
-            dividerBottom
-          >
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="closing soon"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="closed"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
-            />
-          </CardScrollableLayout>
-          <CardScrollableLayout
-            title={`${sortedPavillons[0]}`}
-            titleMarginTop={SPACING["xl"]}
-            scrollMarginTop={SPACING["xs"]}
-            scrollMarginBottom={SPACING["md"]}
-            scrollGap={SPACING["md"]}
-            dividerBottom
-          >
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="closing soon"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="closed"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
-            />
-          </CardScrollableLayout>
-          <CardScrollableLayout
-            title="Promotions en cours"
-            titleMarginTop={SPACING["xl"]}
-            scrollMarginTop={SPACING["xs"]}
-            scrollMarginBottom={SPACING["md"]}
-            scrollGap={SPACING["md"]}
-            dividerBottom
-          >
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="closing soon"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="closed"
-            />
-            <CafeCard
-              name="Jean Brillant"
-              location="Pavillon Claire McNicole"
-              priceRange="$$"
-              rating={4.8}
-              status="open"
-            />
-          </CardScrollableLayout>
-        </View>
+          <Text 
+            style={{
+              marginVertical: SPACING["xl"], 
+              marginHorizontal: SPACING["md"], 
+              ...TYPOGRAPHY.heading.small.bold
+            }}>Proches de vous
+          </Text>
+          <FlatList data={filterCafes(data)} renderItem={({item}) =>
+              <CafeCard
+                name={item.name}
+                image={item.banner_url}
+                location={item.location.pavillon}
+                priceRange="$$"
+                rating={4.8}
+                status={item.is_open}
+                id={item.id}
+              /> }
+              keyExtractor={item => item.id}
+              horizontal
+              ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
+              style={{paddingHorizontal: SPACING["sm"], paddingBottom: SPACING["md"]}}
+          />
 
-        {/* All Cafes Cards */}
-        <CardScrollableLayout
-          title="Tous les cafés"
-          titleMarginTop={SPACING["xl"]}
-          scrollMarginTop={SPACING["lg"]}
-          scrollMarginBottom={SPACING["md"]}
-          scrollGap={SPACING["2xl"]}
-          scroll={false}
-        >
-          <CafeCard
-            status={"open"}
-            name={"Jean Brillant"}
-            location={"Pavillon Claire McNicole"}
-            priceRange={"$$"}
-            rating={4.5}
-            size={"large"}
-            slug="1"
+          <Text 
+          style={{
+            marginVertical: SPACING["xl"], 
+            marginHorizontal: SPACING["md"], 
+            ...TYPOGRAPHY.heading.small.bold
+          }}>{`${sortedPavillons[0]}`}
+          </Text>
+          <FlatList data={filterCafes(data)} renderItem={({item}) =>
+              <CafeCard
+                name={item.name}
+                image={item.banner_url}
+                location={item.location.pavillon}
+                priceRange="$$"
+                rating={4.8}
+                status={item.is_open}
+                id={item.id}
+              /> }
+              keyExtractor={item => item.id}
+              horizontal
+              ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
+              style={{paddingHorizontal: SPACING["sm"], paddingBottom: SPACING["md"]}}
           />
-          <CafeCard
-            status={"open"}
-            name={"Jean Brillant"}
-            location={"Pavillon Claire McNicole"}
-            priceRange={"$$"}
-            rating={4.5}
-            size={"large"}
-            slug="2"
+
+          <Text 
+          style={{
+            marginVertical: SPACING["xl"], 
+            marginHorizontal: SPACING["md"], 
+            ...TYPOGRAPHY.heading.small.bold
+          }}>Promotions en cours
+          </Text>
+          <FlatList data={filterCafes(data)} renderItem={({item}) =>
+              <CafeCard
+                name={item.name}
+                image={item.banner_url}
+                location={item.location.pavillon}
+                priceRange="$$"
+                rating={4.8}
+                status={item.is_open}
+                id={item.id}
+              /> }
+              keyExtractor={item => item.id}
+              horizontal
+              ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
+              style={{paddingHorizontal: SPACING["sm"], paddingBottom: SPACING["md"]}}
           />
-          <CafeCard
-            status={"open"}
-            name={"Jean Brillant"}
-            location={"Pavillon Claire McNicole"}
-            priceRange={"$$"}
-            rating={4.5}
-            size={"large"}
-            slug="3"
+          </View>
+
+          {/* All Cafes Cards */}
+          <Text 
+          style={{
+            marginVertical: SPACING["xl"], 
+            marginHorizontal: SPACING["md"], 
+            ...TYPOGRAPHY.heading.small.bold
+          }}>Tous les cafés
+          </Text>
+          <FlatList data={data} renderItem={({item}) =>
+              <CafeCard
+                name={item.name}
+                image={item.banner_url}
+                location={item.location.pavillon}
+                priceRange="$$"
+                rating={4.8}
+                status={item.is_open}
+                id={item.id}
+              /> }
+              keyExtractor={item => item.id}
+              horizontal
+              ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
+              style={{
+                paddingHorizontal: SPACING["sm"], 
+                paddingBottom: SPACING["md"],
+              }}
           />
-          <CafeCard
-            status={"open"}
-            name={"Jean Brillant"}
-            location={"Pavillon Claire McNicole"}
-            priceRange={"$$"}
-            rating={4.5}
-            size={"large"}
-            slug="4"
-          />
-          <CafeCard
-            status={"open"}
-            name={"Jean Brillant"}
-            location={"Pavillon Claire McNicole"}
-            priceRange={"$$"}
-            rating={4.5}
-            size={"large"}
-            slug="5"
-          />
-        </CardScrollableLayout>
-      </>
-    </ScrollableLayout>
+        </>
+      </ScrollableLayout>
+      </SafeAreaView>
   );
 }
 
@@ -387,7 +339,7 @@ const styles = StyleSheet.create({
   },
   announcementImage: {
     marginTop: SPACING["xl"],
-    borderRadius: SPACING["sm"],
+    borderRadius: 12,
     marginHorizontal: SPACING["md"],
   },
   tooltipSearch: {

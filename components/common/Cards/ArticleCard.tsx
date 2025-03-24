@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, Image, Pressable } from "react-native";
 import { Circle } from "lucide-react-native";
 import { router } from "expo-router";
+import { StyleProp, ViewStyle } from "react-native";
 
 import TYPOGRAPHY from "@/constants/Typography";
 import COLORS from "@/constants/Colors";
@@ -14,13 +15,13 @@ type ArticleCardProps = {
   name: string;
 
   /** The calories of the article */
-  calories: string;
+  calories?: string;
 
   /** The price range of the article */
   price: string;
 
   /** The rating of the article */
-  rating: number;
+  rating?: number;
 
   /** The image of the article */
   image?: string;
@@ -33,6 +34,9 @@ type ArticleCardProps = {
 
   /** The slug of the cafe */
   cafeSlug?: string;
+
+  /** Additional styles for the card */
+  style?: StyleProp<ViewStyle>;
 };
 
 let cardDimensions = {
@@ -81,9 +85,10 @@ export default function ArticleCard({
   size = "medium",
   cafeSlug = "INVALID_SLUG",
   slug = "INVALID_SLUG",
+  style,
 }: ArticleCardProps) {
   return (
-    <View>
+    <View style={[style]}>
       {size === "large" ? (
         <Pressable onPress={() => router.push(`/cafe/${cafeSlug}/${slug}`)}
           style={{
@@ -92,7 +97,7 @@ export default function ArticleCard({
             overflow: "hidden",
           }}
         >
-          <View style={{ gap: 10, width: "50%" }}>
+          <View style={{ gap: 10, width: 50 }}>
             <View style={{ gap: 8 }}>
               <Text style={TYPOGRAPHY.body.large.semiBold}>
                 Croissant au chocolat
@@ -114,7 +119,7 @@ export default function ArticleCard({
               source={require("@/assets/images/placeholder/imagexs.png")}
               width={160}
               height={108}
-              style={{ borderRadius: SPACING["sm"] }}
+              style={[{ borderRadius: SPACING["sm"] }]}
             ></Image>
             <Text
               style={[TYPOGRAPHY.body.small.bold, styles.rating]}
@@ -150,12 +155,12 @@ export default function ArticleCard({
           testID="button"
         >
           <>
-            <View>
+            <View style={styles.wrapper}>
               <Image
                 source={image ? { uri: image } : cardDimensions[size].image}
                 width={cardDimensions[size].width}
                 height={cardDimensions[size].height}
-                style={{ borderRadius: SPACING["sm"] }}
+                style={[{ borderRadius: SPACING["sm"] }]}
                 testID="image"
               />
               <Text
@@ -237,4 +242,12 @@ const styles = StyleSheet.create({
     right: SPACING.sm,
     top: SPACING.sm,
   },
+  wrapper: {
+    shadowColor: "#000",                       // Black shadow
+    shadowOffset: { width: 5, height: 5 },     // Offset shadow towards bottom-right 
+    shadowOpacity: 0.25,                        // Half opaque
+    shadowRadius: 5,                          // Smoothness of the shadow
+
+    elevation: 3, 
+  }
 });

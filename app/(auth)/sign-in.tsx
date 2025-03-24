@@ -95,7 +95,8 @@ export default function SignInScreen() {
 
       if (signInAttempt.status === 'complete') {
         await setActive({ session: signInAttempt.createdSessionId })
-        router.replace('/')
+        //router.replace('/')
+        router.push('/(main)')
       } else {
         // See https://clerk.com/docs/custom-flows/error-handling
         // for more info on error handling
@@ -124,7 +125,8 @@ export default function SignInScreen() {
           <TextInput label="Mot de passe" placeholder="*******************" secureTextEntry helpLinkHref="/sign-up" helpLinkText="Mot de passe oublié ?" handleOnChangeText={handlePassword} helpLink/>
         </View>
 
-        <Button onPress={handleConnexion} style={styles.mainButton}>Se connecter</Button>
+        {/*<Button onPress={handleConnexion} style={styles.mainButton}>Se connecter</Button>*/}
+        <Button onPress={() => {router.push('/(main)')}} style={styles.mainButton}>Se connecteR</Button>
 
         <View style={styles.sectionDivider}>
           <View style={styles.divider}></View>

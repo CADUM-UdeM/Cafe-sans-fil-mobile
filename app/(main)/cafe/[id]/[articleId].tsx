@@ -3,8 +3,6 @@ import IconButton from "@/components/common/Buttons/IconButton";
 import ArticleCard from "@/components/common/Cards/ArticleCard";
 import Counter from "@/components/common/Inputs/Counter";
 import Tooltip from "@/components/common/Tooltip";
-import CardScrollableLayout from "@/components/layouts/CardScrollableLayout";
-import ScrollableLayout from "@/components/layouts/ScrollableLayout";
 import COLORS from "@/constants/Colors";
 import SPACING from "@/constants/Spacing";
 import TYPOGRAPHY from "@/constants/Typography";
@@ -18,20 +16,41 @@ import {
   Vegan,
   ThumbsUp,
 } from "lucide-react-native";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, KeyboardAvoidingView,
   Platform,
   ScrollView, } from "react-native";
 
+import { Item } from "@/constants/types/GET_item";
+
 export default function ArticleScreen() {
   const { id, articleId } = useLocalSearchParams();
-  console.log("Caffé Id", id);
+  console.log("Café Id", id);
   console.log("Article Id", articleId) ;
 
   const scrollViewRef = useRef<ScrollView>(null);
 
+  const [menuItem, setMenuItem] = useState<Item | any>({});
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     scrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true });
+    const fetchMenuItem = async () =>{
+      try {
+        console.log(`test cafe slug ${id}`);
+        console.log(`article slug ${articleId}`);
+        //console.log(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}/menu/${articleId}`);
+        const response = await fetch(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}/menu/items/${articleId}`);
+        const json = await response.json();
+        console.log(json.image_url);
+        setMenuItem(json);
+      } catch (error) {
+          console.error('Fetch error:', error);
+      } finally{
+        setLoading(false);
+      }
+    }
+    fetchMenuItem();
   }, [articleId]);
 
   return (
@@ -47,13 +66,13 @@ export default function ArticleScreen() {
       <View>
         <Image
           style={styles.cafeBackgroundImage}
-          source={require("@/assets/images/placeholder/image2xl.png")}
+          source={loading ? require("@/assets/images/placeholder/image2xl.png") : {uri: menuItem.image_url}}
         />
 
         <View style={styles.cafeHeaderButtons}>
           <IconButton
             Icon={ArrowLeft}
-            onPress={() => router.push("/cafe/Cafe Tore et Fraction")}
+            onPress={() => router.push(`/cafe/${id}`)}
             style={styles.cafeHeaderIconButtons}
           />
           <View style={styles.cafeHeaderButtonsRight}>
@@ -74,9 +93,9 @@ export default function ArticleScreen() {
             marginBottom: 10,
           }}
         >
-          <Text style={TYPOGRAPHY.heading.medium.bold}>Americano Glacée</Text>
+          <Text style={TYPOGRAPHY.heading.medium.bold}>{loading? "is loading": menuItem.name}</Text>
           <Text style={[TYPOGRAPHY.heading.medium.bold, { color: "#656565" }]}>
-            $6.00
+            {loading? "is loading" : `${menuItem.price}$`}
           </Text>
         </View>
         <Text
@@ -85,8 +104,7 @@ export default function ArticleScreen() {
             { color: COLORS.subtuleDark, lineHeight: 21 },
           ]}
         >
-          Un americano glacé inspiré par les mystères de notre univers pour vous
-          inspirer à poursuivre vos rêves les plus audacieux.
+          {loading ? "": menuItem.description}
         </Text>
       </View>
 
@@ -176,55 +194,15 @@ export default function ArticleScreen() {
         </View>
       </View>
 
-      <CardScrollableLayout
-        title="Tendances actuelles"
-        titleMarginTop={SPACING["xl"]}
-        scrollMarginTop={SPACING["xs"]}
-        scrollMarginBottom={SPACING["md"]}
-        scrollGap={SPACING["xl"]}
-      >
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          cafeSlug="Cafe Tore et Fraction"
-          slug="1"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-        <ArticleCard
-          name="Croissant au chocolat"
-          calories="350 CALORIES"
-          price="$2.00"
-          rating={4.8}
-          status="In Stock"
-          slug="Cafe Tore et Fraction"
-        />
-      </CardScrollableLayout>
+      <Text 
+        style={{
+          marginVertical: SPACING["xl"], 
+          marginHorizontal: SPACING["md"], 
+          ...TYPOGRAPHY.heading.small.bold
+        }}>
+          Tendances actuelles
+        </Text>
+      
 
     </ScrollView>
     </KeyboardAvoidingView>
@@ -246,14 +224,19 @@ const styles = StyleSheet.create({
     height: 160,
   },
   cafeBackgroundImage: {
+    width: "100%",  // Fill width
+    height: 250,    // Fixed height, adjust as needed
+    borderBottomLeftRadius: SPACING["7xl"],
     borderBottomRightRadius: SPACING["7xl"],
+    borderTopLeftRadius: SPACING["7xl"],
+    borderTopRightRadius: SPACING["7xl"],
   },
   cafeHeaderButtons: {
     position: "absolute",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    width: "100%",
+    width: 100,
     paddingHorizontal: 16,
     marginTop: SPACING["9xl"],
   },
