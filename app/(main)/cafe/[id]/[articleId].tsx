@@ -37,8 +37,8 @@ export default function ArticleScreen() {
     scrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true });
     const fetchMenuItem = async () =>{
       try {
-        //console.log(`test cafe slug${id}`);
-        //console.log(`article slug${articleId}`);
+        console.log(`test cafe slug ${id}`);
+        console.log(`article slug ${articleId}`);
         //console.log(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}/menu/${articleId}`);
         const response = await fetch(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}/menu/items/${articleId}`);
         const json = await response.json();

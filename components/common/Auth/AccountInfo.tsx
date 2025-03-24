@@ -1,10 +1,11 @@
-import { Image, Text, View, StyleSheet } from "react-native";
+import { Image, Text, View, StyleSheet, TouchableOpacity } from "react-native";
 
 import COLORS from "@/constants/Colors";
 import SPACING from "@/constants/Spacing";
 import TYPOGRAPHY from "@/constants/Typography";
 import React from "react";
 import { useUser } from "@clerk/clerk-expo";
+import { useRouter } from "expo-router";
 
 type AccountInfoProps = {
   title?: string;
@@ -19,7 +20,7 @@ export default function AccountInfo({
 }: AccountInfoProps) {
   const { user } = useUser();
   const [userImage, setUserImage] = React.useState<string | null>(null);
-
+  const navigation = useRouter();
   React.useEffect(() => {
     fetch("https://avatar.iran.liara.run/public").then((res) => {
       console.log(res.url);
@@ -28,7 +29,9 @@ export default function AccountInfo({
   }, []);
   return (
     <View style={styles.accountContainer}>
+      <TouchableOpacity onPress={() => {navigation.push("/(main)/parametre")}}>
       <Image source={{ uri: userImage } as any} style={styles.profilePicture} testID="header-account-image"/>
+      </TouchableOpacity>
       <View>
         <Text style={[styles.welcomeText, TYPOGRAPHY.body.normal.base]}>
           {title}

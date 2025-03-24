@@ -22,6 +22,8 @@ import {
   Instagram,
   Twitter,
   HelpCircle,
+  DollarSign,
+  CreditCard,
 } from "lucide-react-native";
 import {
   View,
@@ -45,11 +47,14 @@ export default function CafeScreen() {
   const scrollViewRef = useRef<ScrollView>(null);
 
   // data for the café returned by the API
-  const [cafe, setCafe] = useState<Cafe | any>({ social_media:{} }); // set social media as empty array pour ne pas produire d'erreur dans l'utlisation de map après
+  // const [cafe, setCafe] = useState<Cafe | any>({ social_media:{} }); // set social media as empty array pour ne pas produire d'erreur dans l'utlisation de map après
   
   // list of items to display
   const [itemList, setItemList] = useState<Item[]>();
-  
+
+  const [cafe, setCafe] = useState<Cafe>(); // set social media as empty object
+
+
   // Have an openable link
   const openLink = (url: string) => {
     Linking.openURL(url).catch(err => console.error("Failed to open URL:", err));
@@ -82,6 +87,7 @@ export default function CafeScreen() {
     setIsLoading(true);
 
     const fetchCafe = async () => {
+
       try {
         const response = await fetch(
           `https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}`
@@ -102,8 +108,6 @@ export default function CafeScreen() {
     };
     fetchCafe();
   }, [id]);
-
-
   
   const [activeFilter, setActiveFilter] = useState("Tous");
 
@@ -135,10 +139,31 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
       }
     }
   }
-
-  // update state variable
   return itemList;
 }
+  // Tableau des média sociaux des cafés : convertie le json {plateform: link} à un tableau [plateform, link]
+  const socialMediaTab = cafe?.social_media ? Object.entries(cafe.social_media).map(([plateform, link]) =>
+    ({plateform, link})) : [] ;
+
+  // Méthode pour traduire en français
+  const translationPaymentMethod = (method) => {
+    const methodTranslated = {
+      CREDIT : "Crédit",
+      DEBIT : "Débit",
+      CASH : "Cash",
+    };
+    return methodTranslated[method] || method;
+  };
+
+  // Tableau? des détails de payements
+  const paymentDetails = cafe?.payment_details ? cafe.payment_details.map(({method, minimum}) => ({
+    method : translationPaymentMethod(method), minimum })) : [];
+
+console.log(paymentDetails);
+  
+
+  
+
 
 
   if(isLoading){
@@ -153,7 +178,9 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
   }
 
   return (
-    <SafeAreaView>
+
+    <SafeAreaView style={{backgroundColor: "#000"}}>
+      
     <ScrollView
       ref={scrollViewRef}
       showsVerticalScrollIndicator={false}
@@ -162,7 +189,7 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
       <View>
         <Image
           style={styles.cafeBackgroundImage}
-          source={isLoading ? require("@/assets/images/placeholder/image2xl.png") : {uri: cafe.banner_url}}
+          source={isLoading ? require("@/assets/images/placeholder/image2xl.png") : {uri: cafe?.banner_url}}
         />
         <View style={styles.cafeHeaderButtons}>
           <IconButton
@@ -178,16 +205,16 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
         </View>
 
         <View style={styles.cafeHeaderOpenStatus}>
-          <Tooltip label={"Ouvert"} showChevron={true} status={cafe.is_open ? "green" : "red"} />
+          <Tooltip label={"Ouvert"} showChevron={true} status={cafe?.is_open ? "green" : "red"} />
         </View>
       </View>
 
       <View>
         <Text style={[TYPOGRAPHY.heading.medium.bold, styles.cafeName]}>
-          {isLoading? "..." : cafe.name}
+          {isLoading? "..." : cafe?.name}
         </Text>
         <Text style={[TYPOGRAPHY.body.large.base, styles.cafeDescription]}>
-          {isLoading? "..." : cafe.description}
+          {isLoading? "..." : cafe?.description}
         </Text>
 
         {/*Média sociaux*/}
@@ -199,20 +226,49 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
             marginTop: 20,
             gap: 10,}}>
 
-              {// convertie le json {plateform: link} à un tableau [plateform, link]
-            cafe.social_media && Object.entries(cafe.social_media).map(([plateform, link]) => ( link ? (
-            <View key={plateform}>
-              <Tooltip
-                  key={plateform}
-                  label={plateform.charAt(0).toUpperCase() + plateform.slice(1)}
-                  onPress={() => openLink(link.toString())}
-                  Icon={getIcon(plateform)}
-                  showChevron={false} color='white'/>
-              </View>
-                ) : null ))}
-                {/* Order possible */}
-                <Tooltip label="Order" showChevron={false} color="white" status={cafe.features?.includes("ORDER")? "green" : "red"} />
+              {socialMediaTab.map(({plateform, link}) => ( link ? (
+                <Tooltip
+                label={plateform.charAt(0).toUpperCase() + plateform.slice(1)}
+                onPress={() => openLink(link)}
+                Icon={getIcon(plateform)}
+                showChevron={false} color='white'/>
+              ) : null ))}
           </View>
+
+        {/* Section paiement */}
+          <Text
+            style={[
+              TYPOGRAPHY.body.large.semiBold,
+              { color: COLORS.subtuleDark, textAlign: "center" },
+              { marginTop: 20},
+            ]}
+          >
+            Paiement
+          </Text>
+          <View
+          style={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: 20,
+            gap: 10,
+          }}
+        >
+          {paymentDetails.map(({method, minimum}) => ( minimum ? (
+            <Tooltip
+              label={`${method} MIN : ${minimum}`}
+              showChevron={true}
+              color="white"
+              Icon={CreditCard}
+              /> ) : 
+              (<Tooltip
+              label={method}
+              showChevron={false}
+              color="white"
+              Icon={DollarSign}/>)
+            /* <Text>{method} MIN: {minimum}</Text> ) : <Text>{method}</Text> */ ))}
+        </View>
 
       </View>
       <View
@@ -233,7 +289,7 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
         >
           Horaires
         </Text>
-        <FlatList data={cafe.opening_hours} horizontal
+        <FlatList data={cafe?.opening_hours} horizontal
           keyExtractor={item => item.day}
           ItemSeparatorComponent={() => 
             <View
@@ -267,7 +323,7 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
             Filtres 
           </Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignContent:'center', justifyContent: 'center'}}>
-            {cafe.menu? [
+            {cafe? [
               ...cafe.menu.categories.map((item : Category) => (
                 <View 
                   key={item.id} 
@@ -314,6 +370,8 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
                                 status={item.in_stock? "In Stock" : "Out of Stock"}
                                 image={item.image_url}
                                 style={{alignItems: 'center'}}
+                                cafeSlug={cafe?.slug}
+                                slug={item.id}
                               />
                               }
       ItemSeparatorComponent={() => <View style={{ marginTop: SPACING["md"]}} />} // padding
@@ -342,22 +400,26 @@ const styles = StyleSheet.create({
   cafeBackgroundImage: {
     width: "100%",  // Fill width
     height: 250,    // Fixed height, adjust as needed
-    borderBottomLeftRadius: SPACING["7xl"],
-    borderBottomRightRadius: SPACING["7xl"],
-    borderTopLeftRadius: SPACING["7xl"],
-    borderTopRightRadius: SPACING["7xl"],
-    
   },
   cafeHeaderButtons: {
     position: "absolute",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    width: 100,
+    width: "100%",
     paddingHorizontal: 16,
     marginTop: SPACING["sm"],
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   cafeHeaderButtonsRight: {
+    
     flexDirection: "row",
     gap: 8,
     alignItems: "center",
