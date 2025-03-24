@@ -14,7 +14,7 @@ export type Cafe = {
     };
     is_open: boolean;
     status_message: string;
-    opening_hours: any[];
+    opening_hours: OpeningHours[];
     location: {
     pavillon: string;
     local: string;
@@ -84,3 +84,9 @@ type Interaction = {
     count: number;
     me: boolean;
 };
+
+type OpeningHours = {
+    day : string;
+    blocks : DayBlock[]
+}
+

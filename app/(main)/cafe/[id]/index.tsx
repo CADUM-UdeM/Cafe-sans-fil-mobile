@@ -179,7 +179,7 @@ console.log(paymentDetails);
 
   return (
 
-    <SafeAreaView style={{backgroundColor: "#000"}}>
+    <SafeAreaView style={{}}>
       
     <ScrollView
       ref={scrollViewRef}
@@ -256,18 +256,26 @@ console.log(paymentDetails);
           }}
         >
           {paymentDetails.map(({method, minimum}) => ( minimum ? (
-            <Tooltip
-              label={`${method} MIN : ${minimum}`}
-              showChevron={true}
-              color="white"
-              Icon={CreditCard}
-              /> ) : 
-              (<Tooltip
-              label={method}
-              showChevron={false}
-              color="white"
-              Icon={DollarSign}/>)
-            /* <Text>{method} MIN: {minimum}</Text> ) : <Text>{method}</Text> */ ))}
+            <View key={method}>
+              <Tooltip
+                label={`${method} MIN : ${minimum}`}
+                showChevron={true}
+                color="white"
+                Icon={CreditCard}
+                /> 
+            </View>
+                ) : 
+                (
+              <View key={method}>
+                <Tooltip
+                  label={method}
+                  showChevron={false}
+                  color="white"
+                  Icon={DollarSign}/>
+              </View>    
+              )
+            //<Text>{method} MIN: {minimum}</Text> ) : <Text>{method}</Text> */ }
+          ))}
         </View>
 
       </View>
@@ -291,8 +299,8 @@ console.log(paymentDetails);
         </Text>
         <FlatList data={cafe?.opening_hours} horizontal
           keyExtractor={item => item.day}
-          ItemSeparatorComponent={() => 
-            <View
+          ItemSeparatorComponent={(item) => 
+            <View key={item.day}
               style={{margin:10, borderColor: "black", borderWidth: 0.5}}></View>
           }
           renderItem={({ item }) => (
