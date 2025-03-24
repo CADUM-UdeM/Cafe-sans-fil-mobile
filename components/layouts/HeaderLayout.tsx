@@ -42,7 +42,7 @@ export default function HeaderLayout({fullName, profilePicture}: HeaderLayoutPro
   
 
 
-  const handleDelete = (id) => {
+  const handleDelete = (id : any) => {
     setNotifs(notifs.filter((notif) => notif.id !== id));
     const swipeableRef = swipeableRefs.current.get(id);
     if (swipeableRef) {
@@ -50,7 +50,7 @@ export default function HeaderLayout({fullName, profilePicture}: HeaderLayoutPro
     }
   };
 
-  const handleUpdate = (id) => {
+  const handleUpdate = (id : any) => {
     setNotifs(
       notifs.map((notif) =>
         notif.id === id ? { ...notif, status: !notif.status } : notif
@@ -62,7 +62,7 @@ export default function HeaderLayout({fullName, profilePicture}: HeaderLayoutPro
     }
   };
   const swipeableRefs = useRef(new Map());
-  const renderRightActions = (dragX, id) => {
+  const renderRightActions = (dragX : any, id : any) => {
     const opacity = dragX.interpolate({
       inputRange: [-100, 0],
       outputRange: [1, 0],
@@ -83,7 +83,7 @@ export default function HeaderLayout({fullName, profilePicture}: HeaderLayoutPro
       </Animated.View>
     );
   };
-  const renderLeftActions = (dragX, id) => {
+  const renderLeftActions = (dragX : any, id : any) => {
     const opacity = dragX.interpolate({
       inputRange: [-100, 0],
       outputRange: [1, 0],
