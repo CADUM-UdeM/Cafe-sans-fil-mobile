@@ -114,7 +114,25 @@ export default function HomeScreen() {
   // Mock implementation of search and filter functions.
   // FIXME: Implement actual search and filter functions.
   function handleSearch(text: string): void {
-    console.warn("Search `Search` function not implemented.");
+    fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
+      .then((response) => response.json())
+      .then((json) => {
+        const allCafes = json.items;
+
+        if (text.trim() === "") {
+          setData(allCafes);
+          return;
+        }
+
+        const filteredCafes = allCafes.filter((cafe) =>
+          cafe.name.toLowerCase().includes(text.toLowerCase()) || 
+          cafe.location.pavillon.toLowerCase().includes(text.toLowerCase()) ||
+          cafe.location.local.toLowerCase().includes(text.toLowerCase()) ||
+          cafe.affiliation.faculty.toLowerCase().includes(text.toLowerCase())
+        );
+        setData(filteredCafes);
+      })
+      .catch((error) => console.error(error));
   }
 
   // Mock implementation of search and filter functions.
