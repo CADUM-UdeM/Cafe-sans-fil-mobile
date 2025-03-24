@@ -363,15 +363,13 @@ console.log(paymentDetails);
       data={itemList? itemList : []}  
       keyExtractor={item => item.id}
       renderItem={({item}) => <ArticleCard
-                                cafeSlug={cafe.slug}
+                                cafeSlug={cafe?.slug}
                                 slug={item.id}
                                 name={item.name} 
                                 price={"$" + item.price} 
                                 status={item.in_stock? "In Stock" : "Out of Stock"}
                                 image={item.image_url}
                                 style={{alignItems: 'center'}}
-                                cafeSlug={cafe?.slug}
-                                slug={item.id}
                               />
                               }
       ItemSeparatorComponent={() => <View style={{ marginTop: SPACING["md"]}} />} // padding

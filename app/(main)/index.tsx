@@ -88,12 +88,6 @@ export default function HomeScreen() {
     "pavillon"
   >(location, pavillonCoordinates, "lat", "lng", "pavillon");
 
-  // Const for the commander en ligne filter
-  const [showOnlyOrder, setShowOnlyOrder] = useState(false);
-
-  // Const for Ouvert filter
-  const [showOpen, setShowOpen] = useState(false)
-
   // Make a fonction that filters depending on filter button pressed
   const filterCafes = (cafes) => {
     let filteredCafes = cafes;

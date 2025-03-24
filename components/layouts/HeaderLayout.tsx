@@ -2,7 +2,8 @@ import { Button, Modal, StyleSheet, TouchableOpacity, View, Text, TouchableHighl
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Redirect, Tabs, useRouter } from "expo-router";
-import { Swipeable, GestureHandlerRootView } from 'react-native-gesture-handler';
+
+import {Swipeable} from "react-native-gesture-handler";
 
 import SPACING from "@/constants/Spacing";
 import COLORS from "@/constants/Colors";
@@ -16,7 +17,7 @@ import {
   Info,
 } from "lucide-react-native";
 import AccountInfo from "@/components/common/Auth/AccountInfo";
-import { useState , useRef} from "react";
+import React, { useState , useRef} from "react";
 // FIXME: Replace with actual user data. This is just a placeholder.
 export const user = {
   fullName: "Darlene Robertson",
@@ -129,7 +130,6 @@ export default function HeaderLayout({fullName, profilePicture}: HeaderLayoutPro
     };
     const unreadCount = notifs.filter((notif) => !notif.status).length;
   return (
-    <GestureHandlerRootView style={{  }}>
     <SafeAreaView style={styles.headerContainer} testID="header-container">
       <AccountInfo
         profilePicture={user.profilePicture}
@@ -192,7 +192,6 @@ export default function HeaderLayout({fullName, profilePicture}: HeaderLayoutPro
       </Modal>
       
     </SafeAreaView>
-    </GestureHandlerRootView>
   );
 }
 
