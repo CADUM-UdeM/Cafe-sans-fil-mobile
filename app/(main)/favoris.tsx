@@ -6,25 +6,40 @@ import SPACING from '@/constants/Spacing';
 import CafeCard from '@/components/common/Cards/CafeCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
-import { fetchSync, deleteSecurely } from "@/scripts/storage";
+import { fetchSecurely, deleteSecurely } from "@/scripts/storage";
 import { sampleFavoris } from '@/constants/type_samples';
 
 export default function FavorisScreen() {
   const [data, setData] = useState<Favoris[]>([]);
 
-  const loadFavorites = () => {
-    let fetchData = fetchSync('favorites');
-    if (fetchData) {
-      setData(JSON.parse(fetchData));
+  const loadFavorites = async () => {
+    try {
+      const fetchData = await fetchSecurely('favorites'); // Use fetchSecurely
+      if (fetchData) {
+        setData(fetchData); // No need to JSON.parse, since fetchSecurely already returns JSON
+      }
+    } catch (error) {
+      console.error("Error loading favorites:", error);
     }
   };
 
   // fetch favorites cafe
   useFocusEffect(
     useCallback(() => {
-      loadFavorites();
-    }, [])
+      const reloadFavorites = async () => {
+        try {
+          console.log("Reloading favorites..."); // Debugging log
+          const fetchData = await fetchSecurely("favorites");
+          setData(fetchData || []); // Ensure state updates properly
+        } catch (error) {
+          console.error("Error loading favorites:", error);
+        }
+      };
+  
+      reloadFavorites();
+    }, []) // No dependencies needed
   );
+  
 
   return (
     <ScrollableLayout>

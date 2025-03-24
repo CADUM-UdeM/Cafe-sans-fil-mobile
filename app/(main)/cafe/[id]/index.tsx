@@ -34,7 +34,7 @@ import {
 } from "react-native";
 import { 
   deleteSecurely,
-  fetchSync, 
+  fetchSecurely, 
   saveFav 
 } from '@/scripts/storage';
 import { createPathConfigForStaticNavigation } from '@react-navigation/native';
@@ -51,53 +51,62 @@ export default function CafeScreen() {
 
   // handle the saving and deletion of the cafe
   useEffect(() => {
-    if (cafe != null && id != null){
-      if(favorited == true) {
-        let favObj = sampleFavoris;
-        favObj.cafe_id = cafe.cafe_id;
-        favObj.image_url = cafe.image_url;
-        favObj.faculty = cafe.faculty;
-        favObj.is_open = cafe.is_open;
-        favObj.location = cafe.location;
-        favObj.name = cafe.name;
-        favObj.slug = cafe.slug;
-        favObj.status_message = cafe.status_message;
-        saveFav(favObj);
-        console.log('saved cafe ', id);
-      }
-      else if (favorited == false){
-        // check if already saved
-        let fetchedData = fetchSync('favorited'+id);
-        if (fetchedData){
-          deleteSecurely('favorited'+id);
-          console.log('deleted cafe ', id);
+    if (!cafe || !id) return; // Ensure cafe is fully loaded before proceeding
+  
+    const handleFavorites = async () => {
+      try {
+        if (favorited) {
+          let favObj = { ...sampleFavoris }; // Clone instead of modifying directly
+          favObj.cafe_id = cafe.cafe_id;
+          favObj.image_url = cafe.image_url;
+          favObj.faculty = cafe.faculty;
+          favObj.is_open = cafe.is_open;
+          favObj.location = cafe.location;
+          favObj.name = cafe.name;
+          favObj.slug = cafe.slug;
+          favObj.status_message = cafe.status_message;
+  
+          await saveFav(favObj);
+          console.log("Saved cafe:", id);
+        } else {
+          let fetchedData = await fetchSecurely("favorites"); // Use consistent key
+          if (fetchedData) {
+            await deleteSecurely("favorites"); // Delete only if it exists
+            console.log("Deleted cafe:", id);
+          }
         }
+      } catch (error) {
+        console.error("Error handling favorites:", error);
       }
-    }
-  }, [favorited])
+    };
+  
+    handleFavorites();
+  }, [favorited, cafe, id]);
 
   // fetch cafe data
   useEffect(() => {
     setIsLoading(true);
     const fetchCafe = async () => {
-        try {
-            const response = await fetch(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}`);
-            const json = await response.json();
-            setCafe(json);
-            if (fetchSync(id) != null){
-              setFavorited(true);
-            }
-            else{
-              setFavorited(false);
-            }
-        } catch (error) {
-            console.error('Fetch error:', error);
-        } finally {
-            setIsLoading(false);
+      try {
+        const response = await fetch(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}`);
+        const json = await response.json();
+        setCafe(json);
+  
+        let storedFavorites = await fetchSecurely("favorites") || [];
+        if (storedFavorites.some((fav : Favoris) => fav.cafe_id === id)) {
+          setFavorited(true);
+        } else {
+          setFavorited(false);
         }
+      } catch (error) {
+        console.error("Fetch error:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchCafe();
   }, [id]);
+  
 
   return (
     <SafeAreaView>
