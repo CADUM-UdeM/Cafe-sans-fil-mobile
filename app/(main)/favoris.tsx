@@ -8,6 +8,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import { fetchSync, deleteSecurely } from "@/script/storage";
 import { sampleFavoris } from "@/constants/types/type_samples";
 import TYPOGRAPHY from "@/constants/Typography";
+import { Header } from 'react-native/Libraries/NewAppScreen';
+import HeaderLayout from '@/components/layouts/HeaderLayout';
 
 export default function FavorisScreen() {
   const [data, setData] = useState<Favoris[]>([]);
@@ -27,7 +29,8 @@ export default function FavorisScreen() {
   );
 
   return (
-    <SafeAreaView>
+    <>
+    <HeaderLayout />
       <ScrollableLayout>
         <View>
           <TouchableOpacity onPress={() => { 
@@ -64,6 +67,6 @@ export default function FavorisScreen() {
             />
         </View>
       </ScrollableLayout>
-    </SafeAreaView>
+    </>
   );
 }
