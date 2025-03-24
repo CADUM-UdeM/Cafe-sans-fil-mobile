@@ -26,9 +26,12 @@ import COLORS from "@/constants/Colors";
 import SPACING from "@/constants/Spacing";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import TYPOGRAPHY from "@/constants/Typography";
-import Divider from "@/components/common/Divider";
+
+import Divider from "@/components/common/Divider"; 
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import AntDesign from '@expo/vector-icons/AntDesign';  // icone de Instagram
 import FontAwesome from '@expo/vector-icons/FontAwesome'; // icone de user-secret 
+
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -44,10 +47,12 @@ export default function ParametreScreen() {
   const { user } = useUser();
   const navigation = useRouter();
   const [notifModal,setNotifModal] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
+  //const [modalVisible, setModalVisible] = useState(false);
   const [accountModalVisible, setAccountModalVisible] = useState(false);
   const [ordersModalVisible, setOrdersModalVisible] = useState(false);
-  const [prferencesModalVisible, setPreferencesModalVisible] = useState(false);
+  const [preferencesModalVisible, setPreferencesModalVisible] = useState(false);
+
+  const [ modalVisible , setModalVisible] = useState(-1);
   
 
   const orders = [
@@ -155,7 +160,7 @@ export default function ParametreScreen() {
       icon: <Info size={26} strokeWidth={2.5} color={COLORS.black} />,
       title: "À propos",
       subtitle: "En savoir plus sur nous et notre mission.",
-      onPress: () => setModalVisible(true),
+      onPress: () => setModalVisible(1),
     },
   ];
 
@@ -239,7 +244,7 @@ export default function ParametreScreen() {
         <Modal
           animationType="slide"
           transparent={true}
-          visible={accountModalVisible}
+          visible={modalVisible == 1}
           onRequestClose={() => setAccountModalVisible(false)}
         >
           <View style={styles.modalOverlay}>
@@ -280,7 +285,8 @@ export default function ParametreScreen() {
                 <Button title="Fermer" onPress={() => setModalVisible(false)} />
               </View>
               <ScrollView style={styles.modalContent}>
-              <View style={{borderColor:"black", borderWidth:1,borderRadius:10}}>
+
+              <View style={{borderColor:"black", borderWidth:1, borderRadius:10, marginVertical:10, padding:10}}>
                <Text style={styles.modalText}>
                 <Text style={styles.boldText}>Bienvenue! {"\n"}</Text>
                 Avez-vous déjà rêvé d’utiliser une application mobile pour pouvoir commander un bon repas? 
@@ -290,7 +296,7 @@ export default function ParametreScreen() {
                </Text>
                </View>
 
-              <View style={styles.textContainer}>
+              <View style={{borderColor:"black", borderWidth:1, borderRadius:10, marginVertical:10, padding:10}}>
                <Text style={styles.clubText}>
                 <Text style={styles.boldText}>Club {"\n"}</Text>
                 L'idée de ce club est venue en hiver 2024. Les étudiants de l'Université de Montréal dans le programme d'informatique voulaient appliquer leurs connaissances acquises dans les cours d'informatique dans la vie réelle.
@@ -299,7 +305,7 @@ export default function ParametreScreen() {
                </Text>
               </View>
 
-              <View style={styles.textContainer}>
+              <View style={{borderColor:"black", borderWidth:1, borderRadius:10, marginVertical:10, padding:10}}>
                <Text style={styles.socialText}>
                 <Text style={styles.boldText}>Réseaux sociaux {"\n"}</Text>
                 Comme toute autre compagnie, nous sommes aussi présents sur les réseaux sociaux. Là-bas, vous pouvez suivre toutes les nouvelles dont des activités et même des nouveautés sur l'application mobile en soi.
@@ -307,7 +313,7 @@ export default function ParametreScreen() {
                </Text>    
               </View>
 
-              <View style={styles.textContainer}>
+              <View style={{borderColor:"black", borderWidth:1, borderRadius:10, marginVertical:20, padding:10}}>
                <Text style={styles.policyText}>
                 <Text style={styles.boldText}>Politiques et confidentalité {"\n"}</Text>
                 En termes de politique et de confidentalité, nous respectons la vie privée de chaque individu. Donc, les informations personnelles comme les mots de passe sont confidentielles. 
@@ -351,6 +357,41 @@ export default function ParametreScreen() {
           </View>
         </Modal>
 
+        <Modal                                                                                // ce code ne fonctionne pas, car il a un probleme (aide et support)
+          animationType="slide"                                                                // refaire tout ce modal
+          transparent={true}                                                                  
+          visible={ordersModalVisible}
+          onRequestClose={() => setPreferencesModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalHeader}>    
+                <Text style={styles.modalTitle}>Aide et support</Text>
+                <Button title="Fermer" onPress={() => setPreferencesModalVisible(false)} />
+              </View>
+              <ScrollView style={styles.modalContent}>
+              <View style={{borderColor:"black", borderWidth:1, borderRadius:10, marginVertical:10, padding:10}}>
+                <Text style={styles.modal}>
+                  <Text> 
+                    
+
+
+
+                  </Text>
+
+                </Text>
+              </View>
+              <View style={{borderColor:"black", borderWidth:1, borderRadius:10, marginVertical:10, padding:10}}>
+
+
+              </View>
+              <View style={{borderColor:"black", borderWidth:1, borderRadius:10, marginVertical:10, padding:10}}>
+                
+              </View> 
+              </ScrollView>
+            </View>
+          </View>
+        </Modal>
         
       </SafeAreaView>
     </ScrollableLayout></>
@@ -491,9 +532,18 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
+  textContainer: {
+    margin: 10,
+    borderColor: "black",
+    borderWidth: 1,
+    borderRadius: 10,
+    marginVertical: 10,
+  },
   modalText: {
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: 17, // taille de texte plus grande
+    fontFamily: 'Arial', // police Calibri
+    textAlign: 'justify',
+    padding: 10,
   },
   input: {
     height: 40,
@@ -551,7 +601,32 @@ const styles = StyleSheet.create({
   orderPrice: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#333',
+  },
+  clubText: {
+    fontSize: 17, // taille de texte plus grande
+    fontFamily: 'Arial', // police Calibri
+    textAlign: 'justify',
+    padding: 5,
+  },
+  socialText: {
+    fontSize: 17,
+    fontFamily: 'Arial',
+    textAlign: 'justify',
+    padding: 5,
+  },
+  policyText: {
+    fontSize: 17,
+    fontFamily: 'Arial',
+    textAlign: 'justify',
+    padding: 5,
+  },  
+  boldText: {
+    fontSize: 21,
+    fontFamily: 'Arial',
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+    lineHeight: 45,
+    color: '#000033', // peut etre repeter cette couleur dans les autres parties
   },
   clubText: {
     fontSize: 17, // taille de texte plus grande
