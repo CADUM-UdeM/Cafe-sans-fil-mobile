@@ -163,7 +163,7 @@ export default function HeaderLayout({fullName, profilePicture}: HeaderLayoutPro
                 ) : (
               notifs.map((notif) => (
                 //<Swipeable key={notif.id} renderLeftActions={(progress, dragX) => renderLeftActions(dragX, notif.id)} renderRightActions={(progress, dragX) => renderRightActions(dragX, notif.id)} ref={(ref) => swipeableRefs.current.set(notif.id, ref)}>
-                <View style={styles.orderBox} >
+                <View style={styles.orderBox} key={notif.title}>
                   <View style={styles.orderDetails}>
                     <Text style={styles.orderTitle}>{notif.title}</Text>
                     <Text style={styles.orderContent}>{notif.content}</Text>
