@@ -13,6 +13,7 @@ type Hours = {
 };
 
 type CafeLocation = {
+    geometry: any;
     pavillon: string;
     local: string;
 };

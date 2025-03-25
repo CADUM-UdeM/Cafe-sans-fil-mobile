@@ -89,7 +89,7 @@ export default function HomeScreen() {
   >(location, pavillonCoordinates, "lat", "lng", "pavillon");
 
   // Make a fonction that filters depending on filter button pressed
-  const filterCafes = (cafes : Cafe[]) => {
+  const filterCafesClose = (cafes : Cafe[]) => {
     let filteredCafes = cafes;
 
     if (showOnlyOrder) {
@@ -99,11 +99,75 @@ export default function HomeScreen() {
     if (showOpen) {
       filteredCafes = filteredCafes.filter(cafe => cafe.is_open == true);
     }
-
+    
+    if (location) {
+      
+      filteredCafes = filteredCafes.filter(cafe => cafe.location.geometry !=  null);
+      filteredCafes = filteredCafes.sort((a, b) => {
+        return calculateDistance(a.location.geometry.coordinates[1], a.location.geometry.coordinates[0], location.coords.latitude, location.coords.longitude) - calculateDistance(b.location.geometry.coordinates[1], b.location.geometry.coordinates[0], location.coords.latitude, location.coords.longitude)
+      })
+    
+    }
     return filteredCafes;
 
   };
 
+  const filterCafes = (cafes : Cafe[]) => {
+    let filteredCafesClose = cafes;
+
+    if (showOnlyOrder) {
+      filteredCafesClose = filteredCafesClose.filter(cafe => cafe.features.includes("ORDER"));
+    }
+
+    if (showOpen) {
+      filteredCafesClose = filteredCafesClose.filter(cafe => cafe.is_open == true);
+    }
+    return filteredCafesClose;
+
+  };
+  const filterCafesHype = (cafes: Cafe[]) => {
+    let filteredCafesHype = [...cafes]; // Create a shallow copy to avoid mutating the original data
+
+    if (showOnlyOrder) {
+      filteredCafesHype = filteredCafesHype.filter(cafe => cafe.features.includes("ORDER"));
+    }
+
+    if (showOpen) {
+      filteredCafesHype = filteredCafesHype.filter(cafe => cafe.is_open == true);
+    }
+    // À changer pour les cafés les plus populaires
+    return filteredCafesHype
+      .sort(() => Math.random() - 0.5) // Shuffle the array randomly
+      .slice(0, 5); // Take the first 5 cafes
+  };
+  const filterCafesPavillon = (cafes : Cafe[]) => {
+    let filteredCafesPavillon = cafes;
+
+    if (showOnlyOrder) {
+      filteredCafesPavillon = filteredCafesPavillon.filter(cafe => cafe.features.includes("ORDER"));
+    }
+
+    if (showOpen) {
+      filteredCafesPavillon = filteredCafesPavillon.filter(cafe => cafe.is_open == true);
+    }
+    filteredCafesPavillon = filteredCafesPavillon.filter(cafe => cafe.location.pavillon == sortedPavillons[0]);
+    return filteredCafesPavillon;
+
+  };
+
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    var R = 6371; 
+    var dLat = (lat2-lat1) * Math.PI / 180;
+    var dLon = (lon2-lon1) * Math.PI / 180;
+    
+
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    var d = R * c;
+    return d;
+  }
   // Get the modal context for opening and closing modals.
   const modalContext = useModal();
 
@@ -166,6 +230,7 @@ export default function HomeScreen() {
             <SelectLocalisation
               currentLocalisation={sortedPavillons[0]}
               location={location as Location.LocationObject}
+              
             />
             <Search onSearch={handleSearch} onFilter={handleFilter} />
           </View>
@@ -209,9 +274,9 @@ export default function HomeScreen() {
                 marginVertical: SPACING["xl"], 
                 marginHorizontal: SPACING["md"], 
                 ...TYPOGRAPHY.heading.small.bold
-              }}>Tendances du moment
+              }}>Notre selection
           </Text>
-          <FlatList data={filterCafes(data)} renderItem={({item}) =>
+          <FlatList data={filterCafesHype(data)} renderItem={({item}) =>
               <CafeCard
                 name={item.name}
                 image={item.banner_url}
@@ -234,7 +299,7 @@ export default function HomeScreen() {
               ...TYPOGRAPHY.heading.small.bold
             }}>Proches de vous
           </Text>
-          <FlatList data={filterCafes(data)} renderItem={({item}) =>
+          <FlatList data={filterCafesClose(data)} renderItem={({item}) =>
               <CafeCard
                 name={item.name}
                 image={item.banner_url}
@@ -257,7 +322,7 @@ export default function HomeScreen() {
             ...TYPOGRAPHY.heading.small.bold
           }}>{`${sortedPavillons[0]}`}
           </Text>
-          <FlatList data={filterCafes(data)} renderItem={({item}) =>
+          <FlatList data={filterCafesPavillon(data)} renderItem={({item}) =>
               <CafeCard
                 name={item.name}
                 image={item.banner_url}
@@ -280,7 +345,7 @@ export default function HomeScreen() {
             ...TYPOGRAPHY.heading.small.bold
           }}>Promotions en cours
           </Text>
-          <FlatList data={filterCafes(data)} renderItem={({item}) =>
+          <FlatList data={filterCafesHype(data)} renderItem={({item}) =>
               <CafeCard
                 name={item.name}
                 image={item.banner_url}
@@ -305,7 +370,7 @@ export default function HomeScreen() {
             ...TYPOGRAPHY.heading.small.bold
           }}>Tous les cafés
           </Text>
-          <FlatList data={data} renderItem={({item}) =>
+          <FlatList data={filterCafes(data)} renderItem={({item}) =>
               <CafeCard
                 name={item.name}
                 image={item.banner_url}
