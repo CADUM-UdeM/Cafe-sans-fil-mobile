@@ -69,27 +69,7 @@ export default function ParametreScreen() {
     },
     // Add more orders as needed
   ];
-  const notifs = [
-    {
-      id: 1,
-      title: 'Titre notification #XXX',
-      content: 'Contenu de la notification',
-      status: true,
-    },
-    {
-      id: 2,
-      title: 'Titre notification #XXX',
-      content: 'Contenu de la notification',
-      status: false,
-    },
-    {
-      id: 3,
-      title: 'Titre notification #XXX',
-      content: 'Contenu de la notification',
-      status: false,
-    },
-    // Add more orders as needed
-  ]
+  
 
   const [profilePicture, setProfilePicture] = useState('https://placehold.jp/150x150.png');
   const pickImage = async () => {

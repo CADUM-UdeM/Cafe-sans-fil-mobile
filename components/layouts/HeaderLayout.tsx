@@ -115,13 +115,13 @@ export default function HeaderLayout({fullName, profilePicture}: HeaderLayoutPro
       },
       {
         id: 2,
-        title: 'Titre notification #XXX',
+        title: 'Titre notification #XX2',
         content: 'Contenu de la notification',
         status: false,
       },
       {
         id: 3,
-        title: 'Titre notification #XXX',
+        title: 'Titre notification #XX1',
         content: 'Contenu de la notification',
         status: false,
       },
