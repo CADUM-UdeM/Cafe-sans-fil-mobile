@@ -43,6 +43,8 @@ type TooltipProps = {
 
   /** Callback function triggered when the tooltip is pressed */
   onPress?: () => void;
+
+  description? : string;
 };
 
 /**
@@ -101,6 +103,7 @@ export default function Tooltip({
   color,
   textColor,
   changeColorOnPress = false,
+  description,
   onPress,
 }: TooltipProps): JSX.Element {
   const [isPressed, setIsPressed] = React.useState(false);

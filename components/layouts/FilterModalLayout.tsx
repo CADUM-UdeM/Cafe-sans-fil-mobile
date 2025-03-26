@@ -9,12 +9,14 @@ import FilterButtons from "../common/Buttons/FilterButtons";
 type InfoModalLayoutProps = {
   title?: string;
   children?: React.ReactNode;
+  description?: string;
   handleApplyFilter?: () => void;
   handleResetFilter?: () => void;
 };
 
 export default function InfoModalLayout({
   title,
+  description,
   children = (
     <Text
       style={{
@@ -23,13 +25,12 @@ export default function InfoModalLayout({
         margin: SPACING.md,
       }}
     >
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque nostrum
-      accusantium autem eos vero consequatur reiciendis quae tenetur possimus
-      sit!
+      {description? description : "Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque nostrum accusantium autem eos vero consequatur reiciendis quae tenetur possimus sit!"}
     </Text>
   ),
   handleApplyFilter = () => console.log("Apply Filter"),
   handleResetFilter = () => console.log("Reset Filter"),
+  
 }: InfoModalLayoutProps) {
   return (
     <>

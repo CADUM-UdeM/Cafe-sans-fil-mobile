@@ -38,6 +38,14 @@ type ArticleCardProps = {
   /** Additional styles for the card */
   style?: StyleProp<ViewStyle>;
 };
+const formatPrice = (price: string) => {
+  if (price.charAt(price.length - 2) == ".") {
+    return price + "0";
+  }
+  else{
+    return price
+  }
+}
 
 let cardDimensions = {
   medium: {
@@ -131,19 +139,25 @@ export default function ArticleCard({
             </View>
             <View style={styles.caption}>
               <View style={styles.articleInfo}>
-                <View style={styles.articleInfoHeader}>
-                  <Text style={[TYPOGRAPHY.body.large.semiBold]}>{name}</Text>
-                </View>
-                <Text
-                  style={[
-                    TYPOGRAPHY.body.normal.semiBold,
-                    styles.articleInfocalories,
-                  ]}
-                >
-                  {calories}
-                </Text>
+              <View style={styles.articleInfoHeader}>
+                <Text style={[TYPOGRAPHY.body.large.semiBold]}>{name}</Text>
               </View>
-              <Text style={[TYPOGRAPHY.body.normal.semiBold]}>{price}</Text>
+              {calories && (
+                <Text
+                style={[
+                  TYPOGRAPHY.body.small.base,
+                  styles.articleInfocalories,
+                ]}
+                >
+                {calories} Calories
+                </Text>
+              )}
+              </View>
+              <View style={styles.priceContainer}>
+              <Text style={[TYPOGRAPHY.body.large.semiBold, styles.priceText]}>
+                {formatPrice(price)}
+              </Text>
+              </View>
             </View>
           </>
         </Pressable>
@@ -160,6 +174,10 @@ const styles = StyleSheet.create({
   },
   articleInfo: {
     gap: 6,
+  },
+  priceContainer: {
+    justifyContent: "center",
+    alignItems: "flex-end",
   },
   articleInfoHeader: {
     flexDirection: "row",
@@ -188,5 +206,9 @@ const styles = StyleSheet.create({
     shadowRadius: 5,                          // Smoothness of the shadow
 
     elevation: 3, 
-  }
+  },
+  priceText: {
+    color: COLORS.black, // Example style, adjust as needed
+    fontSize: 16,
+  },
 });
