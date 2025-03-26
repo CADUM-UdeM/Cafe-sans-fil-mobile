@@ -27,6 +27,14 @@ export default function ArticleScreen() {
   const { id, articleId } = useLocalSearchParams();
   console.log("Café Id", id);
   console.log("Article Id", articleId) ;
+  const formatPrice = (price: string) => {
+    if (price.charAt(price.length - 2) == ".") {
+      return price + "0";
+    }
+    else{
+      return price
+    }
+  }
 
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -95,7 +103,7 @@ export default function ArticleScreen() {
         >
           <Text style={TYPOGRAPHY.heading.medium.bold}>{loading? "is loading": menuItem.name}</Text>
           <Text style={[TYPOGRAPHY.heading.medium.bold, { color: "#656565" }]}>
-            {loading? "is loading" : `${menuItem.price}$`}
+            {loading? "is loading" : `$${formatPrice(menuItem.price)}`}
           </Text>
         </View>
         <Text

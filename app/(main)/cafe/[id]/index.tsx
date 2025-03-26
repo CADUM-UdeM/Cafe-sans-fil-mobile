@@ -39,6 +39,8 @@ import {
   ActivityIndicator
 } from "react-native";
 import { Cafe, Category, Item } from "@/constants/types/GET_cafe";
+import { allCafe } from '@/constants/types/GET_list_cafe';
+import ScrollableLayout from '@/components/layouts/ScrollableLayout';
 
 export default function CafeScreen() {
   const [isLoading, setIsLoading] = useState(true);
@@ -53,7 +55,18 @@ export default function CafeScreen() {
   const [itemList, setItemList] = useState<Item[]>();
 
   const [cafe, setCafe] = useState<Cafe>(); // set social media as empty object
-
+  const [data, setData] = useState<allCafe | any>([]);
+  useEffect(() => {
+      setIsLoading(true);
+      fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
+        .then((response) => response.json())
+        .then((json) => {
+          setData(json.items);
+          // console.log(json)
+        })
+        .catch((error) => console.error(error))
+        .finally(() => setIsLoading(false));;
+    }, []);
 
   // Have an openable link
   const openLink = (url: string) => {
@@ -179,7 +192,7 @@ console.log(paymentDetails);
 
   return (
 
-    <SafeAreaView style={{}}>
+    <SafeAreaView style={{ backgroundColor: '#000' }}>
       
     <ScrollView
       ref={scrollViewRef}
@@ -258,9 +271,10 @@ console.log(paymentDetails);
           {paymentDetails.map(({method, minimum}) => ( minimum ? (
             <View key={method}>
               <Tooltip
-                label={`${method} MIN : ${minimum}`}
-                showChevron={true}
+                label={`${method}`}
+                showChevron={true }
                 color="white"
+                description={`Minimum: ${minimum}`}
                 Icon={CreditCard}
                 /> 
             </View>
@@ -330,7 +344,7 @@ console.log(paymentDetails);
             }}>
             Filtres 
           </Text>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignContent:'center', justifyContent: 'center'}}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignContent: 'center', justifyContent: 'center', padding: 8 }}>
             {cafe? [
               ...cafe.menu.categories.map((item : Category) => (
                 <View 
@@ -394,6 +408,28 @@ console.log(paymentDetails);
         }}>
           Autres cafés similaires
         </Text>
+        <FlatList
+          data={data}
+          renderItem={({ item }) => (
+            <CafeCard
+              name={item.name}
+              image={item.banner_url}
+              location={item.location.pavillon}
+              priceRange="$$"
+              rating={4.8}
+              status={item.is_open}
+              id={item.id}
+            />
+          )}
+          keyExtractor={(item) => item.id}
+          horizontal
+          ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
+          style={{
+            paddingHorizontal: SPACING["sm"],
+            paddingBottom: SPACING["md"],
+          }}
+        />
+
 
         {/* TODO: IMPLÉMENTER LA FLATLIST */}
 
