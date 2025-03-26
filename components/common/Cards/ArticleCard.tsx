@@ -41,7 +41,7 @@ type ArticleCardProps = {
 
 let cardDimensions = {
   medium: {
-    width: 220,
+    width: "100%",
     height: 135,
     image: require("@/assets/images/placeholder/imagesm.png"),
   },
@@ -88,67 +88,7 @@ export default function ArticleCard({
   style,
 }: ArticleCardProps) {
   return (
-    <View style={[style]}>
-      {size === "large" ? (
-        <Pressable onPress={() => router.push(`/cafe/${cafeSlug}/${slug}`)}
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            overflow: "hidden",
-          }}
-        >
-          <View style={{ gap: 10, width: 50 }}>
-            <View style={{ gap: 8 }}>
-              <Text style={TYPOGRAPHY.body.large.semiBold}>
-                Croissant au chocolat
-              </Text>
-              <Text style={{ fontSize: 12 }}>
-                Un ssssscroissant au chocolat d'exception, savourez sssleset
-                laissez-vous ssstransporter en France. Bonne dégustationsss!
-              </Text>
-            </View>
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
-              <Text style={TYPOGRAPHY.body.small.bold}>350 CALORIES</Text>
-              <Text style={TYPOGRAPHY.body.small.bold}>$2.00</Text>
-            </View>
-          </View>
-          <View>
-            <Image
-              source={require("@/assets/images/placeholder/imagexs.png")}
-              width={160}
-              height={108}
-              style={[{ borderRadius: SPACING["sm"] }]}
-            ></Image>
-            <Text
-              style={[TYPOGRAPHY.body.small.bold, styles.rating]}
-              testID="icon-button"
-            >
-              <Circle
-                width={12}
-                height={12}
-                strokeWidth={1}
-                color={
-                  status === "In Stock"
-                    ? COLORS.status.green
-                    : status === "Almost Out"
-                    ? COLORS.status.orange
-                    : COLORS.status.red
-                }
-                fill={
-                  status === "In Stock"
-                    ? COLORS.status.green
-                    : status === "Almost Out"
-                    ? COLORS.status.orange
-                    : COLORS.status.red
-                }
-                testID="tooltip-icon"
-              />
-            </Text>
-          </View>
-        </Pressable>
-      ) : (
+    <View style={[style, {width: "40%"}]}>
         <Pressable
           onPress={() => router.push(`/cafe/${cafeSlug}/${slug}`)}
           style={{ width: cardDimensions[size].width }}
@@ -207,7 +147,6 @@ export default function ArticleCard({
             </View>
           </>
         </Pressable>
-      )}
     </View>
   );
 }

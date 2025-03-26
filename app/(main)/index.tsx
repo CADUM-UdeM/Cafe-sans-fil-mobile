@@ -27,6 +27,8 @@ import ScrollableLayout from "@/components/layouts/ScrollableLayout";
 import FilterModalLayout from "@/components/layouts/FilterModalLayout";
 import { useUser } from "@clerk/clerk-expo";
 import COLORS from "@/constants/Colors";
+import { Cafe } from "@/constants/types/GET_cafe";
+
 /**
  * Home screen of the app. It allows the user to search for cafes, filter them,
  * and view them. The screen also displays quick search options and cafe cards
@@ -53,40 +55,75 @@ import COLORS from "@/constants/Colors";
  * - All Cafes Cards: Lists all available cafes.
  */
 export default function HomeScreen() {
-  const [data, setData] = useState<allCafe | any>([]);
+  const [data, setData] = useState<allCafe | any>();
+  const [closest, setClosest] = useState<Cafe>();
   const [isLoading, setIsLoading] = useState(true);
   // Const for the commander en ligne filter
   const [showOnlyOrder, setShowOnlyOrder] = useState(false);
 
   // Const for Ouvert filter
   const [showOpen, setShowOpen] = useState(false)
+  // Get the user's current location
+  const [location, getCurrentLocation] = useLocation();
 
-  // fetch cafe list
   useEffect(() => {
     setIsLoading(true);
     fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
       .then((response) => response.json())
       .then((json) => {
         setData(json.items);
-        // console.log(json)
+        let closestCafe = getClosest(location as Location.LocationObject, json.items);
+        setClosest(closestCafe);
       })
       .catch((error) => console.error(error))
-      .finally(() => setIsLoading(false));;
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, []);
 
-  // Get the user's current location
-  const [location, getCurrentLocation] = useLocation();
+  useEffect(() => {
+    setIsLoading(true);
+    setClosest(getClosest(location as Location.LocationObject, data))
+  }, [location])
+
+/**
+ * This function returns the closest cafe based on the user's current location.
+ * @param current current location of the user.
+ * @param cafe list of all cafes.
+ * @returns cafe object
+ */
+  function getClosest(current: Location.LocationObject, cafe: Cafe[]): Cafe | undefined {
+    if (current && cafe){
+      let distanceMin = {distance : -1, id : ""};
+      for (let i = 0; i < cafe.length; i++) {
+        if (cafe[i].location.geometry){
+          let cafeCoords = cafe[i].location.geometry.coordinates;
+          let x = current.coords.latitude - cafeCoords[1];
+          let y = current.coords.longitude - cafeCoords[0];
+          let distance = Math.sqrt(x**2 + y**2);
+  
+          if (distanceMin.distance < 0 || distanceMin.distance > distance){
+            distanceMin.distance = distance;
+            distanceMin.id = cafe[i].id;
+          }
+        }
+      }
+      console.log('closest: ', distanceMin);
+      return cafe.find(obj => obj.id === distanceMin.id);
+    }
+    
+  }
 
   // Execute a callback when the app comes to the foreground
   useOnForegroundBack(getCurrentLocation);
 
   // Sort pavillons by distance from the user's location
-  const sortedPavillons = useSortedItemsByDistance<
-    PavillonCoordinate,
-    "lat",
-    "lng",
-    "pavillon"
-  >(location, pavillonCoordinates, "lat", "lng", "pavillon");
+  // const sortedPavillons = useSortedItemsByDistance<
+  //   PavillonCoordinate,
+  //   "lat",
+  //   "lng",
+  //   "pavillon"
+  // >(location, pavillonCoordinates, "lat", "lng", "pavillon");
 
   // Make a fonction that filters depending on filter button pressed
   const filterCafes = (cafes : Cafe[]) => {
@@ -164,19 +201,11 @@ export default function HomeScreen() {
           {/* User Location and Search */}
           <View style={styles.locationAndSearchContainer}>
             <SelectLocalisation
-              currentLocalisation={sortedPavillons[0]}
+              currentLocalisation={closest? closest.name : ""}
               location={location as Location.LocationObject}
             />
             <Search onSearch={handleSearch} onFilter={handleFilter} />
           </View>
-
-          {/* Announcement Image */}
-          {/* <Image
-            width={361}
-            height={210}
-            style={styles.announcementImage}
-            source={require("@/assets/images/placeholder/imagexl.png")}
-          /> */}
 
           {/* Quick Search Section with Tooltips */}
           {/* TODO: IMPLEMENT FILTERS USING TOOLTIPS */}
@@ -200,6 +229,30 @@ export default function HomeScreen() {
             changeColorOnPress
           />
         </CardScrollableLayout>
+        
+        {/* Cafe le plus proche*/}
+        {closest && (
+          <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+            <Text 
+                style={{
+                  marginVertical: SPACING["xl"], 
+                  marginHorizontal: SPACING["md"], 
+                  ...TYPOGRAPHY.heading.small.bold
+                }}>Le plus proche
+            </Text>
+            <View >
+                <CafeCard
+                name={closest.name}
+                image={closest.banner_url}
+                location={closest.location.pavillon}
+                priceRange="$$"
+                rating={4.8}
+                status={closest.is_open}
+                id={closest.id}
+                />
+            </View>
+        </View>
+        )}
           
           {/* Horizontal Cafe Cards By Categories */}
           <View>
@@ -233,29 +286,6 @@ export default function HomeScreen() {
               marginHorizontal: SPACING["md"], 
               ...TYPOGRAPHY.heading.small.bold
             }}>Proches de vous
-          </Text>
-          <FlatList data={filterCafes(data)} renderItem={({item}) =>
-              <CafeCard
-                name={item.name}
-                image={item.banner_url}
-                location={item.location.pavillon}
-                priceRange="$$"
-                rating={4.8}
-                status={item.is_open}
-                id={item.id}
-              /> }
-              keyExtractor={item => item.id}
-              horizontal
-              ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
-              style={{paddingHorizontal: SPACING["sm"], paddingBottom: SPACING["md"]}}
-          />
-
-          <Text 
-          style={{
-            marginVertical: SPACING["xl"], 
-            marginHorizontal: SPACING["md"], 
-            ...TYPOGRAPHY.heading.small.bold
-          }}>{`${sortedPavillons[0]}`}
           </Text>
           <FlatList data={filterCafes(data)} renderItem={({item}) =>
               <CafeCard

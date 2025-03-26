@@ -62,7 +62,7 @@ export const fetchSecurely = async (key) => {
     try {
         const jsonValue = await SecureStore.getItemAsync(key);
         console.log('fetched value: ', jsonValue != null ? JSON.parse(jsonValue).slug : null);
-        return jsonValue != null ? JSON.parse(jsonValue) : null 
+        return jsonValue != null ? JSON.parse(jsonValue) : null;
     }catch (error){
         throw error;
     }

@@ -87,6 +87,10 @@ type Interaction = {
 
 type OpeningHours = {
     day : string;
-    blocks : DayBlock[]
+    blocks : DayBlock[];
 }
 
+type DayBlock = {
+    start: string;
+    end: string;
+};

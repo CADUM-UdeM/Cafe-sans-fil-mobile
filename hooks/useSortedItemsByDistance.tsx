@@ -105,7 +105,7 @@ export default function useSortedItemsByDistance<
       setSortedItemNames(sortedNames);
 
       // FIXME: Remove this log after testing.
-      console.warn("Sorted Items: ", sortedNames);
+      //console.warn("Sorted Items: ", sortedNames);
     } else {
       setSortedItemNames([]);
     }

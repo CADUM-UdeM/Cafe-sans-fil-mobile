@@ -227,11 +227,13 @@ console.log(paymentDetails);
             gap: 10,}}>
 
               {socialMediaTab.map(({plateform, link}) => ( link ? (
-                <Tooltip
-                label={plateform.charAt(0).toUpperCase() + plateform.slice(1)}
-                onPress={() => openLink(link)}
-                Icon={getIcon(plateform)}
-                showChevron={false} color='white'/>
+                <View key={plateform}>
+                  <Tooltip
+                  label={plateform.charAt(0).toUpperCase() + plateform.slice(1)}
+                  onPress={() => openLink(link)}
+                  Icon={getIcon(plateform)}
+                  showChevron={false} color='white'/>
+                </View>
               ) : null ))}
           </View>
 
@@ -377,12 +379,12 @@ console.log(paymentDetails);
                                 price={"$" + item.price} 
                                 status={item.in_stock? "In Stock" : "Out of Stock"}
                                 image={item.image_url}
-                                style={{alignItems: 'center'}}
+                                style={{alignItems: 'center', width: "45%", margin: SPACING["md"]}}
                               />
                               }
-      ItemSeparatorComponent={() => <View style={{ marginTop: SPACING["md"]}} />} // padding
       scrollEnabled={false}
       style={{marginTop: SPACING['md']}}
+      numColumns={2}
       />      
 
       {/* Cafés similaires */}

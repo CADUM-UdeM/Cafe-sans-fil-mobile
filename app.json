@@ -9,7 +9,10 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+            "NSLocationWhenInUseUsageDescription": "This app uses the location to find cafes near you."
+        }
     },
     "android": {
       "adaptiveIcon": {
