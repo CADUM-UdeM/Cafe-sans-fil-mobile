@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,25 +10,26 @@ import {
 } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import HeaderLayout from "@/components/layouts/HeaderLayout";
+import { fetchSync } from '@/script/storage';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 const Panier = () => {
-  const [items, setItems] = useState([
-    {
-      id: '1',
-      name: 'Café Latte',
-      price: 3.5,
-      quantity: 1,
-      image: 'https://via.placeholder.com/80',
-    },
-    {
-      id: '2',
-      name: 'Croissant',
-      price: 2.0,
-      quantity: 2,
-      image: 'https://via.placeholder.com/80',
-    },
-  ]);
+  const [items, setItems] = useState(new Array());
+
+  useEffect(() => {
+      const fetchPanierItems = () =>{
+        try{
+          let currPanier = fetchSync("12345");
+          console.log(currPanier);
+          if (currPanier){
+            setItems(currPanier);
+          }
+        }catch(error){
+
+        }
+      }
+      fetchPanierItems();
+    }, []);
 
   // Fonction pour calculer le total du panier
   const calculateTotal = () =>
@@ -69,44 +70,55 @@ const Panier = () => {
     );
   };
 
+  function panierItemToItem(panierItem){
+    return fetchSync(panierItem.id);
+  }
+
+  function panierItemDisplay(panierItem){
+    let item = panierItemToItem(panierItem);
+    return(
+      <View style={styles.itemContainer}>
+                <Image source={{ uri: item.image_url }} style={styles.itemImage} />
+                <View style={styles.textContainer}>
+                  <Text style={styles.itemTitle}>{item.name}</Text>
+                  <Text style={styles.itemPrice}>{Number(item.price)} $</Text>
+                  <Text style={styles.itemQuantity}>
+                    Quantité: {panierItem.quantity}
+                  </Text>
+                </View>
+                <View style={styles.actionContainer}>
+                  <TouchableOpacity onPress={() => increaseQuantity(panierItem.id)}>
+                    <Feather name="plus" size={20} color="#000" />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => decreaseQuantity(panierItem.id)}>
+                    <Feather name="minus" size={20} color="#000" />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => removeItem(panierItem.id)}>
+                    <Feather name="trash" size={20} color="red" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+    )
+  }
+
   return (<>
     <HeaderLayout />
     <View style={styles.container}>
       
       <Text style={styles.title}>Panier des items sélectionnés</Text>
 
-      {items.length > 0 ? (
+      {items.length>0 ? (
         <>
           <FlatList
             data={items}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <View style={styles.itemContainer}>
-                <Image source={{ uri: item.image }} style={styles.itemImage} />
-                <View style={styles.textContainer}>
-                  <Text style={styles.itemTitle}>{item.name}</Text>
-                  <Text style={styles.itemPrice}>{item.price.toFixed(2)} $</Text>
-                  <Text style={styles.itemQuantity}>
-                    Quantité: {item.quantity}
-                  </Text>
-                </View>
-                <View style={styles.actionContainer}>
-                  <TouchableOpacity onPress={() => increaseQuantity(item.id)}>
-                    <Feather name="plus" size={20} color="#000" />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => decreaseQuantity(item.id)}>
-                    <Feather name="minus" size={20} color="#000" />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => removeItem(item.id)}>
-                    <Feather name="trash" size={20} color="red" />
-                  </TouchableOpacity>
-                </View>
-              </View>
+              panierItemDisplay(item)
             )}
           />
 
           <View style={styles.totalContainer}>
-            <Text style={styles.totalText}>Total: {calculateTotal()} $</Text>
+            <Text style={styles.totalText}>Total: {} $</Text>
             <TouchableOpacity style={styles.checkoutButton}>
               <Text style={styles.checkoutButtonText}>Passer la commande</Text>
             </TouchableOpacity>
