@@ -32,8 +32,15 @@ const Panier = () => {
     }, []);
 
   // Fonction pour calculer le total du panier
-  const calculateTotal = () =>
-    items.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+  function calculateTotal() {
+    let total = 0;
+    for(const item of items){
+      let itemPrice = Number(fetchSync(item.id).price);
+      total = total + itemPrice;
+    }
+    console.log(total);
+    return total;
+  }
 
   // Fonction pour augmenter la quantité d'un item
   const increaseQuantity = (id) => {
@@ -81,7 +88,7 @@ const Panier = () => {
                 <Image source={{ uri: item.image_url }} style={styles.itemImage} />
                 <View style={styles.textContainer}>
                   <Text style={styles.itemTitle}>{item.name}</Text>
-                  <Text style={styles.itemPrice}>{Number(item.price)} $</Text>
+                  <Text style={styles.itemPrice}>{Number(item.price).toFixed(2)} $</Text>
                   <Text style={styles.itemQuantity}>
                     Quantité: {panierItem.quantity}
                   </Text>
@@ -118,7 +125,7 @@ const Panier = () => {
           />
 
           <View style={styles.totalContainer}>
-            <Text style={styles.totalText}>Total: {} $</Text>
+            <Text style={styles.totalText}>Total: {calculateTotal().toFixed(2)} $</Text>
             <TouchableOpacity style={styles.checkoutButton}>
               <Text style={styles.checkoutButtonText}>Passer la commande</Text>
             </TouchableOpacity>
