@@ -10,10 +10,12 @@ import {
 } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import HeaderLayout from "@/components/layouts/HeaderLayout";
-import { fetchSync } from '@/script/storage';
+import { deleteSecurely, fetchSync, saveSync } from '@/script/storage';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 const Panier = () => {
+
+  let panierID = "12345";
   const [items, setItems] = useState(new Array());
 
   useEffect(() => {
@@ -34,11 +36,13 @@ const Panier = () => {
   // Fonction pour calculer le total du panier
   function calculateTotal() {
     let total = 0;
+    if(!items){
+      return total;
+    }
     for(const item of items){
       let itemPrice = Number(fetchSync(item.id).price);
       total = total + itemPrice;
     }
-    console.log(total);
     return total;
   }
 
@@ -62,6 +66,26 @@ const Panier = () => {
     );
   };
 
+  function deletePanierItem(id){
+    try{
+      deleteSecurely(id);
+    }catch(error){
+
+    }
+
+    //find idx of id
+    let idx = -1;
+    for(let i = 0; i<items.length; i++){
+      if(id == items[i].id){
+        idx=i
+      }
+    }
+    if(idx!=-1){
+      setItems(items.splice(idx,1));
+    }
+    saveSync(panierID,items);
+  }
+
   // Fonction pour supprimer un item du panier
   const removeItem = (id) => {
     Alert.alert(
@@ -71,7 +95,7 @@ const Panier = () => {
         { text: 'Annuler', style: 'cancel' },
         {
           text: 'Supprimer',
-          onPress: () => setItems((prevItems) => prevItems.filter((item) => item.id !== id)),
+          onPress: () => deletePanierItem(id),
         },
       ]
     );
@@ -108,6 +132,13 @@ const Panier = () => {
     )
   }
 
+  function refreshPanier(){
+    let currPanier = fetchSync(panierID);
+    if(currPanier&&currPanier.length>0){
+      setItems(currPanier);
+    }
+  }
+
   return (<>
     <HeaderLayout />
     <View style={styles.container}>
@@ -130,9 +161,21 @@ const Panier = () => {
               <Text style={styles.checkoutButtonText}>Passer la commande</Text>
             </TouchableOpacity>
           </View>
+
+          <View style={styles.totalContainer}>
+            <TouchableOpacity style={styles.checkoutButton}>
+              <Text style={styles.checkoutButtonText} onPress={()=>refreshPanier()}>Refresh panier</Text>
+            </TouchableOpacity>
+          </View>
         </>
-      ) : (
+      ) : (<>
         <Text style={styles.emptyCartText}>Votre panier est vide.</Text>
+        <View style={styles.totalContainer}>
+            <TouchableOpacity style={styles.checkoutButton}>
+              <Text style={styles.checkoutButtonText} onPress={()=>refreshPanier()}>Refresh panier</Text>
+            </TouchableOpacity>
+          </View>
+        </>
       )}
     </View></>
   );
