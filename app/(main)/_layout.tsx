@@ -28,6 +28,7 @@ export default function TabLayout() {
             header: () => <HeaderLayout />,
             tabBarIcon: ({ color }) => <Home size={28} color={color} />,
             tabBarLabelStyle: TYPOGRAPHY.body.small.bold,
+            animation: 'shift'
           }}
         />
         <Tabs.Screen
@@ -39,6 +40,7 @@ export default function TabLayout() {
               <FontAwesome size={24} name="heart" color={color} />
             ),
             tabBarLabelStyle: TYPOGRAPHY.body.small.bold,
+            animation: 'shift'
           }}
         />
         <Tabs.Screen
@@ -50,6 +52,7 @@ export default function TabLayout() {
               <ShoppingBasket size={28} color={color} />
             ),
             tabBarLabelStyle: TYPOGRAPHY.body.small.bold,
+            animation: 'shift'
           }}
         />
         <Tabs.Screen
@@ -59,6 +62,7 @@ export default function TabLayout() {
             headerShown: false,
             tabBarIcon: ({ color }) => <UserRound size={28} color={color} />,
             tabBarLabelStyle: TYPOGRAPHY.body.small.bold,
+            animation: 'shift'
           }}
         />
         <Tabs.Screen
@@ -73,6 +77,7 @@ export default function TabLayout() {
           options={{
             href: null,
             headerShown: false,
+            animation: 'shift'
           }}
         />
         <Tabs.Screen
@@ -80,6 +85,7 @@ export default function TabLayout() {
           options={{
             href: null,
             headerShown: false,
+            animation: 'shift'
           }}
         />
         <Tabs.Screen
@@ -87,6 +93,7 @@ export default function TabLayout() {
           options={{
             href: null,
             headerShown: false,
+            animation: 'shift'
           }}
         />
       </Tabs>

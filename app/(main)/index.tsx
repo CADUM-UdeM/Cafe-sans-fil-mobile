@@ -56,15 +56,13 @@ import { Cafe } from "@/constants/types/GET_cafe";
  */
 export default function HomeScreen() {
   const [data, setData] = useState<allCafe | any>();
-  const [closest, setClosest] = useState<Cafe>();
+  const [closest, setClosest] = useState<Cafe[]>();
   const [isLoading, setIsLoading] = useState(true);
-  // Const for the commander en ligne filter
   const [showOnlyOrder, setShowOnlyOrder] = useState(false);
-
-  // Const for Ouvert filter
   const [showOpen, setShowOpen] = useState(false)
-  // Get the user's current location
   const [location, getCurrentLocation] = useLocation();
+  // Execute a callback when the app comes to the foreground
+  useOnForegroundBack(getCurrentLocation);
 
   useEffect(() => {
     setIsLoading(true);
@@ -72,18 +70,13 @@ export default function HomeScreen() {
       .then((response) => response.json())
       .then((json) => {
         setData(json.items);
-        setClosest(getClosest(location as Location.LocationObject, json.items));
+        setClosest(sortByDistance(location as Location.LocationObject, json.items));
       })
       .catch((error) => console.error(error))
       .finally(() => {
         setIsLoading(false);
       });
-  }, []);
-
-  useEffect(() => {
-    setIsLoading(true);
-    setClosest(getClosest(location as Location.LocationObject, data))
-  }, [location])
+  }, [location]);
 
 /**
  * This function returns the closest cafe based on the user's current location.
@@ -91,62 +84,26 @@ export default function HomeScreen() {
  * @param cafe list of all cafes.
  * @returns cafe object
  */
-  function getClosest(current: Location.LocationObject, cafe: Cafe[]): Cafe | undefined {
-    if (current && cafe){
-      let distanceMin = {distance : -1, id : ""};
-      for (let i = 0; i < cafe.length; i++) {
-        if (cafe[i].location.geometry){
-          let cafeCoords = cafe[i].location.geometry.coordinates;
-          let x = current.coords.latitude - cafeCoords[1];
-          let y = current.coords.longitude - cafeCoords[0];
-          let distance = Math.sqrt(x**2 + y**2);
-  
-          if (distanceMin.distance < 0 || distanceMin.distance > distance){
-            distanceMin.distance = distance;
-            distanceMin.id = cafe[i].id;
-          }
-        }
+function sortByDistance(current: Location.LocationObject, cafes: Cafe[]): Cafe[] | undefined {
+  if (current && cafes){
+    let cafeDistances = cafes.map(cafe => {
+      if (cafe.location.geometry){
+        let cafeCoords = cafe.location.geometry.coordinates;
+        let x = current.coords.latitude - cafeCoords[1];
+        let y = current.coords.longitude - cafeCoords[0];
+        let distance = Math.sqrt(x**2 + y**2);
+        return { ...cafe , distance }; // add the calculated distance into cafe object
       }
-      console.log('closest: ', distanceMin);
-      return cafe.find(obj => obj.id === distanceMin.id);
-    }
+      return { ...cafe , distance: Infinity }; // for cafes without valid coordinates 
+    });
     
+    cafeDistances.sort((a, b) => a.distance - b.distance); // sort by ascending distance
+    
+    return cafeDistances;
+  } else {
+    console.log('params undefined')
   }
-
-  // Execute a callback when the app comes to the foreground
-  useOnForegroundBack(getCurrentLocation);
-
-  //Sort pavillons by distance from the user's location
-  const sortedPavillons = useSortedItemsByDistance<
-    PavillonCoordinate,
-    "lat",
-    "lng",
-    "pavillon"
-  >(location, pavillonCoordinates, "lat", "lng", "pavillon");
-
-  // Make a fonction that filters depending on filter button pressed
-  const filterCafesClose = (cafes : Cafe[]) => {
-    let filteredCafes = cafes;
-
-    if (showOnlyOrder) {
-      filteredCafes = filteredCafes.filter(cafe => cafe.features.includes("ORDER"));
-    }
-
-    if (showOpen) {
-      filteredCafes = filteredCafes.filter(cafe => cafe.is_open == true);
-    }
-    
-    if (location) {
-      
-      filteredCafes = filteredCafes.filter(cafe => cafe.location.geometry !=  null);
-      filteredCafes = filteredCafes.sort((a, b) => {
-        return calculateDistance(a.location.geometry.coordinates[1], a.location.geometry.coordinates[0], location.coords.latitude, location.coords.longitude) - calculateDistance(b.location.geometry.coordinates[1], b.location.geometry.coordinates[0], location.coords.latitude, location.coords.longitude)
-      })
-    
-    }
-    return filteredCafes;
-
-  };
+}
 
   const filterCafes = (cafes : Cafe[]) => {
     let filteredCafesClose = cafes;
@@ -161,267 +118,162 @@ export default function HomeScreen() {
     return filteredCafesClose;
 
   };
-  const filterCafesHype = (cafes: Cafe[]) => {
-    let filteredCafesHype = [...cafes]; // Create a shallow copy to avoid mutating the original data
-
-    if (showOnlyOrder) {
-      filteredCafesHype = filteredCafesHype.filter(cafe => cafe.features.includes("ORDER"));
-    }
-
-    if (showOpen) {
-      filteredCafesHype = filteredCafesHype.filter(cafe => cafe.is_open == true);
-    }
-    // À changer pour les cafés les plus populaires
-    return filteredCafesHype
-      .sort(() => Math.random() - 0.5) // Shuffle the array randomly
-      .slice(0, 5); // Take the first 5 cafes
-  };
-  const filterCafesPavillon = (cafes : Cafe[]) => {
-    let filteredCafesPavillon = cafes;
-
-    if (showOnlyOrder) {
-      filteredCafesPavillon = filteredCafesPavillon.filter(cafe => cafe.features.includes("ORDER"));
-    }
-
-    if (showOpen) {
-      filteredCafesPavillon = filteredCafesPavillon.filter(cafe => cafe.is_open == true);
-    }
-    filteredCafesPavillon = filteredCafesPavillon.filter(cafe => cafe.location.pavillon == sortedPavillons[0]);
-    return filteredCafesPavillon;
-
-  };
-
-  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
-    var R = 6371; 
-    var dLat = (lat2-lat1) * Math.PI / 180;
-    var dLon = (lon2-lon1) * Math.PI / 180;
-    
-
-    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon/2) * Math.sin(dLon/2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    var d = R * c;
-    return d;
-  }
-  // Get the modal context for opening and closing modals.
-  const modalContext = useModal();
-
-  // Get the open and close modal functions from the modal context.
-  const openModal = modalContext ? modalContext.openModal : () => {};
-  const closeModal = modalContext ? modalContext.closeModal : () => {};
-
+  
   // Mock implementation of search and filter functions.
-  // FIXME: Implement actual search and filter functions.
   function handleSearch(text: string): void {
-    fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
-      .then((response) => response.json())
-      .then((json) => {
-        const allCafes = json.items;
+    // A REFAIRE PAS BIEN PAS BIEN DU TOUT C NUL A CHIER
 
-        if (text.trim() === "") {
-          setData(allCafes);
-          return;
-        }
+    // fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
+    //   .then((response) => response.json())
+    //   .then((json) => {
+    //     const allCafes = json.items;
 
-        const filteredCafes = allCafes.filter((cafe : Cafe) =>
-          cafe.name.toLowerCase().includes(text.toLowerCase()) || 
-          cafe.location.pavillon.toLowerCase().includes(text.toLowerCase()) ||
-          cafe.location.local.toLowerCase().includes(text.toLowerCase()) ||
-          cafe.affiliation.faculty.toLowerCase().includes(text.toLowerCase())
-        );
-        setData(filteredCafes);
-      })
-      .catch((error) => console.error(error));
+    //     if (text.trim() === "") {
+    //       setData(allCafes);
+    //       return;
+    //     }
+
+    //     const filteredCafes = allCafes.filter((cafe : Cafe) =>
+    //       cafe.name.toLowerCase().includes(text.toLowerCase()) || 
+    //       cafe.location.pavillon.toLowerCase().includes(text.toLowerCase()) ||
+    //       cafe.location.local.toLowerCase().includes(text.toLowerCase()) ||
+    //       cafe.affiliation.faculty.toLowerCase().includes(text.toLowerCase())
+    //     );
+    //     setData(filteredCafes);
+    //   })
+    //   .catch((error) => console.error(error));
   }
 
-  // Mock implementation of search and filter functions.
-  // FIXME: Implement actual search and filter functions.
-  function handleFilter(): void {
-    console.warn("Search `Filter` function not implemented.");
-    openModal(
-      <FilterModalLayout
-        title="Filtrer par"
-        handleApplyFilter={() => closeModal()}
-        handleResetFilter={() => closeModal()}
-      ></FilterModalLayout>
-    );
-  }
-
-  if (isLoading) {
+  if (isLoading || (!data && !closest)) {
     return(
       <View style={{ flex:1, justifyContent: 'center', alignContent: 'center'}}>
         <ActivityIndicator size={'large'} />
       </View>
     )
   }
-
-  return (
-    <SafeAreaView>
-      
-      <ScrollableLayout>
-        <>
-          {/* User Location and Search */}
-          <View style={styles.locationAndSearchContainer}>
-            <SelectLocalisation
-              currentLocalisation={closest? closest.name : ""}
-              location={location as Location.LocationObject}
-              
-            />
-            <Search onSearch={handleSearch} onFilter={handleFilter} />
-          </View>
-
-          {/* Quick Search Section with Tooltips */}
-          {/* TODO: IMPLEMENT FILTERS USING TOOLTIPS */}
-          {/* Quick Search Section with Tooltips */}
-        <CardScrollableLayout
-          scrollMarginTop={SPACING["md"]}
-          scrollMarginBottom={SPACING["sm"]}
-          dividerBottom
-        >
-          <Tooltip
-            label="Ouvert"
-            status="green"
-            onPress={() => setShowOpen(!showOpen)}
-            showChevron={false}
-            changeColorOnPress
-          />
-          <Tooltip
-            label="Commander en ligne"
-            onPress={() => setShowOnlyOrder(!showOnlyOrder)} // fonction qui va afficher les cafés où on peut order en ligne
-            showChevron={false}
-            changeColorOnPress
-          />
-        </CardScrollableLayout>
-        
-        {/* Cafe le plus proche*/}
-        {closest && (
-          <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-            <Text 
-                style={{
-                  marginVertical: SPACING["xl"], 
-                  marginHorizontal: SPACING["md"], 
-                  ...TYPOGRAPHY.heading.small.bold
-                }}>Le plus proche
-            </Text>
-            <View >
-                <CafeCard
-                name={closest.name}
-                image={closest.banner_url}
-                location={closest.location.pavillon}
-                priceRange="$$"
-                rating={4.8}
-                status={closest.is_open}
-                id={closest.id}
-                />
+  else {
+    return (
+      <SafeAreaView>
+        <ScrollableLayout>
+          <>
+            {/* User Location and Search */}
+            <View style={styles.locationAndSearchContainer}>
+              <SelectLocalisation
+                currentLocalisation={closest? closest[0].name : ""}
+                location={location as Location.LocationObject}
+              />
+              <Search onSearch={handleSearch} />
             </View>
-        </View>
-        )}
+
+            {/* TODO: IMPLEMENT FILTERS USING TOOLTIPS */}
+            {/* Quick Search Section with Tooltips */}
+          <CardScrollableLayout
+            scrollMarginTop={SPACING["md"]}
+            scrollMarginBottom={SPACING["sm"]}
+            dividerBottom
+          >
+            <Tooltip
+              label="Ouvert"
+              status="green"
+              onPress={() => setShowOpen(!showOpen)}
+              showChevron={false}
+              changeColorOnPress
+            />
+            <Tooltip
+              label="Commander en ligne"
+              onPress={() => setShowOnlyOrder(!showOnlyOrder)} // fonction qui va afficher les cafés où on peut order en ligne
+              showChevron={false}
+              changeColorOnPress
+            />
+          </CardScrollableLayout>
           
-          {/* Horizontal Cafe Cards By Categories */}
-          <View>
-          {/* Tendences du momemt */}
-          <Text 
-              style={{
-                marginVertical: SPACING["xl"], 
-                marginHorizontal: SPACING["md"], 
-                ...TYPOGRAPHY.heading.small.bold
-              }}>Notre selection
-          </Text>
-          <FlatList data={filterCafesHype(data)} renderItem={({item}) =>
-              <CafeCard
-                name={item.name}
-                image={item.banner_url}
-                location={item.location.pavillon}
-                priceRange="$$"
-                rating={4.8}
-                status={item.is_open}
-                id={item.id}
-              /> }
-            keyExtractor={item => item.id}
-            horizontal // render honrizontalement
-            ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
-            style={{paddingHorizontal: SPACING["sm"], paddingBottom: SPACING["md"]}}
-          />
-
-          <Text 
-          style={{
-            marginVertical: SPACING["xl"], 
-            marginHorizontal: SPACING["md"], 
-            ...TYPOGRAPHY.heading.small.bold
-          }}>{`${sortedPavillons[0]}`}
-          </Text>
-          <FlatList data={filterCafesPavillon(data)} renderItem={({item}) =>
-              <CafeCard
-                name={item.name}
-                image={item.banner_url}
-                location={item.location.pavillon}
-                priceRange="$$"
-                rating={4.8}
-                status={item.is_open}
-                id={item.id}
-              /> }
-              keyExtractor={item => item.id}
-              horizontal
-              ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
-              style={{paddingHorizontal: SPACING["sm"], paddingBottom: SPACING["md"]}}
-          />
-
-          <Text 
-          style={{
-            marginVertical: SPACING["xl"], 
-            marginHorizontal: SPACING["md"], 
-            ...TYPOGRAPHY.heading.small.bold
-          }}>Promotions en cours
-          </Text>
-          <FlatList data={filterCafesHype(data)} renderItem={({item}) =>
-              <CafeCard
-                name={item.name}
-                image={item.banner_url}
-                location={item.location.pavillon}
-                priceRange="$$"
-                rating={4.8}
-                status={item.is_open}
-                id={item.id}
-              /> }
-              keyExtractor={item => item.id}
-              horizontal
-              ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
-              style={{paddingHorizontal: SPACING["sm"], paddingBottom: SPACING["md"]}}
-          />
+          {/* Cafe le plus proche*/}
+          {closest && (
+            <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+              <Text 
+                  style={{
+                    marginVertical: SPACING["xl"], 
+                    marginTop: SPACING["md"], 
+                    ...TYPOGRAPHY.heading.small.bold
+                  }}>Le plus proche
+              </Text>
+              <View >
+                  <CafeCard
+                  name={closest[0].name}
+                  image={closest[0].banner_url}
+                  location={closest[0].location.pavillon}
+                  priceRange="$$"
+                  rating={4.8}
+                  status={closest[0].is_open}
+                  id={closest[0].id}
+                  />
+              </View>
           </View>
+          )}
+            
+            {/* Tous les cafés classés du plus au moins proche */}
+            <View>
+            {closest && (
+              <View>
+                <Text 
+                  style={{
+                    marginVertical: SPACING["xl"], 
+                    marginHorizontal: SPACING["md"], 
+                    ...TYPOGRAPHY.heading.small.bold
+                  }}> Tous les cafés
+                  </Text>
+                  <FlatList data={closest} renderItem={({item}) =>
+                      <CafeCard
+                        name={item.name}
+                        image={item.banner_url}
+                        location={item.location.pavillon}
+                        priceRange="$$"
+                        rating={4.8}
+                        status={item.is_open}
+                        id={item.id}
+                      /> }
+                      keyExtractor={item => item.id}
+                      horizontal
+                      ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
+                      style={{paddingHorizontal: SPACING["sm"], paddingBottom: SPACING["md"]}}
+                  />
+            </View>
+            )}
+            </View>
 
-          {/* All Cafes Cards */}
-          <Text 
-          style={{
-            marginVertical: SPACING["xl"], 
-            marginHorizontal: SPACING["md"], 
-            ...TYPOGRAPHY.heading.small.bold
-          }}>Tous les cafés
-          </Text>
-          <FlatList data={filterCafes(data)} renderItem={({item}) =>
-              <CafeCard
-                name={item.name}
-                image={item.banner_url}
-                location={item.location.pavillon}
-                priceRange="$$"
-                rating={4.8}
-                status={item.is_open}
-                id={item.id}
-              /> }
-              keyExtractor={item => item.id}
-              horizontal
-              ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
-              style={{
-                paddingHorizontal: SPACING["sm"], 
-                paddingBottom: SPACING["md"],
-              }}
-          />
-        </>
-      </ScrollableLayout>
-      </SafeAreaView>
-  );
+            {/* All Cafes Cards */}
+            <Text 
+            style={{
+              marginVertical: SPACING["xl"], 
+              marginHorizontal: SPACING["md"], 
+              ...TYPOGRAPHY.heading.small.bold
+            }}>Tous les cafés
+            </Text>
+            <FlatList data={filterCafes(data)} renderItem={({item}) =>
+                <CafeCard
+                  name={item.name}
+                  image={item.banner_url}
+                  location={item.location.pavillon}
+                  priceRange="$$"
+                  rating={4.8}
+                  status={item.is_open}
+                  id={item.id}
+                /> }
+                keyExtractor={item => item.id}
+                horizontal
+                ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
+                style={{
+                  paddingHorizontal: SPACING["sm"], 
+                  paddingBottom: SPACING["md"],
+                }}
+            />
+          </>
+        </ScrollableLayout>
+        </SafeAreaView>
+    );
+  }
 }
+
 
 const styles = StyleSheet.create({
   locationAndSearchContainer: {

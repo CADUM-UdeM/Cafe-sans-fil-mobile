@@ -99,20 +99,20 @@ export default function RootLayout() {
     }
 
     return (
-        <ClerkProvider publishableKey={publishableKey}>
-            <ClerkLoaded>
-                <GlobalModalProvider>
-                    <Stack screenOptions={{ 
-                        gestureEnabled: false,
-                        animation: "none",
-                        contentStyle: { backgroundColor: COLORS.white },
-                    }}>
-                        <Stack.Screen name='(main)' options={{ headerShown: false }} />
-                        <Stack.Screen name='(onboarding)' options={{ headerShown: false}} />
-                        <Stack.Screen name='(auth)' options={{ headerShown: false}} />
-                    </Stack>
-                </GlobalModalProvider>
-            </ClerkLoaded>
-        </ClerkProvider>
+      <ClerkProvider publishableKey={publishableKey}>
+        <ClerkLoaded>
+          <GlobalModalProvider>
+            <Stack screenOptions={{ 
+              gestureEnabled: false,
+              contentStyle: { backgroundColor: COLORS.white },
+            }}>
+              <Stack.Screen name='(main)' options={{ headerShown: false }}  />
+              <Stack.Screen name='(onboarding)' options={{ headerShown: false}} />
+              <Stack.Screen name='(auth)' options={{ headerShown: false}} />
+            </Stack>
+          </GlobalModalProvider>
+        </ClerkLoaded>
+      </ClerkProvider>
     )
+    
 }
