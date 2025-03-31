@@ -65,8 +65,7 @@ export default function CafeScreen() {
         const updatedCafe = { ...json, cafe_id: json.id };
         setCafe(updatedCafe);
 
-        const favorites = await getFavorites();
-        const isFav = favorites.some((fav : Favoris) => fav.cafe_id === updatedCafe.cafe_id);
+        const isFav = await checkIfFavorite(updatedCafe.cafe_id)
         setFavorited(isFav);
 
       } catch (error) {
