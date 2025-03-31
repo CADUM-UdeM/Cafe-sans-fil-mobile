@@ -104,6 +104,37 @@ function sortByDistance(current: Location.LocationObject, cafes: Cafe[]): Cafe[]
     console.log('params undefined')
   }
 }
+  function sortByPavillon(cafes: Cafe[]): Cafe[][] {
+    if (!cafes || cafes.length === 0) {
+      return [];
+    }
+    
+    // Create a Map to group cafes by pavillon
+    const pavillonMap = new Map<string, Cafe[]>();
+    
+    // Group cafes by pavillon
+    cafes.forEach(cafe => {
+      const pavillon = cafe.location.pavillon;
+      if (!pavillonMap.has(pavillon)) {
+        pavillonMap.set(pavillon, []);
+      }
+      pavillonMap.get(pavillon)?.push(cafe);
+    });
+    
+    // Convert the Map to a list of lists
+    return Array.from(pavillonMap.values());
+  }
+  // Print the pavillon of the first cafe in each group
+  if (data) {
+    const cafesByPavillon = sortByPavillon(data);
+    console.log("Pavillons of first cafe in each group:");
+    cafesByPavillon.forEach(pavillonGroup => {
+      if (pavillonGroup.length > 0) {
+        console.log(pavillonGroup[0].location.pavillon);
+      }
+    });
+  }
+  console.log(sortByPavillon(data)[0]);
 
   const filterCafes = (cafes : Cafe[]) => {
     let filteredCafesClose = cafes;
@@ -242,12 +273,58 @@ function sortByDistance(current: Location.LocationObject, cafes: Cafe[]): Cafe[]
             </View>
 
             {/* All Cafes Cards */}
+            {/* Cafés groupés par pavillon */}
+            {data && (
+            <View style={{ marginTop: SPACING["xl"] }}>
+              
+              {sortByPavillon(filterCafes(data)).map((pavillonGroup, index) => {
+              if (pavillonGroup.length === 0) return null;
+              
+              const pavillonName = pavillonGroup[0].location.pavillon;
+              
+              return (
+                <View key={`pavillon-${index}`} style={{ marginBottom: SPACING["lg"] }}>
+                <Text 
+                  style={{
+                    marginVertical: SPACING["xl"], 
+                    marginHorizontal: SPACING["md"], 
+                    marginTop: -SPACING["md"],
+                    ...TYPOGRAPHY.heading.small.bold
+                  }}>
+                  {pavillonName}
+                </Text>
+                <FlatList 
+                  data={pavillonGroup}
+                  renderItem={({item}) => (
+                  <CafeCard
+                    name={item.name}
+                    image={item.banner_url}
+                    location={item.location.local || ""}
+                    priceRange="$$"
+                    rating={4.8}
+                    status={item.is_open}
+                    id={item.id}
+                  />
+                  )}
+                  keyExtractor={item => item.id}
+                  horizontal
+                  ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
+                  style={{
+                  paddingHorizontal: SPACING["sm"],
+                  paddingBottom: SPACING["md"],
+                  }}
+                />
+                </View>
+              );
+              })}
+            </View>
+            )}
             <Text 
             style={{
               marginVertical: SPACING["xl"], 
               marginHorizontal: SPACING["md"], 
               ...TYPOGRAPHY.heading.small.bold
-            }}>Tous les cafés
+            }}>Tous les cafes
             </Text>
             <FlatList data={filterCafes(data)} renderItem={({item}) =>
                 <CafeCard

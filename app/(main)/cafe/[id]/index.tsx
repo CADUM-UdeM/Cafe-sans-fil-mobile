@@ -41,6 +41,9 @@ import {
 import { Cafe, Category, Item } from "@/constants/types/GET_cafe";
 import { allCafe } from '@/constants/types/GET_list_cafe';
 import ScrollableLayout from '@/components/layouts/ScrollableLayout';
+const { Platform } = require('react-native');
+const ActionSheetIOS = require('react-native').ActionSheetIOS;
+const { Alert } = require('react-native');
 
 export default function CafeScreen() {
   const [isLoading, setIsLoading] = useState(true);
@@ -167,6 +170,116 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
     };
     return methodTranslated[method] || method;
   };
+  const openLocation = (location) => {
+    console.log("Location: ", location);
+    
+    // Extract latitude and longitude from the location array
+    const latitude = location[1];
+    const longitude = location[0];
+
+    // Define URLs for different map applications
+    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+    const appleMapsUrl = `maps://app?daddr=${latitude},${longitude}`;
+    const wazeUrl = `waze://?ll=${latitude},${longitude}&navigate=yes`;
+    const genericMapsUrl = Platform.OS === 'android' ? `geo:${latitude},${longitude}` : appleMapsUrl;
+
+    // Use Alert to present app choices to the user
+    if (Platform.OS === 'ios') {
+      // For iOS we can use ActionSheetIOS
+      
+      // First check which apps are installed before showing options
+      Promise.all([
+        Linking.canOpenURL(appleMapsUrl),
+        Linking.canOpenURL("https://www.google.com/maps"),
+        Linking.canOpenURL("waze://")
+      ]).then(([appleSupported, googleSupported, wazeSupported]) => {
+        // Build options array with only installed apps
+        const options = ['Annuler'];
+        const availableApps = [];
+        
+        if (appleSupported) {
+          options.push('Apple Plans');
+          availableApps.push('apple');
+        }
+        
+        if (googleSupported) {
+          options.push('Google Maps');
+          availableApps.push('google');
+        }
+        
+        if (wazeSupported) {
+          options.push('Waze');
+          availableApps.push('waze');
+        }
+        
+        // Only show ActionSheet if there's at least one map app available
+        if (availableApps.length > 0) {
+          ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options,
+          cancelButtonIndex: 0,
+        },
+        (buttonIndex) => {
+          if (buttonIndex === 0) return; // Cancel
+          
+          const selectedApp = availableApps[buttonIndex - 1];
+          
+          if (selectedApp === 'apple') {
+            Linking.openURL(appleMapsUrl).catch(err => 
+          console.error("Failed to open Apple Maps:", err));
+          } else if (selectedApp === 'google') {
+            Linking.openURL(googleMapsUrl).catch(err => 
+          console.error("Failed to open Google Maps:", err));
+          } else if (selectedApp === 'waze') {
+            Linking.openURL(wazeUrl).catch(err => 
+          console.error("Failed to open Waze:", err));
+          }
+        }
+          );
+        } else {
+          // No map apps available, open with default URL scheme
+          Linking.openURL(genericMapsUrl).catch(err => 
+        console.error("Failed to open Maps:", err));
+        }
+      }).catch(err => {
+        console.error("Error checking for installed map apps:", err);
+        // Fallback to generic map URL
+        Linking.openURL(genericMapsUrl).catch(err => 
+          console.error("Failed to open Maps:", err));
+      });
+    } else {
+      // For Android use Alert
+      
+      Alert.alert(
+        'Choisir une application',
+        'Quelle application souhaitez-vous utiliser pour afficher cet itinéraire?',
+        [
+          {
+            text: 'Google Maps',
+            onPress: () => Linking.openURL(googleMapsUrl)
+              .catch(err => console.error("Failed to open Google Maps:", err))
+          },
+          {
+            text: 'Waze',
+            onPress: () => Linking.canOpenURL(wazeUrl)
+              .then(supported => {
+                if (supported) {
+                  return Linking.openURL(wazeUrl);
+                } else {
+                  // Fallback to Google Maps
+                  Alert.alert('Waze non installé', 'Voulez-vous ouvrir avec Google Maps?', [
+                    { text: 'Non', style: 'cancel' },
+                    { text: 'Oui', onPress: () => Linking.openURL(googleMapsUrl) }
+                  ]);
+                }
+              })
+              .catch(err => console.error("Failed to open Waze:", err))
+          },
+          { text: 'Annuler', style: 'cancel' },
+        ]
+      );
+    }
+  };
 
   // Tableau? des détails de payements
   const paymentDetails = cafe?.payment_details ? cafe.payment_details.map(({method, minimum}) => ({
@@ -206,11 +319,15 @@ console.log(paymentDetails);
             onPress={() => router.back()}
             style={styles.cafeHeaderIconButtons}
           />
-          <View style={styles.cafeHeaderButtonsRight}>
+            <View style={styles.cafeHeaderButtonsRight}>
             <IconButton Icon={Search} style={styles.cafeHeaderIconButtons} />
-            <IconButton Icon={Locate} style={styles.cafeHeaderIconButtons} />
+            <IconButton 
+              Icon={Locate} 
+              style={styles.cafeHeaderIconButtons} 
+              onPress={() => cafe?.location && openLocation(cafe.location.geometry.coordinates)} 
+            />
             <IconButton Icon={Heart} style={styles.cafeHeaderIconButtons} />
-          </View>
+            </View>
         </View>
 
         <View style={styles.cafeHeaderOpenStatus}>

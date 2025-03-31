@@ -29,6 +29,7 @@ import { fetchPannier } from "@/scripts/pannier";
 export default function ArticleScreen() {
   const { id, articleId } = useLocalSearchParams();
   console.log("Café Id", id);
+  const [reload, setReload] = useState(false);
   console.log("Article Id", articleId) ;
   const formatPrice = (price: string) => {
     if (price.charAt(price.length - 2) == ".") {
@@ -75,6 +76,7 @@ export default function ArticleScreen() {
     else{
       await saveSecurely('pannier', [itemObj]);
     }
+    router.push(`/pannier`);
   }
 
   return (
