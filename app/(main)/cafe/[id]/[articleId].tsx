@@ -66,6 +66,9 @@ export default function ArticleScreen() {
     fetchMenuItem();
   }, [articleId]);
 
+  const options = menuItem.options ? menuItem.options.map(({type, value, fee}) => 
+    ({type, value, fee})) : []; 
+
   async function handleAddToCart(itemObj : Item){
     // fetch check
     let fetchedPannier = await fetchPannier();
@@ -232,9 +235,11 @@ export default function ArticleScreen() {
           onChangeText={() => {}}
         ></TextInput>
         <View style={{ marginBottom: 44, marginTop: 32, flexDirection: "row", alignItems: "center", gap: 32}}>
-          <Counter></Counter>
+          <Counter
+          count={quantity}
+          setCount={setQuantity}></Counter>
           <Button onPress={() => handleAddToCart(menuItem)} style={{ flex: 1, width: "auto" }}>
-            Ajouter au panier
+            Ajouter au panier ・ ${menuItem.price * quantity /* + fees */}
           </Button>
         </View>
       </View>
