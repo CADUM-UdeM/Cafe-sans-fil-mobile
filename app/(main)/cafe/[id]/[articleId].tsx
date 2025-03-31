@@ -22,6 +22,9 @@ import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, KeyboardAvoidin
   ScrollView, } from "react-native";
 
 import { Item } from "@/constants/types/GET_item";
+import { fetchSync, saveSecurely, saveSync } from "@/script/storage";
+import * as hash from "object-hash";
+
 
 import { fetchSecurely, saveSecurely } from "@/scripts/storage";
 import { fetchPannier } from "@/scripts/pannier";
@@ -65,16 +68,51 @@ export default function ArticleScreen() {
     fetchMenuItem();
   }, [articleId]);
 
-  async function handleAddToCart(itemObj : Item){
-    // fetch check
-    let fetchedPannier = await fetchPannier();
-    if (fetchedPannier) {
-      // we add the new item to the existing cart
-      let newCart = [... fetchedPannier, itemObj]
-      await saveSecurely('pannier', newCart);
+
+  const panierID = "12345";
+  function addToCart(){
+    //get current list of items from cart
+    let currCart = new Array();
+    try{
+      currCart = fetchSync(panierID);
+      //console.log("here");
+      //console.log(currCart);
+      if (!currCart){
+        currCart = new Array();
+        saveSync(panierID,currCart);
+      }
+      console.log("here");
+      console.log(fetchSync(panierID));
+    }catch(error){
+      currCart = new Array();
     }
-    else{
-      await saveSecurely('pannier', [itemObj]);
+
+    type panierItem = {
+      id : string;
+      quantity:number;
+    };
+    //check for same item
+    let currQuantity = 1;
+    let itemHash = hash.MD5(menuItem);
+
+    for(const item of currCart){
+      if(item.id == itemHash){
+        currQuantity = currQuantity + item.quantity;
+        item.quantity = currQuantity;
+        break;
+      }
+    };
+
+    //add new item
+    if(currQuantity == 1){
+      saveSync(itemHash, menuItem);
+      let newItem : panierItem = {
+        id:itemHash,
+        quantity:1
+      };
+      currCart.push(newItem);
+      //console.log("here");
+      //console.log(fetchSync(panierID));
     }
     router.push(`/pannier`);
   }
@@ -214,7 +252,7 @@ export default function ArticleScreen() {
         ></TextInput>
         <View style={{ marginBottom: 44, marginTop: 32, flexDirection: "row", alignItems: "center", gap: 32}}>
           <Counter></Counter>
-          <Button onPress={() => handleAddToCart(menuItem)} style={{ flex: 1, width: "auto" }}>
+          <Button onPress={() => addToCart()} style={{ flex: 1, width: "auto" }}>
             Ajouter au panier
           </Button>
         </View>
