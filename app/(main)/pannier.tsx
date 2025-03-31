@@ -12,9 +12,8 @@ import {
 } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import HeaderLayout from "@/components/layouts/HeaderLayout";
-import { deleteSecurely, fetchSync, saveSync } from '@/script/storage';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import { deleteSecurely, fetchSecurely } from '@/scripts/storage';
+import { deleteSecurely, fetchSecurely, fetchSync, saveSync } from '@/scripts/storage';
 import { fetchPannier } from '@/scripts/pannier';
 import { router } from 'expo-router';
 

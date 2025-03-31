@@ -22,11 +22,10 @@ import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, KeyboardAvoidin
   ScrollView, } from "react-native";
 
 import { Item } from "@/constants/types/GET_item";
-import { fetchSync, saveSecurely, saveSync } from "@/script/storage";
+import { deleteSecurely, fetchSecurely, fetchSync, saveSync } from '@/scripts/storage';
 import * as hash from "object-hash";
 
 
-import { fetchSecurely, saveSecurely } from "@/scripts/storage";
 import { fetchPannier } from "@/scripts/pannier";
 
 export default function ArticleScreen() {
