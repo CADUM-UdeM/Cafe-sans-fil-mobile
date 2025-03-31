@@ -65,7 +65,7 @@ export default function CafeScreen() {
           // console.log(json)
         })
         .catch((error) => console.error(error))
-        .finally(() => setIsLoading(false));;
+        .finally(() => setIsLoading(false));
     }, []);
 
   // Have an openable link

@@ -82,6 +82,7 @@ export default function ArticleScreen() {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
+    <SafeAreaView>
     <ScrollView
       ref={scrollViewRef}
       showsVerticalScrollIndicator={false}
@@ -229,6 +230,7 @@ export default function ArticleScreen() {
       
 
     </ScrollView>
+    </SafeAreaView>
     </KeyboardAvoidingView>
   );
 }
