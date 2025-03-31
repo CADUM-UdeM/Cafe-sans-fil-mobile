@@ -79,18 +79,22 @@ const Panier = () => {
     }*/
 
     //find idx of id
+    let currPanier = fetchSync(panierID);
+    if(!currPanier){currPanier=new Array();}
     let idx = -1;
     for(let i = 0; i<items.length; i++){
       if(id == items[i].id){
-        idx=i
+        idx=i;
+        break;
       }
     }
     console.log(idx);
     if(idx!=-1){
-      setItems(items.splice(idx,1));
+      setItems(currPanier.splice(idx,1));
     }
     console.log(items);
-    saveSync(panierID,items);
+    saveSync(panierID,currPanier);
+    refreshPanier();
   }
 
   // Fonction pour supprimer un item du panier
