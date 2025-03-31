@@ -9,13 +9,12 @@ import TYPOGRAPHY from "@/constants/Typography";
 type SearchBarProps = {
   placeholder?: string;
   onSearch: (text: string) => void;
-  onFilter: () => void;
+  onFilter?: () => void;
 };
 
 export default function SearchBar({
   placeholder = "Rechercher les cafés, les plats",
   onSearch,
-  onFilter,
 }: SearchBarProps) {
   return (
     <View style={styles.searchContainer}>
@@ -36,17 +35,9 @@ export default function SearchBar({
       />
 
       <TouchableOpacity
-        onPress={onFilter}
         style={styles.filterButton}
         testID="filter-icon-container"
       >
-        <SlidersHorizontal
-          width={20}
-          height={20}
-          strokeWidth={3}
-          color={COLORS.subtuleDark}
-          testID="filter-icon"
-        />
       </TouchableOpacity>
     </View>
   );

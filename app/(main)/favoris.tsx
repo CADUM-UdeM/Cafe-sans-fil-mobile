@@ -5,7 +5,7 @@ import SPACING from '@/constants/Spacing';
 import CafeCard from '@/components/common/Cards/CafeCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
-import { fetchSync, deleteSecurely } from "@/script/storage";
+import { fetchSync, deleteSecurely } from "@/scripts/storage";
 import { sampleFavoris } from "@/constants/types/type_samples";
 import TYPOGRAPHY from "@/constants/Typography";
 import { Header } from 'react-native/Libraries/NewAppScreen';

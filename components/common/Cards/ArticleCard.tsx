@@ -38,10 +38,18 @@ type ArticleCardProps = {
   /** Additional styles for the card */
   style?: StyleProp<ViewStyle>;
 };
+const formatPrice = (price: string) => {
+  if (price.charAt(price.length - 2) == ".") {
+    return price + "0";
+  }
+  else{
+    return price
+  }
+}
 
 let cardDimensions = {
   medium: {
-    width: 220,
+    width: "100%",
     height: 135,
     image: require("@/assets/images/placeholder/imagesm.png"),
   },
@@ -88,67 +96,7 @@ export default function ArticleCard({
   style,
 }: ArticleCardProps) {
   return (
-    <View style={[style]}>
-      {size === "large" ? (
-        <Pressable onPress={() => router.push(`/cafe/${cafeSlug}/${slug}`)}
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            overflow: "hidden",
-          }}
-        >
-          <View style={{ gap: 10, width: 50 }}>
-            <View style={{ gap: 8 }}>
-              <Text style={TYPOGRAPHY.body.large.semiBold}>
-                Croissant au chocolat
-              </Text>
-              <Text style={{ fontSize: 12 }}>
-                Un ssssscroissant au chocolat d'exception, savourez sssleset
-                laissez-vous ssstransporter en France. Bonne dégustationsss!
-              </Text>
-            </View>
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
-              <Text style={TYPOGRAPHY.body.small.bold}>350 CALORIES</Text>
-              <Text style={TYPOGRAPHY.body.small.bold}>$2.00</Text>
-            </View>
-          </View>
-          <View>
-            <Image
-              source={require("@/assets/images/placeholder/imagexs.png")}
-              width={160}
-              height={108}
-              style={[{ borderRadius: SPACING["sm"] }]}
-            ></Image>
-            <Text
-              style={[TYPOGRAPHY.body.small.bold, styles.rating]}
-              testID="icon-button"
-            >
-              <Circle
-                width={12}
-                height={12}
-                strokeWidth={1}
-                color={
-                  status === "In Stock"
-                    ? COLORS.status.green
-                    : status === "Almost Out"
-                    ? COLORS.status.orange
-                    : COLORS.status.red
-                }
-                fill={
-                  status === "In Stock"
-                    ? COLORS.status.green
-                    : status === "Almost Out"
-                    ? COLORS.status.orange
-                    : COLORS.status.red
-                }
-                testID="tooltip-icon"
-              />
-            </Text>
-          </View>
-        </Pressable>
-      ) : (
+    <View style={[style, {width: "40%"}]}>
         <Pressable
           onPress={() => router.push(`/cafe/${cafeSlug}/${slug}`)}
           style={{ width: cardDimensions[size].width }}
@@ -191,23 +139,28 @@ export default function ArticleCard({
             </View>
             <View style={styles.caption}>
               <View style={styles.articleInfo}>
-                <View style={styles.articleInfoHeader}>
-                  <Text style={[TYPOGRAPHY.body.large.semiBold]}>{name}</Text>
-                </View>
-                <Text
-                  style={[
-                    TYPOGRAPHY.body.normal.semiBold,
-                    styles.articleInfocalories,
-                  ]}
-                >
-                  {calories}
-                </Text>
+              <View style={styles.articleInfoHeader}>
+                <Text style={[TYPOGRAPHY.body.large.semiBold]}>{name}</Text>
               </View>
-              <Text style={[TYPOGRAPHY.body.normal.semiBold]}>{price}</Text>
+              {calories && (
+                <Text
+                style={[
+                  TYPOGRAPHY.body.small.base,
+                  styles.articleInfocalories,
+                ]}
+                >
+                {calories} Calories
+                </Text>
+              )}
+              </View>
+              <View style={styles.priceContainer}>
+              <Text style={[TYPOGRAPHY.body.large.semiBold, styles.priceText]}>
+                {formatPrice(price)}
+              </Text>
+              </View>
             </View>
           </>
         </Pressable>
-      )}
     </View>
   );
 }
@@ -221,6 +174,10 @@ const styles = StyleSheet.create({
   },
   articleInfo: {
     gap: 6,
+  },
+  priceContainer: {
+    justifyContent: "center",
+    alignItems: "flex-end",
   },
   articleInfoHeader: {
     flexDirection: "row",
@@ -249,5 +206,9 @@ const styles = StyleSheet.create({
     shadowRadius: 5,                          // Smoothness of the shadow
 
     elevation: 3, 
-  }
+  },
+  priceText: {
+    color: COLORS.black, // Example style, adjust as needed
+    fontSize: 16,
+  },
 });

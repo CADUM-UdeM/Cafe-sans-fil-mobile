@@ -42,7 +42,7 @@ export default function HeaderLayout({fullName, profilePicture}: HeaderLayoutPro
   
 
 
-  const handleDelete = (id) => {
+  const handleDelete = (id : any) => {
     setNotifs(notifs.filter((notif) => notif.id !== id));
     const swipeableRef = swipeableRefs.current.get(id);
     if (swipeableRef) {
@@ -50,7 +50,7 @@ export default function HeaderLayout({fullName, profilePicture}: HeaderLayoutPro
     }
   };
 
-  const handleUpdate = (id) => {
+  const handleUpdate = (id : any) => {
     setNotifs(
       notifs.map((notif) =>
         notif.id === id ? { ...notif, status: !notif.status } : notif
@@ -62,7 +62,7 @@ export default function HeaderLayout({fullName, profilePicture}: HeaderLayoutPro
     }
   };
   const swipeableRefs = useRef(new Map());
-  const renderRightActions = (dragX, id) => {
+  const renderRightActions = (dragX : any, id : any) => {
     const opacity = dragX.interpolate({
       inputRange: [-100, 0],
       outputRange: [1, 0],
@@ -83,7 +83,7 @@ export default function HeaderLayout({fullName, profilePicture}: HeaderLayoutPro
       </Animated.View>
     );
   };
-  const renderLeftActions = (dragX, id) => {
+  const renderLeftActions = (dragX : any, id : any) => {
     const opacity = dragX.interpolate({
       inputRange: [-100, 0],
       outputRange: [1, 0],
@@ -115,13 +115,13 @@ export default function HeaderLayout({fullName, profilePicture}: HeaderLayoutPro
       },
       {
         id: 2,
-        title: 'Titre notification #XXX',
+        title: 'Titre notification #XX2',
         content: 'Contenu de la notification',
         status: false,
       },
       {
         id: 3,
-        title: 'Titre notification #XXX',
+        title: 'Titre notification #XX1',
         content: 'Contenu de la notification',
         status: false,
       },
@@ -162,22 +162,28 @@ export default function HeaderLayout({fullName, profilePicture}: HeaderLayoutPro
                   <Text style={styles.noNotificationsText}>Aucune notification</Text>
                 ) : (
               notifs.map((notif) => (
-                //<Swipeable key={notif.id} renderLeftActions={(progress, dragX) => renderLeftActions(dragX, notif.id)} renderRightActions={(progress, dragX) => renderRightActions(dragX, notif.id)} ref={(ref) => swipeableRefs.current.set(notif.id, ref)}>
-                <View style={styles.orderBox} key={notif.title} >
-                  <View style={styles.orderDetails}>
-                    <Text style={styles.orderTitle}>{notif.title}</Text>
-                    <Text style={styles.orderContent}>{notif.content}</Text>
-                    <View style={{ position: 'absolute', right: 10, top: '50%', transform: [{ translateY: -5 }] }}>
-                      <View style={{
-                        width: 10,
-                        height: 10,
-                        borderRadius: 5,
-                        backgroundColor: notif.status ? 'green' : 'red',
-                      }} />
+                <GestureHandlerRootView key={notif.id} style={{ width: '100%', marginBottom: 12 }}>
+                  <Swipeable
+                    renderLeftActions={(progress, dragX) => renderLeftActions(dragX, notif.id)}
+                    renderRightActions={(progress, dragX) => renderRightActions(dragX, notif.id)}
+                    ref={(ref) => swipeableRefs.current.set(notif.id, ref)}
+                  >
+                    <View style={styles.orderBox}>
+                      <View style={styles.orderDetails}>
+                        <Text style={styles.orderTitle}>{notif.title}</Text>
+                        <Text style={styles.orderContent}>{notif.content}</Text>
+                        <View style={{ position: 'absolute', right: 10, top: '50%', transform: [{ translateY: -5 }] }}>
+                          <View style={{
+                            width: 10,
+                            height: 10,
+                            borderRadius: 5,
+                            backgroundColor: notif.status ? 'green' : 'red',
+                          }} />
+                        </View>
+                      </View>
                     </View>
-                  </View>
-                </View>
-                //</Swipeable>
+                  </Swipeable>
+                </GestureHandlerRootView>
               )))}
               
             </View>

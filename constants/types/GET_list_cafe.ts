@@ -1,3 +1,5 @@
+import { Cafe } from "./GET_cafe";
+
 type Links = {
     first: string;
     last: string;

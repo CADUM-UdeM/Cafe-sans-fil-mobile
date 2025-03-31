@@ -22,12 +22,22 @@ import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, KeyboardAvoidin
   ScrollView, FlatList } from "react-native";
 
 import { Item } from "@/constants/types/GET_item";
-// import { FlatList } from "react-native-gesture-handler";
+
+import { fetchSecurely, saveSecurely } from "@/scripts/storage";
+import { fetchPannier } from "@/scripts/pannier";
 
 export default function ArticleScreen() {
   const { id, articleId } = useLocalSearchParams();
   console.log("Café Id", id);
   console.log("Article Id", articleId) ;
+  const formatPrice = (price: string) => {
+    if (price.charAt(price.length - 2) == ".") {
+      return price + "0";
+    }
+    else{
+      return price
+    }
+  }
 
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -45,7 +55,7 @@ export default function ArticleScreen() {
         //console.log(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}/menu/${articleId}`);
         const response = await fetch(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}/menu/items/${articleId}`);
         const json = await response.json();
-        console.log(json.image_url);
+        //console.log(json.image_url);
         setMenuItem(json);
       } catch (error) {
           console.error('Fetch error:', error);
@@ -56,9 +66,18 @@ export default function ArticleScreen() {
     fetchMenuItem();
   }, [articleId]);
 
-  // Const pour les options extra de certains article
-  const options = menuItem.options ? menuItem.options.map(({type, value, fee}) => 
-    ({type, value, fee})) : []; 
+  async function handleAddToCart(itemObj : Item){
+    // fetch check
+    let fetchedPannier = await fetchPannier();
+    if (fetchedPannier) {
+      // we add the new item to the existing cart
+      let newCart = [... fetchedPannier, itemObj]
+      await saveSecurely('pannier', newCart);
+    }
+    else{
+      await saveSecurely('pannier', [itemObj]);
+    }
+  }
 
   return (
     <KeyboardAvoidingView
@@ -102,7 +121,7 @@ export default function ArticleScreen() {
         >
           <Text style={TYPOGRAPHY.heading.medium.bold}>{loading? "is loading": menuItem.name}</Text>
           <Text style={[TYPOGRAPHY.heading.medium.bold, { color: "#656565" }]}>
-            {loading? "is loading" : `${menuItem.price}$`}
+            {loading? "is loading" : `$${formatPrice(menuItem.price)}`}
           </Text>
         </View>
         <Text
@@ -213,11 +232,9 @@ export default function ArticleScreen() {
           onChangeText={() => {}}
         ></TextInput>
         <View style={{ marginBottom: 44, marginTop: 32, flexDirection: "row", alignItems: "center", gap: 32}}>
-          <Counter
-          count={quantity}
-          setCount={setQuantity}/>
-          <Button onPress={() => router.push('/(main)/pannier')} style={{ flex: 1, width: "auto" }}>
-            Ajouter au panier ・ ${menuItem.price * quantity /* + fees */}
+          <Counter></Counter>
+          <Button onPress={() => handleAddToCart(menuItem)} style={{ flex: 1, width: "auto" }}>
+            Ajouter au panier
           </Button>
         </View>
       </View>

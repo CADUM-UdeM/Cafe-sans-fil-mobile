@@ -39,6 +39,8 @@ import {
   ActivityIndicator
 } from "react-native";
 import { Cafe, Category, Item } from "@/constants/types/GET_cafe";
+import { allCafe } from '@/constants/types/GET_list_cafe';
+import ScrollableLayout from '@/components/layouts/ScrollableLayout';
 
 export default function CafeScreen() {
   const [isLoading, setIsLoading] = useState(true);
@@ -53,7 +55,18 @@ export default function CafeScreen() {
   const [itemList, setItemList] = useState<Item[]>();
 
   const [cafe, setCafe] = useState<Cafe>(); // set social media as empty object
-
+  const [data, setData] = useState<allCafe | any>([]);
+  useEffect(() => {
+      setIsLoading(true);
+      fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
+        .then((response) => response.json())
+        .then((json) => {
+          setData(json.items);
+          // console.log(json)
+        })
+        .catch((error) => console.error(error))
+        .finally(() => setIsLoading(false));;
+    }, []);
 
   // Have an openable link
   const openLink = (url: string) => {
@@ -162,10 +175,6 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
 console.log(paymentDetails);
   
 
-  
-
-
-
   if(isLoading){
     return(
       <ActivityIndicator size={'large'}
@@ -179,7 +188,7 @@ console.log(paymentDetails);
 
   return (
 
-    <SafeAreaView style={{}}>
+    <SafeAreaView style={{ backgroundColor: '#000' }}>
       
     <ScrollView
       ref={scrollViewRef}
@@ -227,11 +236,13 @@ console.log(paymentDetails);
             gap: 10,}}>
 
               {socialMediaTab.map(({plateform, link}) => ( link ? (
-                <Tooltip
-                label={plateform.charAt(0).toUpperCase() + plateform.slice(1)}
-                onPress={() => openLink(link)}
-                Icon={getIcon(plateform)}
-                showChevron={false} color='white'/>
+                <View key={plateform}>
+                  <Tooltip
+                  label={plateform.charAt(0).toUpperCase() + plateform.slice(1)}
+                  onPress={() => openLink(link)}
+                  Icon={getIcon(plateform)}
+                  showChevron={false} color='white'/>
+                </View>
               ) : null ))}
           </View>
 
@@ -258,9 +269,10 @@ console.log(paymentDetails);
           {paymentDetails.map(({method, minimum}) => ( minimum ? (
             <View key={method}>
               <Tooltip
-                label={`${method} MIN : ${minimum}`}
-                showChevron={true}
+                label={`${method}`}
+                showChevron={true }
                 color="white"
+                description={`Minimum: ${minimum}`}
                 Icon={CreditCard}
                 /> 
             </View>
@@ -330,7 +342,7 @@ console.log(paymentDetails);
             }}>
             Filtres 
           </Text>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignContent:'center', justifyContent: 'center'}}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignContent: 'center', justifyContent: 'center', padding: 8 }}>
             {cafe? [
               ...cafe.menu.categories.map((item : Category) => (
                 <View 
@@ -377,12 +389,12 @@ console.log(paymentDetails);
                                 price={"$" + item.price} 
                                 status={item.in_stock? "In Stock" : "Out of Stock"}
                                 image={item.image_url}
-                                style={{alignItems: 'center'}}
+                                style={{alignItems: 'center', width: "45%", margin: SPACING["md"]}}
                               />
                               }
-      ItemSeparatorComponent={() => <View style={{ marginTop: SPACING["md"]}} />} // padding
       scrollEnabled={false}
       style={{marginTop: SPACING['md']}}
+      numColumns={2}
       />      
 
       {/* Cafés similaires */}
@@ -394,6 +406,28 @@ console.log(paymentDetails);
         }}>
           Autres cafés similaires
         </Text>
+        <FlatList
+          data={data}
+          renderItem={({ item }) => (
+            <CafeCard
+              name={item.name}
+              image={item.banner_url}
+              location={item.location.pavillon}
+              priceRange="$$"
+              rating={4.8}
+              status={item.is_open}
+              id={item.id}
+            />
+          )}
+          keyExtractor={(item) => item.id}
+          horizontal
+          ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
+          style={{
+            paddingHorizontal: SPACING["sm"],
+            paddingBottom: SPACING["md"],
+          }}
+        />
+
 
         {/* TODO: IMPLÉMENTER LA FLATLIST */}
 
