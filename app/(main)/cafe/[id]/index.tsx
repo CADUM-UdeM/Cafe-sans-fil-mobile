@@ -175,10 +175,6 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
 console.log(paymentDetails);
   
 
-  
-
-
-
   if(isLoading){
     return(
       <ActivityIndicator size={'large'}
