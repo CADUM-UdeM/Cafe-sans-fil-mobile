@@ -64,3 +64,40 @@ export const saveFav = async (newValue) => {
         console.error("Save Favorite Error:", error);
     }
 };
+
+/**
+ * Function to remove a specific favorite cafe by ID.
+ * @param cafeId The ID of the cafe to remove.
+ */
+export const deleteFav = async (cafeId) => {
+    try {
+        let storedFavorites = await fetchSecurely("favorites") || [];
+
+        // Filter out the cafe that needs to be deleted
+        const updatedFavorites = storedFavorites.filter(fav => fav.cafe_id !== cafeId);
+
+        if (updatedFavorites.length === 0) {
+            await deleteSecurely("favorites"); // Delete key only if the list is empty
+            console.log("Deleted all favorites as last one was removed.");
+        } else {
+            await saveSecurely("favorites", updatedFavorites);
+            console.log("Removed from favorites:", cafeId);
+        }
+    } catch (error) {
+        console.error("Delete Favorite Error:", error);
+    }
+};
+
+/**
+ * Function to retrieve all saved favorite cafes.
+ * @returns An array of favorite cafes or an empty array if none exist.
+ */
+export const getFavorites = async () => {
+    try {
+        const favorites = await fetchSecurely("favorites");
+        return favorites || [];
+    } catch (error) {
+        console.error("Get Favorites Error:", error);
+        return [];
+    }
+};

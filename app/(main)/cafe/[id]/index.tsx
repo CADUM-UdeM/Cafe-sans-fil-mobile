@@ -33,15 +33,14 @@ import {
   FlatList,
 } from "react-native";
 import { 
-  deleteSecurely,
-  fetchSecurely, 
+  deleteFav,
+  getFavorites, 
   saveFav 
 } from '@/scripts/storage';
 import { createPathConfigForStaticNavigation } from '@react-navigation/native';
 import { sampleFavoris } from '@/constants/type_samples';
 
 export default function CafeScreen() {
-  var favCafe : Favoris[] = [];
   const [isLoading, setIsLoading] = useState(true);
   const { id } = useLocalSearchParams();
   const scrollViewRef = useRef<ScrollView>(null);
@@ -49,55 +48,27 @@ export default function CafeScreen() {
   const [cafe, setCafe] = useState<Cafe | null>(null);
   const [favorited, setFavorited] = useState(false);
 
-  // handle the saving and deletion of the cafe
-  useEffect(() => {
-    if (!cafe || !id) return; // Ensure cafe is fully loaded before proceeding
+  const checkIfFavorite = async (cafeId: string) => {
+    const savedFavorites = await getFavorites(); // Retrieve saved favorites (from AsyncStorage, database, etc.)
+    return savedFavorites.some((fav: Favoris) => fav.cafe_id === cafeId);
+  };
   
-    const handleFavorites = async () => {
-      try {
-        if (favorited) {
-          let favObj = { ...sampleFavoris }; // Clone instead of modifying directly
-          favObj.cafe_id = cafe.cafe_id;
-          favObj.image_url = cafe.image_url;
-          favObj.faculty = cafe.faculty;
-          favObj.is_open = cafe.is_open;
-          favObj.location = cafe.location;
-          favObj.name = cafe.name;
-          favObj.slug = cafe.slug;
-          favObj.status_message = cafe.status_message;
-  
-          await saveFav(favObj);
-          console.log("Saved cafe:", id);
-        } else {
-          let fetchedData = await fetchSecurely("favorites"); // Use consistent key
-          if (fetchedData) {
-            await deleteSecurely("favorites"); // Delete only if it exists
-            console.log("Deleted cafe:", id);
-          }
-        }
-      } catch (error) {
-        console.error("Error handling favorites:", error);
-      }
-    };
-  
-    handleFavorites();
-  }, [favorited, cafe, id]);
-
-  // fetch cafe data
+  // Fetch cafe data and check if it’s favorited
   useEffect(() => {
     setIsLoading(true);
     const fetchCafe = async () => {
       try {
         const response = await fetch(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}`);
         const json = await response.json();
-        setCafe(json);
   
-        let storedFavorites = await fetchSecurely("favorites") || [];
-        if (storedFavorites.some((fav : Favoris) => fav.cafe_id === id)) {
-          setFavorited(true);
-        } else {
-          setFavorited(false);
-        }
+        // Ensure `cafe_id` exists
+        const updatedCafe = { ...json, cafe_id: json.id };
+        setCafe(updatedCafe);
+
+        const favorites = await getFavorites();
+        const isFav = favorites.some((fav : Favoris) => fav.cafe_id === updatedCafe.cafe_id);
+        setFavorited(isFav);
+
       } catch (error) {
         console.error("Fetch error:", error);
       } finally {
@@ -106,6 +77,39 @@ export default function CafeScreen() {
     };
     fetchCafe();
   }, [id]);
+
+  // Handle saving/deleting favorite when user toggles it manually
+  const toggleFavorite = async () => {
+    if (!cafe || !cafe.cafe_id) {
+      console.error("Cannot toggle favorite: cafe data is missing");
+      return;
+    }
+
+    try {
+      if (favorited) {
+        await deleteFav(cafe.cafe_id);
+        console.log("Removed from favorites:", cafe.cafe_id);
+      } else {
+        const favObj = {
+          cafe_id: cafe.cafe_id,
+          image_url: cafe.image_url,
+          faculty: cafe.faculty,
+          is_open: cafe.is_open,
+          location: cafe.location,
+          name: cafe.name,
+          slug: cafe.slug,
+          status_message: cafe.status_message,
+        };
+
+        await saveFav(favObj);
+        console.log("Added to favorites:", cafe.cafe_id);
+      }
+
+      setFavorited(!favorited);
+    } catch (error) {
+      console.error("Error handling favorites:", error);
+    }
+  };
   
 
   return (
@@ -130,9 +134,7 @@ export default function CafeScreen() {
             <IconButton Icon={Search} style={styles.cafeHeaderIconButtons} />
             <IconButton Icon={Locate} style={styles.cafeHeaderIconButtons} />
             <IconButton Icon={Heart} style={[favorited? styles.cafeFavoritedButton : styles.cafeHeaderIconButtons]} 
-              onPress={() => {
-                setFavorited(!favorited);
-              }} />
+              onPress={toggleFavorite} />
           </View>
         </View>
 
