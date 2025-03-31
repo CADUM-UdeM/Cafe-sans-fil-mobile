@@ -12,10 +12,9 @@ import {
 } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import HeaderLayout from "@/components/layouts/HeaderLayout";
-import { deleteSecurely, fetchSync, saveSync } from '@/script/storage';
+import { deleteSecurely, fetchSync, saveSync } from '@/scripts/storage';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import { deleteSecurely, fetchSecurely } from '@/scripts/storage';
-import { fetchPannier } from '@/scripts/pannier';
+import { fetchPannier } from '../../scripts/pannier';
 import { router } from 'expo-router';
 
 const Panier = () => {
@@ -37,18 +36,6 @@ const Panier = () => {
       }
       fetchPanierItems();
     }, []);
-
-  const [cart, setCart] = useState();
-  const [reload, setReload] = useState(false);
-  
-  useEffect(() => {
-    let savedCart = async () => {
-      let ret = await fetchSecurely('pannier');
-      setCart(ret);
-      console.log(ret);
-    }
-    savedCart();
-  }, [reload]);
 
   // Fonction pour calculer le total du panier
   function calculateTotal() {
@@ -84,11 +71,12 @@ const Panier = () => {
   };
 
   function deletePanierItem(id){
+    /*
     try{
       deleteSecurely(id);
     }catch(error){
 
-    }
+    }*/
 
     //find idx of id
     let idx = -1;
@@ -97,9 +85,11 @@ const Panier = () => {
         idx=i
       }
     }
+    console.log(idx);
     if(idx!=-1){
       setItems(items.splice(idx,1));
     }
+    console.log(items);
     saveSync(panierID,items);
   }
 
@@ -117,6 +107,7 @@ const Panier = () => {
       ]
     );
   };
+
   function panierItemToItem(panierItem){
     return fetchSync(panierItem.id);
   }
@@ -150,9 +141,11 @@ const Panier = () => {
 
   function refreshPanier(){
     let currPanier = fetchSync(panierID);
-    if(currPanier&&currPanier.length>0){
+    if(currPanier){
       setItems(currPanier);
     }
+    console.log(currPanier);
+    console.log(items);
   }
 
   return (<>
