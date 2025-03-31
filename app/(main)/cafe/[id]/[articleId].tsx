@@ -19,9 +19,10 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, KeyboardAvoidingView,
   Platform,
-  ScrollView, } from "react-native";
+  ScrollView, FlatList } from "react-native";
 
 import { Item } from "@/constants/types/GET_item";
+// import { FlatList } from "react-native-gesture-handler";
 
 export default function ArticleScreen() {
   const { id, articleId } = useLocalSearchParams();
@@ -32,6 +33,7 @@ export default function ArticleScreen() {
 
   const [menuItem, setMenuItem] = useState<Item | any>({});
   const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(1); // nombre d'article à mettre dans le panier
 
   useEffect(() => {
     scrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true });
@@ -52,6 +54,24 @@ export default function ArticleScreen() {
     }
     fetchMenuItem();
   }, [articleId]);
+
+  // Const pour les options extra de certains article
+  const options = menuItem.options ? menuItem.options.map(({type, value, fee}) => 
+    ({type, value, fee})) : []; 
+
+  // Fonction qui incrément et décrémente le nombre d'article
+  const incrementQuantity = () => {
+    setQuantity(quantity + 1);
+    console.log("increase pressed");
+  };
+  
+
+  const decrementQuantity = () => {
+    if (quantity > 1){
+      setQuantity(quantity - 1);
+      console.log("decrease pressed");
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -107,7 +127,12 @@ export default function ArticleScreen() {
           {loading ? "": menuItem.description}
         </Text>
       </View>
-
+      {/* <View>
+        <Text>Options</Text>
+        {options.map((options, index) => (<Text key={index}>{options.value} (+{options.fee}$)</Text>)) }
+        
+      </View> */}
+{/*
       <View
         style={{
           flexDirection: "row",
@@ -117,10 +142,12 @@ export default function ArticleScreen() {
           marginBottom: 28,
         }}
       >
+        
         <Tooltip label="95%" Icon={ThumbsUp} showChevron={false}></Tooltip>
-        <Tooltip label="Populaire" showChevron={false} />
-      </View>
+        <Tooltip label="Populaire" showChevron={false} /> 
+      </View> */}
 
+{/*
       <View style={{ borderTopWidth: 3, borderBottomWidth: 3, borderColor: COLORS.lightGray, paddingHorizontal: 16 }}>
         <View style={{ marginBlock: 20 }}>
           <Text style={[TYPOGRAPHY.heading.small.bold]}>Taille de la boisson</Text>
@@ -136,7 +163,7 @@ export default function ArticleScreen() {
             <Text style={[TYPOGRAPHY.body.normal.semiBold, { textAlign: "center" }]}>Grande</Text>
           </View>
         </View>
-      </View>
+      </View> */}
       <View style={{ borderBottomWidth: 3, borderColor: COLORS.lightGray, paddingHorizontal: 16 }}>
         <View style={{ marginBlock: 20, gap: 8 }}>
           <Text style={[TYPOGRAPHY.heading.small.bold]}>Options extras</Text>
@@ -145,11 +172,23 @@ export default function ArticleScreen() {
             TYPOGRAPHY.body.large.base,
             { color: COLORS.subtuleDark, lineHeight: 21 },
           ]}
-        >
+        > 
           Sélectionnez les options qui vous intéressent.
         </Text>
-        </View>
+        </View >
         <View style={{ flexDirection: "row", gap: 12, marginBottom: 24 }}>
+          <FlatList data={options} renderItem={({item}) => (
+            <View style={{ backgroundColor: COLORS.lightGray, paddingHorizontal: 12, paddingVertical: 12, borderRadius: 10, flex: 1,  }}>
+              <Text style={[TYPOGRAPHY.body.normal.semiBold, { textAlign: "center" }]}>{item.value} (+${item.fee})</Text>
+            </View> )}
+            keyExtractor={item => item.value}
+            horizontal
+            ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
+            // style={{paddingHorizontal: SPACING["sm"], paddingBottom: SPACING["md"]}}
+          />
+        </View>
+        
+        {/* <View style={{ flexDirection: "row", gap: 12, marginBottom: 24 }}>
           <View style={{ backgroundColor: COLORS.lightGray, paddingVertical: 12, borderRadius: 10, flex: 1,  }}>
             <Text style={[TYPOGRAPHY.body.normal.semiBold, { textAlign: "center" }]}>Frites</Text>
           </View>
@@ -162,8 +201,8 @@ export default function ArticleScreen() {
           <View style={{ backgroundColor: COLORS.lightGray, paddingVertical: 12, borderRadius: 10, flex: 1,  }}>
             <Text style={[TYPOGRAPHY.body.normal.semiBold, { textAlign: "center" }]}>Pomme</Text>
           </View>
-        </View>
-      </View>
+        </View> */}
+      </View> 
       <View style={{ borderBottomWidth: 3, borderColor: COLORS.lightGray, paddingHorizontal: 16 }}>
         <View style={{ marginBlock: 20, gap: 8 }}>
           <Text style={[TYPOGRAPHY.heading.small.bold]}>Instructions</Text>
@@ -187,9 +226,13 @@ export default function ArticleScreen() {
           onChangeText={() => {}}
         ></TextInput>
         <View style={{ marginBottom: 44, marginTop: 32, flexDirection: "row", alignItems: "center", gap: 32}}>
-          <Counter></Counter>
+          <Counter
+          value={quantity}
+          onIncrement={incrementQuantity}
+          onDecrement={decrementQuantity}
+          />
           <Button onPress={() => router.push('/(main)/pannier')} style={{ flex: 1, width: "auto" }}>
-            Ajouter au panier
+            Ajouter au panier ・ ${menuItem.price * quantity /* + fees */}
           </Button>
         </View>
       </View>
