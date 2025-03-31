@@ -241,8 +241,7 @@ function sortByDistance(current: Location.LocationObject, cafes: Cafe[]): Cafe[]
               </View>
           </View>
           )}
-            
-            {/* Tous les cafés classés du plus au moins proche */}
+          {/* Tous les cafés classés du plus au moins proche 
             <View>
             {closest && (
               <View>
@@ -270,14 +269,14 @@ function sortByDistance(current: Location.LocationObject, cafes: Cafe[]): Cafe[]
                   />
             </View>
             )}
-            </View>
+            </View> */}
 
             {/* All Cafes Cards */}
             {/* Cafés groupés par pavillon */}
             {data && (
             <View style={{ marginTop: SPACING["xl"] }}>
               
-              {sortByPavillon(filterCafes(data)).map((pavillonGroup, index) => {
+              {sortByPavillon(filterCafes(closest)).map((pavillonGroup, index) => {
               if (pavillonGroup.length === 0) return null;
               
               const pavillonName = pavillonGroup[0].location.pavillon;
@@ -286,9 +285,9 @@ function sortByDistance(current: Location.LocationObject, cafes: Cafe[]): Cafe[]
                 <View key={`pavillon-${index}`} style={{ marginBottom: SPACING["lg"] }}>
                 <Text 
                   style={{
-                    marginVertical: SPACING["xl"], 
+                    marginVertical: SPACING["sm"], 
                     marginHorizontal: SPACING["md"], 
-                    marginTop: -SPACING["md"],
+                    marginTop: -SPACING["sm"],
                     ...TYPOGRAPHY.heading.small.bold
                   }}>
                   {pavillonName}
@@ -299,7 +298,7 @@ function sortByDistance(current: Location.LocationObject, cafes: Cafe[]): Cafe[]
                   <CafeCard
                     name={item.name}
                     image={item.banner_url}
-                    location={item.location.local || ""}
+                    location={'L' + item.location.local.substring(1) || ""}
                     priceRange="$$"
                     rating={4.8}
                     status={item.is_open}
@@ -321,10 +320,11 @@ function sortByDistance(current: Location.LocationObject, cafes: Cafe[]): Cafe[]
             )}
             <Text 
             style={{
-              marginVertical: SPACING["xl"], 
-              marginHorizontal: SPACING["md"], 
+              marginVertical: SPACING["sm"], 
+              marginHorizontal: SPACING["sm"], 
+              marginTop: -SPACING["sm"],
               ...TYPOGRAPHY.heading.small.bold
-            }}>Tous les cafes
+            }}>Tous les cafés
             </Text>
             <FlatList data={filterCafes(data)} renderItem={({item}) =>
                 <CafeCard
