@@ -9,7 +9,7 @@ export const saveSecurely = async (key, value) => {
     try {
         const jsonValue = JSON.stringify(value);
         await SecureStore.setItemAsync(key, jsonValue);
-        console.log('saved cafe ', key)
+        console.log('saved value at key: ', key, value);
     }catch (error){
         throw error;
     }
@@ -61,7 +61,7 @@ export const saveFav = async (newValue) =>{
 export const fetchSecurely = async (key) => {
     try {
         const jsonValue = await SecureStore.getItemAsync(key);
-        console.log('fetched value: ', jsonValue != null ? JSON.parse(jsonValue).slug : null);
+        console.log('fetched value : ', key, '...', jsonValue != null ? JSON.parse(jsonValue).slug : null);
         return jsonValue != null ? JSON.parse(jsonValue) : null;
     }catch (error){
         throw error;

@@ -23,6 +23,9 @@ import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, KeyboardAvoidin
 
 import { Item } from "@/constants/types/GET_item";
 
+import { fetchSecurely, saveSecurely } from "@/scripts/storage";
+import { fetchPannier } from "@/scripts/pannier";
+
 export default function ArticleScreen() {
   const { id, articleId } = useLocalSearchParams();
   console.log("Café Id", id);
@@ -50,7 +53,7 @@ export default function ArticleScreen() {
         //console.log(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}/menu/${articleId}`);
         const response = await fetch(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}/menu/items/${articleId}`);
         const json = await response.json();
-        console.log(json.image_url);
+        //console.log(json.image_url);
         setMenuItem(json);
       } catch (error) {
           console.error('Fetch error:', error);
@@ -60,6 +63,19 @@ export default function ArticleScreen() {
     }
     fetchMenuItem();
   }, [articleId]);
+
+  async function handleAddToCart(itemObj : Item){
+    // fetch check
+    let fetchedPannier = await fetchPannier();
+    if (fetchedPannier) {
+      // we add the new item to the existing cart
+      let newCart = [... fetchedPannier, itemObj]
+      await saveSecurely('pannier', newCart);
+    }
+    else{
+      await saveSecurely('pannier', [itemObj]);
+    }
+  }
 
   return (
     <KeyboardAvoidingView
@@ -196,7 +212,7 @@ export default function ArticleScreen() {
         ></TextInput>
         <View style={{ marginBottom: 44, marginTop: 32, flexDirection: "row", alignItems: "center", gap: 32}}>
           <Counter></Counter>
-          <Button onPress={() => router.push('/(main)/pannier')} style={{ flex: 1, width: "auto" }}>
+          <Button onPress={() => handleAddToCart(menuItem)} style={{ flex: 1, width: "auto" }}>
             Ajouter au panier
           </Button>
         </View>
