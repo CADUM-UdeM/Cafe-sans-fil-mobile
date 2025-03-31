@@ -4,8 +4,13 @@ import { Minus, Plus } from "lucide-react-native";
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
-export default function Counter() {
-  const [count, setCount] = useState(1);
+interface CounterProps {
+  count: number;
+  setCount: React.Dispatch<React.SetStateAction<number>>;
+}
+
+export default function Counter({count, setCount} : CounterProps /*(item : number) => void*/ ){
+  // const [count, setCount] = useState(1);
   // TODO: Add a max prop to limit the counter to a certain number
   const increment = () => setCount((prev) => prev + 1);
   const decrement = () => setCount((prev) => Math.max(1, prev - 1));

@@ -34,6 +34,7 @@ export default function ArticleScreen() {
   const [menuItem, setMenuItem] = useState<Item | any>({});
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1); // nombre d'article à mettre dans le panier
+  // add and true 
 
   useEffect(() => {
     scrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true });
@@ -58,20 +59,6 @@ export default function ArticleScreen() {
   // Const pour les options extra de certains article
   const options = menuItem.options ? menuItem.options.map(({type, value, fee}) => 
     ({type, value, fee})) : []; 
-
-  // Fonction qui incrément et décrémente le nombre d'article
-  const incrementQuantity = () => {
-    setQuantity(quantity + 1);
-    console.log("increase pressed");
-  };
-  
-
-  const decrementQuantity = () => {
-    if (quantity > 1){
-      setQuantity(quantity - 1);
-      console.log("decrease pressed");
-    }
-  };
 
   return (
     <KeyboardAvoidingView
@@ -227,10 +214,8 @@ export default function ArticleScreen() {
         ></TextInput>
         <View style={{ marginBottom: 44, marginTop: 32, flexDirection: "row", alignItems: "center", gap: 32}}>
           <Counter
-          value={quantity}
-          onIncrement={incrementQuantity}
-          onDecrement={decrementQuantity}
-          />
+          count={quantity}
+          setCount={setQuantity}/>
           <Button onPress={() => router.push('/(main)/pannier')} style={{ flex: 1, width: "auto" }}>
             Ajouter au panier ・ ${menuItem.price * quantity /* + fees */}
           </Button>
