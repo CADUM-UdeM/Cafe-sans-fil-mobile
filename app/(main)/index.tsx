@@ -54,6 +54,7 @@ import { Cafe } from "@/constants/types/GET_cafe";
  * - Horizontal Cafe Cards By Categories: Shows cafe cards categorized by trends, proximity, and promotions.
  * - All Cafes Cards: Lists all available cafes.
  */
+
 export default function HomeScreen() {
   const [data, setData] = useState<allCafe | any>();
   const [closest, setClosest] = useState<Cafe[]>();
@@ -298,4 +299,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingRight: SPACING["md"],
   },
+  cafeFlatlist: {
+    marginTop: SPACING["md"],
+    //marginBottom: SPACING["md"],
+    padding:7,
+  }
 });

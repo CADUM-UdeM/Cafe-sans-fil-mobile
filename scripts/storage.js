@@ -31,29 +31,6 @@ export const saveSync = (key, value) => {
 }
 
 /**
- * This function will add the new cafe to the favorites list.
- * It will check if a list already exists, if it does, then it will add
- * the new value. Otherwise, it will create the list with the new value inside.
- * @param newValue 
- */
-export const saveFav = async (newValue) =>{
-    try{
-        if (fetchSync('favorites') != null){
-            let fetchData = JSON.parse(fetchSync('favorites'));
-            if (!fetchData.includes(newValue)){
-                fetchData.push(newValue);
-                await deleteSecurely('favorites');
-                saveSync('favorites', JSON.stringify(fetchData));
-            }
-        } else {
-            saveSync('favorites', JSON.stringify([newValue]));
-        }
-    }catch (error){
-        throw error;
-    }
-}
-
-/**
  * Function to fetch the saved data.
  * @param key: the "id" of the attached value. This key is needed to fetch this data.
  * @returns a JSON object containing the data that was fetched. If no data was found, returns null
@@ -94,3 +71,61 @@ export const deleteSecurely = async (key) => {
         throw error;
     }
 }
+/**
+ * Function to save a favorite cafe.
+ * If the favorites list exists, add the new cafe; otherwise, create a new list.
+ * @param newValue The new cafe object to be saved.
+ */
+export const saveFav = async (newValue) => {
+    try {
+        const storedFavorites = await fetchSecurely("favorites") || [];
+        
+        // Check if cafe already exists in favorites
+        if (!storedFavorites.some(fav => fav.cafe_id === newValue.cafe_id)) {
+            const updatedFavorites = [...storedFavorites, newValue];
+            await saveSecurely("favorites", updatedFavorites);
+            console.log("Added to favorites:", newValue.cafe_id);
+        } else {
+            console.log("Cafe already in favorites:", newValue.cafe_id);
+        }
+    } catch (error) {
+        console.error("Save Favorite Error:", error);
+    }
+};
+
+/**
+ * Function to remove a specific favorite cafe by ID.
+ * @param cafeId The ID of the cafe to remove.
+ */
+export const deleteFav = async (cafeId) => {
+    try {
+        let storedFavorites = await fetchSecurely("favorites") || [];
+
+        // Filter out the cafe that needs to be deleted
+        const updatedFavorites = storedFavorites.filter(fav => fav.cafe_id !== cafeId);
+
+        if (updatedFavorites.length === 0) {
+            await deleteSecurely("favorites"); // Delete key only if the list is empty
+            console.log("Deleted all favorites as last one was removed.");
+        } else {
+            await saveSecurely("favorites", updatedFavorites);
+            console.log("Removed from favorites:", cafeId);
+        }
+    } catch (error) {
+        console.error("Delete Favorite Error:", error);
+    }
+};
+
+/**
+ * Function to retrieve all saved favorite cafes.
+ * @returns An array of favorite cafes or an empty array if none exist.
+ */
+export const getFavorites = async () => {
+    try {
+        const favorites = await fetchSecurely("favorites");
+        return favorites || [];
+    } catch (error) {
+        console.error("Get Favorites Error:", error);
+        return [];
+    }
+};

@@ -53,18 +53,18 @@ export default function useLocation() {
     setLocation(position);
 
     // FIXME: Remove this log after testing.
-    console.log(
-      "Current Location: ",
-      position.coords.longitude,
-      position.coords.latitude
-    );
+    // console.log(
+    //   "Current Location: ",
+    //   position.coords.longitude,
+    //   position.coords.latitude
+    // );
 
     // Return the location object if `returnLocation` is true
     if (returnLocation) return position;
   }
 
   useEffect(() => {
-    console.log("FIRST USE EFFECT");
+    //console.log("FIRST USE EFFECT");
     getCurrentLocation();
   }, []);
 

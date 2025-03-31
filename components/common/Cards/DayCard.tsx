@@ -22,7 +22,6 @@ export default function DayCard({ day, blocks }: DayCardProps) {
               <Text style={styles.blockText}>{item.start} - {item.end}</Text>
             </View>
           )}
-          
         />
       </View>
     </View>

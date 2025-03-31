@@ -41,6 +41,12 @@ import {
 import { Cafe, Category, Item } from "@/constants/types/GET_cafe";
 import { allCafe } from '@/constants/types/GET_list_cafe';
 import ScrollableLayout from '@/components/layouts/ScrollableLayout';
+import { 
+  deleteFav,
+  getFavorites, 
+  saveFav 
+} from '@/scripts/storage';
+import { createPathConfigForStaticNavigation } from '@react-navigation/native';
 
 export default function CafeScreen() {
   const [isLoading, setIsLoading] = useState(true);
@@ -56,6 +62,12 @@ export default function CafeScreen() {
 
   const [cafe, setCafe] = useState<Cafe>(); // set social media as empty object
   const [data, setData] = useState<allCafe | any>([]);
+  const [favorited, setFavorited] = useState(false);
+
+  const checkIfFavorite = async (cafeId: string) => {
+    const savedFavorites = await getFavorites(); // Retrieve saved favorites (from AsyncStorage, database, etc.)
+    return savedFavorites.some((fav: Favoris) => fav.cafe_id === cafeId);
+  };
   useEffect(() => {
       setIsLoading(true);
       fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
@@ -92,27 +104,25 @@ export default function CafeScreen() {
       facebook: Facebook,
     };
     return icons[platform] || HelpCircle;
-  }; 
-
-  // fetch cafe data
+  };   
   useEffect(() => {
     // api data fetching
     setIsLoading(true);
-
     const fetchCafe = async () => {
+        try {
+          const response = await fetch(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}`);
+          const json = await response.json();
+          console.log("Social media: ", json.social_media);
+          const updatedCafe = { ...json, cafe_id: json.id };
+          setCafe(updatedCafe);
+          
+          const isFav = await checkIfFavorite(updatedCafe.cafe_id)
+          setFavorited(isFav);
 
-      try {
-        const response = await fetch(
-          `https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}`
-        );
-        const json = await response.json();
-        console.log("Social media: ", json.social_media);
-        setCafe(json);
-
-        // After setting the cafe data, filter the menu items
-        // Directly use 'json' instead of 'cafe'
-        const filteredItems = filterMenu("", json.menu.categories);
-        setItemList(filteredItems);
+          // After setting the cafe data, filter the menu items
+          // Directly use 'json' instead of 'cafe'
+          const filteredItems = filterMenu("", json.menu.categories);
+          setItemList(filteredItems);
       } catch (error) {
         console.error("Fetch error:", error);
       } finally {
@@ -186,6 +196,40 @@ console.log(paymentDetails);
     )
   }
 
+  // Handle saving/deleting favorite when user toggles it manually
+  const toggleFavorite = async () => {
+    if (!cafe || !cafe.cafe_id) {
+      console.error("Cannot toggle favorite: cafe data is missing");
+      return;
+    }
+
+    try {
+      if (favorited) {
+        await deleteFav(cafe.cafe_id);
+        console.log("Removed from favorites:", cafe.cafe_id);
+      } else {
+        const favObj = {
+          cafe_id: cafe.cafe_id,
+          image_url: cafe.image_url,
+          faculty: cafe.faculty,
+          is_open: cafe.is_open,
+          location: cafe.location,
+          name: cafe.name,
+          slug: cafe.slug,
+          status_message: cafe.status_message,
+        };
+
+        await saveFav(favObj);
+        console.log("Added to favorites:", cafe.cafe_id);
+      }
+
+      setFavorited(!favorited);
+    } catch (error) {
+      console.error("Error handling favorites:", error);
+    }
+  };
+  
+
   return (
 
     <SafeAreaView style={{ backgroundColor: '#000' }}>
@@ -209,7 +253,8 @@ console.log(paymentDetails);
           <View style={styles.cafeHeaderButtonsRight}>
             <IconButton Icon={Search} style={styles.cafeHeaderIconButtons} />
             <IconButton Icon={Locate} style={styles.cafeHeaderIconButtons} />
-            <IconButton Icon={Heart} style={styles.cafeHeaderIconButtons} />
+            <IconButton Icon={Heart} style={[favorited? styles.cafeFavoritedButton : styles.cafeHeaderIconButtons]} 
+              onPress={toggleFavorite} />
           </View>
         </View>
 
@@ -395,8 +440,7 @@ console.log(paymentDetails);
       scrollEnabled={false}
       style={{marginTop: SPACING['md']}}
       numColumns={2}
-      />      
-
+      />
       {/* Cafés similaires */}
       <Text 
         style={{
@@ -466,6 +510,9 @@ const styles = StyleSheet.create({
   },
   cafeHeaderIconButtons: {
     backgroundColor: "white",
+  },
+  cafeFavoritedButton:{
+    backgroundColor: "pink",
   },
   cafeHeaderOpenStatus: {
     position: "absolute",
