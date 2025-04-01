@@ -44,6 +44,7 @@ export default function ArticleScreen() {
   const [menuItem, setMenuItem] = useState<Item | any>({});
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1); // nombre d'article à mettre dans le panier
+  const [selectedIndex, setSelectedIndex] = useState<Number |null>(null); // option button
   // add and true 
 
   useEffect(() => {
@@ -66,8 +67,19 @@ export default function ArticleScreen() {
     fetchMenuItem();
   }, [articleId]);
 
+  // tableau des options fetch du api
   const options = menuItem.options ? menuItem.options.map(({type, value, fee}) => 
     ({type, value, fee})) : []; 
+
+  // Prix total 
+  // const selectedFee = selectOption ? Number(options[0].fee) : 0;
+  // console.log("Fee for extra: ", selectedFee);
+  console.log("menuItem.price: ", menuItem.price);
+  const selectedFee = (selectedIndex !== null && selectedIndex >= 0 && selectedIndex < options.length) 
+  ? Number(options[selectedIndex].fee) : 0;
+  console.log("selectedFee : ", selectedFee); 
+  const total = ((Number(menuItem.price) + Number(selectedFee)) * quantity).toFixed(2);
+  console.log("total : ", total);
 
   async function handleAddToCart(itemObj : Item){
     // fetch check
@@ -173,6 +185,7 @@ export default function ArticleScreen() {
           </View>
         </View>
       </View> */}
+      {}
       <View style={{ borderBottomWidth: 3, borderColor: COLORS.lightGray, paddingHorizontal: 16 }}>
         <View style={{ marginBlock: 20, gap: 8 }}>
           <Text style={[TYPOGRAPHY.heading.small.bold]}>Options extras</Text>
@@ -186,11 +199,12 @@ export default function ArticleScreen() {
         </Text>
         </View >
         <View style={{ flexDirection: "row", gap: 12, marginBottom: 24 }}>
-          <FlatList data={options} renderItem={({item}) => (
-            <View style={{ backgroundColor: COLORS.lightGray, paddingHorizontal: 12, paddingVertical: 12, borderRadius: 10, flex: 1,  }}>
-              <Text style={[TYPOGRAPHY.body.normal.semiBold, { textAlign: "center" }]}>{item.value} (+${item.fee})</Text>
-            </View> )}
-            keyExtractor={item => item.value}
+          <FlatList data={options} renderItem={({item, index}) => (
+            <Button onPress={()=> setSelectedIndex(prev => (prev === index ? null : index))} 
+            style={{ backgroundColor : selectedIndex === index ? COLORS.black : COLORS.lightGray, paddingHorizontal: 12, paddingVertical: 12, borderRadius: 10, flex: 1,}}>
+              <Text style={[TYPOGRAPHY.body.normal.semiBold, { textAlign: "center", color: selectedIndex === index ? COLORS.white : COLORS.subtuleDark, }]}>{item.value} (+${item.fee})</Text>
+            </Button> )}
+            keyExtractor={(item, index) => index.toString()}
             horizontal
             ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
             // style={{paddingHorizontal: SPACING["sm"], paddingBottom: SPACING["md"]}}
@@ -239,7 +253,7 @@ export default function ArticleScreen() {
           count={quantity}
           setCount={setQuantity}></Counter>
           <Button onPress={() => handleAddToCart(menuItem)} style={{ flex: 1, width: "auto" }}>
-            Ajouter au panier ・ ${menuItem.price * quantity /* + fees */}
+            Ajouter au panier ・ ${total /* menuItem.price * quantity /* + fees */}
           </Button>
         </View>
       </View>

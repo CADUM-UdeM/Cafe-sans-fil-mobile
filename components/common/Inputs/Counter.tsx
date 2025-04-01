@@ -9,7 +9,7 @@ interface CounterProps {
   setCount: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export default function Counter({count, setCount} : CounterProps /*(item : number) => void*/ ){
+export default function Counter({count, setCount} : CounterProps ){
   // const [count, setCount] = useState(1);
   // TODO: Add a max prop to limit the counter to a certain number
   const increment = () => setCount((prev) => prev + 1);
