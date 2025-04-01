@@ -51,7 +51,7 @@ Cette application mobile partage la même base de données et API que la [versio
 
 ```bash
 # Cloner le répertoire
-git clone https://github.com/CADUM-UdeM/Cafe-sans-fil-mobile.git
+git clone https://github.com/Griselda15/Cafe-sans-fil-mobile.git
 
 # Installer les dépendances
 cd Cafe-sans-fil-mobile
