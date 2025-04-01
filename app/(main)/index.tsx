@@ -127,14 +127,7 @@ function sortByDistance(current: Location.LocationObject, cafes: Cafe[]): Cafe[]
   // Print the pavillon of the first cafe in each group
   if (data) {
     const cafesByPavillon = sortByPavillon(data);
-    console.log("Pavillons of first cafe in each group:");
-    cafesByPavillon.forEach(pavillonGroup => {
-      if (pavillonGroup.length > 0) {
-        console.log(pavillonGroup[0].location.pavillon);
-      }
-    });
   }
-  console.log(sortByPavillon(data)[0]);
 
   const filterCafes = (cafes : Cafe[]) => {
     let filteredCafesClose = cafes;
@@ -153,26 +146,21 @@ function sortByDistance(current: Location.LocationObject, cafes: Cafe[]): Cafe[]
   // Mock implementation of search and filter functions.
   function handleSearch(text: string): void {
     // A REFAIRE PAS BIEN PAS BIEN DU TOUT C NUL A CHIER
+      const allCafes = data;
 
-    // fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
-    //   .then((response) => response.json())
-    //   .then((json) => {
-    //     const allCafes = json.items;
+      if (text.trim() === "") {
+        setData(data);
+        return;
+      }
 
-    //     if (text.trim() === "") {
-    //       setData(allCafes);
-    //       return;
-    //     }
-
-    //     const filteredCafes = allCafes.filter((cafe : Cafe) =>
-    //       cafe.name.toLowerCase().includes(text.toLowerCase()) || 
-    //       cafe.location.pavillon.toLowerCase().includes(text.toLowerCase()) ||
-    //       cafe.location.local.toLowerCase().includes(text.toLowerCase()) ||
-    //       cafe.affiliation.faculty.toLowerCase().includes(text.toLowerCase())
-    //     );
-    //     setData(filteredCafes);
-    //   })
-    //   .catch((error) => console.error(error));
+      const filteredCafes = allCafes.filter((cafe : Cafe) =>
+        cafe.name.toLowerCase().includes(text.toLowerCase()) || 
+        cafe.location.pavillon.toLowerCase().includes(text.toLowerCase()) ||
+        cafe.location.local.toLowerCase().includes(text.toLowerCase()) ||
+        cafe.affiliation.faculty.toLowerCase().includes(text.toLowerCase())
+      );
+      setData(filteredCafes);
+      
   }
 
   if (isLoading || (!data && !closest)) {
@@ -218,7 +206,31 @@ function sortByDistance(current: Location.LocationObject, cafes: Cafe[]): Cafe[]
             />
           </CardScrollableLayout>
           
-          
+          <Text 
+            style={{
+              marginVertical: SPACING["sm"], 
+              marginHorizontal: SPACING["sm"], 
+              ...TYPOGRAPHY.heading.small.bold
+            }}>Tous les cafés
+            </Text>
+            <FlatList data={filterCafes(data)} renderItem={({item}) =>
+                <CafeCard
+                  name={item.name}
+                  image={item.banner_url}
+                  location={item.location.pavillon}
+                  priceRange="$$"
+                  rating={4.8}
+                  status={item.is_open}
+                  id={item.id}
+                /> }
+                keyExtractor={item => item.id}
+                horizontal
+                ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
+                style={{
+                  paddingHorizontal: SPACING["sm"], 
+                  paddingBottom: SPACING["md"],
+                }}
+            />
           {/* Tous les cafés classés du plus au moins proche 
             <View>
             {closest && (
@@ -296,32 +308,7 @@ function sortByDistance(current: Location.LocationObject, cafes: Cafe[]): Cafe[]
               })}
             </View>
             )}
-            <Text 
-            style={{
-              marginVertical: SPACING["sm"], 
-              marginHorizontal: SPACING["sm"], 
-              marginTop: -SPACING["sm"],
-              ...TYPOGRAPHY.heading.small.bold
-            }}>Tous les cafés
-            </Text>
-            <FlatList data={filterCafes(data)} renderItem={({item}) =>
-                <CafeCard
-                  name={item.name}
-                  image={item.banner_url}
-                  location={item.location.pavillon}
-                  priceRange="$$"
-                  rating={4.8}
-                  status={item.is_open}
-                  id={item.id}
-                /> }
-                keyExtractor={item => item.id}
-                horizontal
-                ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
-                style={{
-                  paddingHorizontal: SPACING["sm"], 
-                  paddingBottom: SPACING["md"],
-                }}
-            />
+            
           </>
         </ScrollableLayout>
         </SafeAreaView>
