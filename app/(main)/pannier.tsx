@@ -1,4 +1,6 @@
+
 import React, { useEffect, useState } from 'react'
+
 import {
   View,
   Text,
@@ -10,44 +12,43 @@ import {
 } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import HeaderLayout from "@/components/layouts/HeaderLayout";
+import { deleteSecurely, fetchSync, saveSync } from '@/scripts/storage';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import { deleteSecurely, fetchSecurely } from '@/scripts/storage';
-import { fetchPannier } from '@/scripts/pannier';
+import { fetchPannier } from '../../scripts/pannier';
 import { router } from 'expo-router';
 
 const Panier = () => {
-  const [items, setItems] = useState([
-    {
-      id: '1',
-      name: 'Café Latte',
-      price: 3.5,
-      quantity: 1,
-      image: 'https://via.placeholder.com/80',
-    },
-    {
-      id: '2',
-      name: 'Croissant',
-      price: 2.0,
-      quantity: 2,
-      image: 'https://via.placeholder.com/80',
-    },
-  ]);
 
-  const [cart, setCart] = useState();
-  const [reload, setReload] = useState(false);
-  
+  let panierID = "12345";
+  const [items, setItems] = useState(new Array());
+
   useEffect(() => {
-    let savedCart = async () => {
-      let ret = await fetchSecurely('pannier');
-      setCart(ret);
-      console.log(ret);
-    }
-    savedCart();
-  }, [reload]);
+      const fetchPanierItems = () =>{
+        try{
+          let currPanier = fetchSync("12345");
+          console.log(currPanier);
+          if (currPanier){
+            setItems(currPanier);
+          }
+        }catch(error){
+
+        }
+      }
+      fetchPanierItems();
+    }, []);
 
   // Fonction pour calculer le total du panier
-  const calculateTotal = () =>
-    items.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+  function calculateTotal() {
+    let total = 0;
+    if(!items){
+      return total;
+    }
+    for(const item of items){
+      let itemPrice = Number(fetchSync(item.id).price);
+      total = total + itemPrice;
+    }
+    return total;
+  }
 
   // Fonction pour augmenter la quantité d'un item
   const increaseQuantity = (id) => {
@@ -69,6 +70,33 @@ const Panier = () => {
     );
   };
 
+  function deletePanierItem(id){
+    /*
+    try{
+      deleteSecurely(id);
+    }catch(error){
+
+    }*/
+
+    //find idx of id
+    let currPanier = fetchSync(panierID);
+    if(!currPanier){currPanier=new Array();}
+    let idx = -1;
+    for(let i = 0; i<items.length; i++){
+      if(id == items[i].id){
+        idx=i;
+        break;
+      }
+    }
+    console.log(idx);
+    if(idx!=-1){
+      setItems(currPanier.splice(idx,1));
+    }
+    console.log(items);
+    saveSync(panierID,currPanier);
+    refreshPanier();
+  }
+
   // Fonction pour supprimer un item du panier
   const removeItem = (id) => {
     Alert.alert(
@@ -78,63 +106,89 @@ const Panier = () => {
         { text: 'Annuler', style: 'cancel' },
         {
           text: 'Supprimer',
-          onPress: () => setItems((prevItems) => prevItems.filter((item) => item.id !== id)),
+          onPress: () => deletePanierItem(id),
         },
       ]
     );
   };
 
-  return (<>
-    <HeaderLayout />
-    <View style={styles.container}>
-      
-      <TouchableOpacity onPress={() => setReload(!reload)}>
-        <Text style={styles.title}>Panier des items sélectionnés</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => deleteSecurely('pannier')}>
-        <Text style={styles.title}>delete pannnier</Text>
-      </TouchableOpacity>
-      {items.length > 0 ? (
-        <>
-          <FlatList
-            data={cart}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => router.push(`/cafe/${item.cafe_id}/${item.id}`)}>
-              <View style={styles.itemContainer}>
-                <Image source={{ uri: item.image }} style={styles.itemImage} />
+  function panierItemToItem(panierItem){
+    return fetchSync(panierItem.id);
+  }
+
+  function panierItemDisplay(panierItem){
+    let item = panierItemToItem(panierItem);
+    return(
+      <View style={styles.itemContainer}>
+                <Image source={{ uri: item.image_url }} style={styles.itemImage} />
                 <View style={styles.textContainer}>
                   <Text style={styles.itemTitle}>{item.name}</Text>
-                  <Text style={styles.itemPrice}>{item.price} $</Text>
+                  <Text style={styles.itemPrice}>{Number(item.price).toFixed(2)} $</Text>
                   <Text style={styles.itemQuantity}>
-                    Quantité: {item.quantity}
+                    Quantité: {panierItem.quantity}
                   </Text>
                 </View>
                 <View style={styles.actionContainer}>
-                  <TouchableOpacity onPress={() => increaseQuantity(item.id)}>
+                  <TouchableOpacity onPress={() => increaseQuantity(panierItem.id)}>
                     <Feather name="plus" size={20} color="#000" />
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={() => decreaseQuantity(item.id)}>
+                  <TouchableOpacity onPress={() => decreaseQuantity(panierItem.id)}>
                     <Feather name="minus" size={20} color="#000" />
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={() => removeItem(item.id)}>
+                  <TouchableOpacity onPress={() => removeItem(panierItem.id)}>
                     <Feather name="trash" size={20} color="red" />
                   </TouchableOpacity>
                 </View>
               </View>
-              </TouchableOpacity>
+    )
+  }
+
+  function refreshPanier(){
+    let currPanier = fetchSync(panierID);
+    if(currPanier){
+      setItems(currPanier);
+    }
+    console.log(currPanier);
+    console.log(items);
+  }
+
+  return (<>
+    <HeaderLayout />
+    <View style={styles.container}>
+      
+      <Text style={styles.title}>Panier des items sélectionnés</Text>
+
+      {items.length>0 ? (
+        <>
+          <FlatList
+            data={items}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              panierItemDisplay(item)
             )}
           />
 
           <View style={styles.totalContainer}>
-            <Text style={styles.totalText}>Total: {calculateTotal()} $</Text>
+            <Text style={styles.totalText}>Total: {calculateTotal().toFixed(2)} $</Text>
             <TouchableOpacity style={styles.checkoutButton}>
               <Text style={styles.checkoutButtonText}>Passer la commande</Text>
             </TouchableOpacity>
           </View>
+
+          <View style={styles.totalContainer}>
+            <TouchableOpacity style={styles.checkoutButton}>
+              <Text style={styles.checkoutButtonText} onPress={()=>refreshPanier()}>Refresh panier</Text>
+            </TouchableOpacity>
+          </View>
         </>
-      ) : (
+      ) : (<>
         <Text style={styles.emptyCartText}>Votre panier est vide.</Text>
+        <View style={styles.totalContainer}>
+            <TouchableOpacity style={styles.checkoutButton}>
+              <Text style={styles.checkoutButtonText} onPress={()=>refreshPanier()}>Refresh panier</Text>
+            </TouchableOpacity>
+          </View>
+        </>
       )}
     </View></>
   );

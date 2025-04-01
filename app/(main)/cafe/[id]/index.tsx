@@ -353,6 +353,7 @@ console.log(paymentDetails);
             gap: 10,}}>
 
               {socialMediaTab.map(({plateform, link}) => ( link ? (
+
                 <View key={plateform}>
                   <Tooltip
                   label={plateform.charAt(0).toUpperCase() + plateform.slice(1)}
@@ -360,6 +361,7 @@ console.log(paymentDetails);
                   Icon={getIcon(plateform)}
                   showChevron={false} color='white'/>
                 </View>
+
               ) : null ))}
           </View>
 
@@ -386,6 +388,7 @@ console.log(paymentDetails);
           {paymentDetails.map(({method, minimum}) => ( minimum ? (
             <View key={method}>
               <Tooltip
+                key={`${method}-${minimum}`}
                 label={`${method}`}
                 showChevron={true }
                 color="white"
@@ -397,6 +400,7 @@ console.log(paymentDetails);
                 (
               <View key={method}>
                 <Tooltip
+                key={method} 
                   label={method}
                   showChevron={false}
                   color="white"
