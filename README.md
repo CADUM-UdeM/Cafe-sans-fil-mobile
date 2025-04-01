@@ -74,4 +74,5 @@ Le développement de cette application mobile est le fruit du travail des membre
 - [Ding Wen Li](https://github.com/echobat88) 
 - [Trung Nguyen](https://github.com/likeskymore) 
 - [Kevin Wang](https://github.com/Kevin-Wang78) 
+- [Louis Edouard Lafontant](https://github.com/lelafontant) 
 
