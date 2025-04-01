@@ -218,29 +218,7 @@ function sortByDistance(current: Location.LocationObject, cafes: Cafe[]): Cafe[]
             />
           </CardScrollableLayout>
           
-          {/* Cafe le plus proche*/}
-          {closest && (
-            <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-              <Text 
-                  style={{
-                    marginVertical: SPACING["xl"], 
-                    marginTop: SPACING["md"], 
-                    ...TYPOGRAPHY.heading.small.bold
-                  }}>Le plus proche
-              </Text>
-              <View >
-                  <CafeCard
-                  name={closest[0].name}
-                  image={closest[0].banner_url}
-                  location={closest[0].location.pavillon}
-                  priceRange="$$"
-                  rating={4.8}
-                  status={closest[0].is_open}
-                  id={closest[0].id}
-                  />
-              </View>
-          </View>
-          )}
+          
           {/* Tous les cafés classés du plus au moins proche 
             <View>
             {closest && (
