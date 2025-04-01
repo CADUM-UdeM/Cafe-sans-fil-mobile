@@ -412,36 +412,35 @@ console.log(paymentDetails);
         </View>
 
       </View>
-      <View
-        style={{
-          marginHorizontal: 16,
-          marginTop: 20,
-          backgroundColor: COLORS.lightGray,
-          paddingBlock: 28,
-        }}
-      >
-
-        {/* Horaires du café*/}
-        <Text
-          style={[
-            TYPOGRAPHY.heading.medium.bold,
-            { color: "black", textAlign: "center", marginBottom:8},
-          ]}
-        >
-          Horaires
+      {/* Horaires du café */}
+<View style={styles.hoursContainer}>
+  <Text style={styles.hoursTitle}>Horaires</Text>
+  <FlatList 
+    data={cafe?.opening_hours} 
+    horizontal
+    showsHorizontalScrollIndicator={false}
+    keyExtractor={item => item.day}
+    contentContainerStyle={styles.hoursListContent}
+    renderItem={({ item }) => (
+      <View style={styles.dayCard}>
+        <Text style={styles.dayName}>
+          {item.day.slice(0, 3)}
         </Text>
-        <FlatList data={cafe?.opening_hours} horizontal
-          keyExtractor={item => item.day}
-          ItemSeparatorComponent={(item) => 
-            <View key={item.day}
-              style={{margin:10, borderColor: "black", borderWidth: 0.5}}></View>
-          }
-          renderItem={({ item }) => (
-              <DayCard day={item.day} blocks={item.blocks} />
+        <View style={styles.timeBlocks}>
+          {item.blocks.map((block, index) => (
+            <View key={index} style={styles.timeBlock}>
+              <Text style={styles.timeText}>{block.start} - {block.end}</Text>
+            </View>
+          ))}
+          {item.blocks.length === 0 && (
+            <Text style={styles.closedText}>Fermé</Text>
           )}
-          style={{borderColor: "black", borderWidth: 0.25, borderRadius: 10, padding: SPACING["sm"]}}
-        />
+        </View>
       </View>
+    )}
+    ItemSeparatorComponent={() => <View style={styles.daySeparator} />}
+  />
+</View>
 
       {/* Menu */}
       <Text 
@@ -605,5 +604,63 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     marginTop: SPACING["xs"],
     textAlign: "center",
+  },
+  hoursContainer: {
+    marginHorizontal: 16,
+    marginTop: 20,
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  hoursTitle: {
+    ...TYPOGRAPHY.heading.medium.bold,
+    color: COLORS.black,
+    marginBottom: 15,
+    textAlign: "center",
+  },
+  hoursListContent: {
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+  },
+  dayCard: {
+    backgroundColor: '#f9f9f9',
+    borderRadius: 12,
+    padding: 12,
+    minWidth: 90,
+    alignItems: 'center',
+  },
+  dayName: {
+    ...TYPOGRAPHY.body.normal.semiBold,
+    color: COLORS.black,
+    textTransform: 'uppercase',
+    marginBottom: 8,
+  },
+  timeBlocks: {
+    width: '100%',
+  },
+  timeBlock: {
+    marginVertical: 3,
+  },
+  timeText: {
+    ...TYPOGRAPHY.body.small.base,
+    color: COLORS.subtuleDark,
+    textAlign: 'center',
+  },
+  closedText: {
+    ...TYPOGRAPHY.body.small.semiBold,
+    color: COLORS.status.red,
+    textAlign: 'center',
+    marginTop: 4,
+  },
+  daySeparator: {
+    width: 10,
   },
 });
