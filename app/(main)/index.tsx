@@ -61,6 +61,7 @@ export default function HomeScreen() {
   const [showOnlyOrder, setShowOnlyOrder] = useState(false);
   const [showOpen, setShowOpen] = useState(false)
   const [location, getCurrentLocation] = useLocation();
+  const [originalData, setOriginalData] = useState<Cafe[]>();
   // Execute a callback when the app comes to the foreground
   useOnForegroundBack(getCurrentLocation);
 
@@ -70,6 +71,7 @@ export default function HomeScreen() {
       .then((response) => response.json())
       .then((json) => {
         setData(json.items);
+        setOriginalData(json.items);
         setClosest(sortByDistance(location as Location.LocationObject, json.items));
       })
       .catch((error) => console.error(error))
@@ -143,24 +145,27 @@ function sortByDistance(current: Location.LocationObject, cafes: Cafe[]): Cafe[]
 
   };
   
-  // Mock implementation of search and filter functions.
+  // Improved search function that correctly handles text changes
   function handleSearch(text: string): void {
-    // A REFAIRE PAS BIEN PAS BIEN DU TOUT C NUL A CHIER
-      const allCafes = data;
+    
+    // Always work with the original data to ensure consistent search results
+    if (!originalData) return;
+    
+    // If search text is empty, restore original data
+    if (text.trim() === "") {
+      setData(originalData);
+      return;
+    }
 
-      if (text.trim() === "") {
-        setData(data);
-        return;
-      }
-
-      const filteredCafes = allCafes.filter((cafe : Cafe) =>
-        cafe.name.toLowerCase().includes(text.toLowerCase()) || 
-        cafe.location.pavillon.toLowerCase().includes(text.toLowerCase()) ||
-        cafe.location.local.toLowerCase().includes(text.toLowerCase()) ||
-        cafe.affiliation.faculty.toLowerCase().includes(text.toLowerCase())
-      );
-      setData(filteredCafes);
-      
+    // Filter cafes based on the current search text
+    const filteredCafes = originalData.filter((cafe: Cafe) =>
+      cafe.name.toLowerCase().includes(text.toLowerCase()) || 
+      cafe.location.pavillon.toLowerCase().includes(text.toLowerCase()) ||
+      cafe.location.local.toLowerCase().includes(text.toLowerCase()) ||
+      cafe.affiliation.faculty.toLowerCase().includes(text.toLowerCase())
+    );
+    
+    setData(filteredCafes);
   }
 
   if (isLoading || (!data && !closest)) {
