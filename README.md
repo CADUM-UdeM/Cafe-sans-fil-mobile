@@ -9,7 +9,7 @@
 
 # Café sans-fil Mobile
 
-Café sans-fil Mobile est une extension du [projet Café sans-fil](https://cafesansfil.onrender.com/) développée par le Club de développement d'applications de l'Université de Montréal (CADUM). Cette application mobile complète la plateforme web en offrant une expérience optimisée pour les appareils mobiles.
+Café sans-fil Mobile est une extension du [projet Café sans-fil](https://github.com/ceduni/cafe-sans-fil) développée par le Club de développement d'applications de l'Université de Montréal (CADUM). Cette application mobile complète la plateforme web en offrant une expérience optimisée pour les appareils mobiles.
 
 Le projet Café sans-fil vise à améliorer le service des cafés étudiants de l'UdeM en fournissant une plateforme commune facilitant leur gestion, découverte, communication des produits et prise de commande.
 
