@@ -129,7 +129,7 @@ const Panier = () => {
   function panierItemDisplay(panierItem){
     let item = panierItemToItem(panierItem);
     return(
-      <View style={styles.itemContainer}>
+      <TouchableOpacity style={styles.itemContainer} onPress={()=>router.push(`/cafe/${item.cafe_id}/${item.id}`)}>
                 <Image source={{ uri: item.image_url }} style={styles.itemImage} />
                 <View style={styles.textContainer}>
                   <Text style={styles.itemTitle}>{item.name}</Text>
@@ -149,7 +149,7 @@ const Panier = () => {
                     <Feather name="trash" size={20} color="red" />
                   </TouchableOpacity>
                 </View>
-              </View>
+        </TouchableOpacity>
     )
   }
 
