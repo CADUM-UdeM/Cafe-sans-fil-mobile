@@ -52,22 +52,32 @@ const Panier = () => {
 
   // Fonction pour augmenter la quantité d'un item
   const increaseQuantity = (id) => {
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
+    let currPanier = items;
+    for(const item of currPanier){
+      if(item.id == id){
+        item.quantity = item.quantity+1;
+        break;
+      }
+    }
+    setItems(currPanier);
+    saveSync(panierID, currPanier);
+    refreshPanier();
   };
 
   // Fonction pour diminuer la quantité d'un item
   const decreaseQuantity = (id) => {
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-    );
+    let currPanier = items;
+    for(const item of currPanier){
+      if(item.id == id){
+        if(item.quantity>1){
+          item.quantity = item.quantity -1
+        }
+        break;
+      }
+    }
+    setItems(currPanier);
+    saveSync(panierID, currPanier);
+    refreshPanier();
   };
 
   function deletePanierItem(id){
