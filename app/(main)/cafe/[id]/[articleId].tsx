@@ -56,6 +56,7 @@ export default function ArticleScreen() {
         const response = await fetch(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}/menu/items/${articleId}`);
         const json = await response.json();
         //console.log(json.image_url);
+        //console.log(typeof(id));
         setMenuItem(json);
       } catch (error) {
           console.error('Fetch error:', error);
@@ -138,7 +139,7 @@ export default function ArticleScreen() {
         <View style={styles.cafeHeaderButtons}>
           <IconButton
             Icon={ArrowLeft}
-            onPress={() => router.push(`/cafe/${id}`)}
+            onPress={() => /\d/.test(id)? router.push("/pannier"):router.push(`/cafe/${id}`)}
             style={styles.cafeHeaderIconButtons}
           />
           <View style={styles.cafeHeaderButtonsRight}>
