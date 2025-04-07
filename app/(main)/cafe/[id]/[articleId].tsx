@@ -22,13 +22,15 @@ import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, KeyboardAvoidin
   ScrollView, FlatList } from "react-native";
 
 import { Item } from "@/constants/types/GET_item";
+import { fetchSync, saveSecurely, saveSync } from "@/scripts/storage";
+import * as hash from "object-hash";
 
-import { fetchSecurely, saveSecurely } from "@/scripts/storage";
 import { fetchPannier } from "@/scripts/pannier";
 
 export default function ArticleScreen() {
   const { id, articleId } = useLocalSearchParams();
   console.log("Café Id", id);
+  const [reload, setReload] = useState(false);
   console.log("Article Id", articleId) ;
   const formatPrice = (price: string) => {
     if (price.charAt(price.length - 2) == ".") {
@@ -61,6 +63,8 @@ export default function ArticleScreen() {
         console.log(`article slug ${articleId}`);
         const response = await fetch(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}/menu/items/${articleId}`);
         const json = await response.json();
+        //console.log(json.image_url);
+        //console.log(typeof(id));
         setMenuItem(json);
       } catch (error) {
           console.error('Fetch error:', error);
@@ -70,7 +74,8 @@ export default function ArticleScreen() {
     }
     fetchMenuItem();
   }, [articleId]);
-
+  
+  
   // tableau des options fetch du api
   const options = menuItem.options ? menuItem.options.map(({type, value, fee}) => 
     ({type, value, fee})) : []; 
@@ -80,17 +85,58 @@ export default function ArticleScreen() {
   ? Number(options[selectedIndex].fee) : 0;
   const total = ((Number(menuItem.price) + Number(selectedFee)) * quantity).toFixed(2);
 
-  async function handleAddToCart(itemObj : Item){
-    // fetch check
-    let fetchedPannier = await fetchPannier();
-    if (fetchedPannier) {
-      // we add the new item to the existing cart
-      let newCart = [... fetchedPannier, itemObj]
-      await saveSecurely('pannier', newCart);
+
+
+  const panierID = "12345";
+  function addToCart(){
+    //get current list of items from cart
+    let currCart = new Array();
+    try{
+      currCart = fetchSync(panierID);
+      //console.log("here");
+      //console.log(currCart);
+      if (!currCart){
+        currCart = new Array();
+        saveSync(panierID,currCart);
+      }
+      console.log("here");
+      console.log(fetchSync(panierID));
+    }catch(error){
+      currCart = new Array();
     }
-    else{
-      await saveSecurely('pannier', [itemObj]);
+
+    type panierItem = {
+      id : string;
+      quantity:number;
+    };
+    //check for same item
+    let currQuantity = 1;
+    let itemHash = hash.MD5(menuItem);
+
+    for(const item of currCart){
+      if(item.id == itemHash){
+        currQuantity = currQuantity + item.quantity;
+        item.quantity = currQuantity;
+        break;
+      }
+    };
+
+    //add new item
+    if(currQuantity == 1){
+      saveSync(itemHash, menuItem);
+      let newItem : panierItem = {
+        id:itemHash,
+        quantity:1
+      };
+      currCart.push(newItem);
+      //console.log("here");
+      //console.log(fetchSync(panierID));
     }
+    saveSync(panierID,currCart);
+    
+    //push to panier (might remove)
+    router.push('/pannier');
+    
   }
 
   return (
@@ -112,7 +158,7 @@ export default function ArticleScreen() {
         <View style={styles.cafeHeaderButtons}>
           <IconButton
             Icon={ArrowLeft}
-            onPress={() => router.push(`/cafe/${id}`)}
+            onPress={() => /\d/.test(id)? router.push("/pannier"):router.push(`/cafe/${id}`)}
             style={styles.cafeHeaderIconButtons}
           />
           <View style={styles.cafeHeaderButtonsRight}>
@@ -251,7 +297,7 @@ export default function ArticleScreen() {
           <Counter
           count={quantity}
           setCount={setQuantity}></Counter>
-          <Button onPress={() => handleAddToCart(menuItem)} style={{ flex: 1, width: "auto" }}>
+          <Button onPress={() => addToCart()} style={{ flex: 1, width: "auto" }}>
             Ajouter au panier ・ ${total /* menuItem.price * quantity /* + fees */}
           </Button>
         </View>

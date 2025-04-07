@@ -61,6 +61,7 @@ export default function HomeScreen() {
   const [showOnlyOrder, setShowOnlyOrder] = useState(false);
   const [showOpen, setShowOpen] = useState(false)
   const [location, getCurrentLocation] = useLocation();
+  const [originalData, setOriginalData] = useState<Cafe[]>();
   // Execute a callback when the app comes to the foreground
   useOnForegroundBack(getCurrentLocation);
 
@@ -70,6 +71,7 @@ export default function HomeScreen() {
       .then((response) => response.json())
       .then((json) => {
         setData(json.items);
+        setOriginalData(json.items);
         setClosest(sortByDistance(location as Location.LocationObject, json.items));
       })
       .catch((error) => console.error(error))
@@ -104,6 +106,30 @@ function sortByDistance(current: Location.LocationObject, cafes: Cafe[]): Cafe[]
     console.log('params undefined')
   }
 }
+  function sortByPavillon(cafes: Cafe[]): Cafe[][] {
+    if (!cafes || cafes.length === 0) {
+      return [];
+    }
+    
+    // Create a Map to group cafes by pavillon
+    const pavillonMap = new Map<string, Cafe[]>();
+    
+    // Group cafes by pavillon
+    cafes.forEach(cafe => {
+      const pavillon = cafe.location.pavillon;
+      if (!pavillonMap.has(pavillon)) {
+        pavillonMap.set(pavillon, []);
+      }
+      pavillonMap.get(pavillon)?.push(cafe);
+    });
+    
+    // Convert the Map to a list of lists
+    return Array.from(pavillonMap.values());
+  }
+  // Print the pavillon of the first cafe in each group
+  if (data) {
+    const cafesByPavillon = sortByPavillon(data);
+  }
 
   const filterCafes = (cafes : Cafe[]) => {
     let filteredCafesClose = cafes;
@@ -119,29 +145,27 @@ function sortByDistance(current: Location.LocationObject, cafes: Cafe[]): Cafe[]
 
   };
   
-  // Mock implementation of search and filter functions.
+  // Improved search function that correctly handles text changes
   function handleSearch(text: string): void {
-    // A REFAIRE PAS BIEN PAS BIEN DU TOUT C NUL A CHIER
+    
+    // Always work with the original data to ensure consistent search results
+    if (!originalData) return;
+    
+    // If search text is empty, restore original data
+    if (text.trim() === "") {
+      setData(originalData);
+      return;
+    }
 
-    // fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
-    //   .then((response) => response.json())
-    //   .then((json) => {
-    //     const allCafes = json.items;
-
-    //     if (text.trim() === "") {
-    //       setData(allCafes);
-    //       return;
-    //     }
-
-    //     const filteredCafes = allCafes.filter((cafe : Cafe) =>
-    //       cafe.name.toLowerCase().includes(text.toLowerCase()) || 
-    //       cafe.location.pavillon.toLowerCase().includes(text.toLowerCase()) ||
-    //       cafe.location.local.toLowerCase().includes(text.toLowerCase()) ||
-    //       cafe.affiliation.faculty.toLowerCase().includes(text.toLowerCase())
-    //     );
-    //     setData(filteredCafes);
-    //   })
-    //   .catch((error) => console.error(error));
+    // Filter cafes based on the current search text
+    const filteredCafes = originalData.filter((cafe: Cafe) =>
+      cafe.name.toLowerCase().includes(text.toLowerCase()) || 
+      cafe.location.pavillon.toLowerCase().includes(text.toLowerCase()) ||
+      cafe.location.local.toLowerCase().includes(text.toLowerCase()) ||
+      cafe.affiliation.faculty.toLowerCase().includes(text.toLowerCase())
+    );
+    
+    setData(filteredCafes);
   }
 
   if (isLoading || (!data && !closest)) {
@@ -187,31 +211,32 @@ function sortByDistance(current: Location.LocationObject, cafes: Cafe[]): Cafe[]
             />
           </CardScrollableLayout>
           
-          {/* Cafe le plus proche*/}
-          {closest && (
-            <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-              <Text 
-                  style={{
-                    marginVertical: SPACING["xl"], 
-                    marginTop: SPACING["md"], 
-                    ...TYPOGRAPHY.heading.small.bold
-                  }}>Le plus proche
-              </Text>
-              <View >
-                  <CafeCard
-                  name={closest[0].name}
-                  image={closest[0].banner_url}
-                  location={closest[0].location.pavillon}
+          <Text 
+            style={{
+              marginVertical: SPACING["sm"], 
+              marginHorizontal: SPACING["sm"], 
+              ...TYPOGRAPHY.heading.small.bold
+            }}>Tous les cafés
+            </Text>
+            <FlatList data={filterCafes(data)} renderItem={({item}) =>
+                <CafeCard
+                  name={item.name}
+                  image={item.banner_url}
+                  location={item.location.pavillon}
                   priceRange="$$"
                   rating={4.8}
-                  status={closest[0].is_open}
-                  id={closest[0].id}
-                  />
-              </View>
-          </View>
-          )}
-            
-            {/* Tous les cafés classés du plus au moins proche */}
+                  status={item.is_open}
+                  id={item.id}
+                /> }
+                keyExtractor={item => item.id}
+                horizontal
+                ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
+                style={{
+                  paddingHorizontal: SPACING["sm"], 
+                  paddingBottom: SPACING["md"],
+                }}
+            />
+          {/* Tous les cafés classés du plus au moins proche 
             <View>
             {closest && (
               <View>
@@ -239,34 +264,56 @@ function sortByDistance(current: Location.LocationObject, cafes: Cafe[]): Cafe[]
                   />
             </View>
             )}
-            </View>
+            </View> */}
 
             {/* All Cafes Cards */}
-            <Text 
-            style={{
-              marginVertical: SPACING["xl"], 
-              marginHorizontal: SPACING["md"], 
-              ...TYPOGRAPHY.heading.small.bold
-            }}>Tous les cafés
-            </Text>
-            <FlatList data={filterCafes(data)} renderItem={({item}) =>
-                <CafeCard
-                  name={item.name}
-                  image={item.banner_url}
-                  location={item.location.pavillon}
-                  priceRange="$$"
-                  rating={4.8}
-                  status={item.is_open}
-                  id={item.id}
-                /> }
-                keyExtractor={item => item.id}
-                horizontal
-                ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
-                style={{
-                  paddingHorizontal: SPACING["sm"], 
+            {/* Cafés groupés par pavillon */}
+            {data && (
+            <View style={{ marginTop: SPACING["xl"] }}>
+              
+              {sortByPavillon(filterCafes(closest)).map((pavillonGroup, index) => {
+              if (pavillonGroup.length === 0) return null;
+              
+              const pavillonName = pavillonGroup[0].location.pavillon;
+              
+              return (
+                <View key={`pavillon-${index}`} style={{ marginBottom: SPACING["lg"] }}>
+                <Text 
+                  style={{
+                    marginVertical: SPACING["sm"], 
+                    marginHorizontal: SPACING["md"], 
+                    marginTop: -SPACING["sm"],
+                    ...TYPOGRAPHY.heading.small.bold
+                  }}>
+                  {pavillonName}
+                </Text>
+                <FlatList 
+                  data={pavillonGroup}
+                  renderItem={({item}) => (
+                  <CafeCard
+                    name={item.name}
+                    image={item.banner_url}
+                    location={'L' + item.location.local.substring(1) || ""}
+                    priceRange="$$"
+                    rating={4.8}
+                    status={item.is_open}
+                    id={item.id}
+                  />
+                  )}
+                  keyExtractor={item => item.id}
+                  horizontal
+                  ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
+                  style={{
+                  paddingHorizontal: SPACING["sm"],
                   paddingBottom: SPACING["md"],
-                }}
-            />
+                  }}
+                />
+                </View>
+              );
+              })}
+            </View>
+            )}
+            
           </>
         </ScrollableLayout>
         </SafeAreaView>
