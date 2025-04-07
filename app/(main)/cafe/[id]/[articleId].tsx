@@ -110,7 +110,7 @@ export default function ArticleScreen() {
       quantity:number;
     };
     //check for same item
-    let currQuantity = 1;
+    let currQuantity = quantity;
     let itemHash = hash.MD5(menuItem);
 
     for(const item of currCart){
@@ -119,14 +119,14 @@ export default function ArticleScreen() {
         item.quantity = currQuantity;
         break;
       }
-    };
+    }
 
     //add new item
-    if(currQuantity == 1){
+    if(currQuantity == quantity){
       saveSync(itemHash, menuItem);
       let newItem : panierItem = {
         id:itemHash,
-        quantity:1
+        quantity:quantity
       };
       currCart.push(newItem);
       //console.log("here");
