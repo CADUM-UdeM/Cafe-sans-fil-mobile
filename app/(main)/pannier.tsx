@@ -45,7 +45,7 @@ const Panier = () => {
     }
     for(const item of items){
       let itemPrice = Number(fetchSync(item.id).price);
-      total = total + itemPrice;
+      total = total + itemPrice*item.quantity;
     }
     return total;
   }
