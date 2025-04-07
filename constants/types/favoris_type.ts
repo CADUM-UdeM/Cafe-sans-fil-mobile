@@ -6,5 +6,5 @@ interface Favoris {
     faculty: string;
     is_open: boolean;
     status_message: string | null;
-    location: Location;
+    location: CafeLocation;
 };
