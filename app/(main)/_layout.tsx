@@ -66,7 +66,7 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="events"
+          name="eventsNmore"
           options={{
             title: "Events",
             headerShown: false,
