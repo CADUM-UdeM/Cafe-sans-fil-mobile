@@ -6,7 +6,7 @@ import Tooltip from "@/components/common/Tooltip";
 import COLORS from "@/constants/Colors";
 import SPACING from "@/constants/Spacing";
 import TYPOGRAPHY from "@/constants/Typography";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import {
   ArrowLeft,
   Search,
@@ -16,7 +16,7 @@ import {
   Vegan,
   ThumbsUp,
 } from "lucide-react-native";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, KeyboardAvoidingView,
   Platform,
   ScrollView, FlatList } from "react-native";
@@ -45,7 +45,13 @@ export default function ArticleScreen() {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1); // nombre d'article à mettre dans le panier
   const [selectedIndex, setSelectedIndex] = useState<Number |null>(null); // option button
-  // add and true 
+
+  // reset les options à non sélectionnée
+  useFocusEffect(
+    useCallback(() => {
+      setSelectedIndex(null);
+    },[])
+  )
 
   useEffect(() => {
     scrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true });
@@ -53,10 +59,8 @@ export default function ArticleScreen() {
       try {
         console.log(`test cafe slug ${id}`);
         console.log(`article slug ${articleId}`);
-        //console.log(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}/menu/${articleId}`);
         const response = await fetch(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}/menu/items/${articleId}`);
         const json = await response.json();
-        //console.log(json.image_url);
         setMenuItem(json);
       } catch (error) {
           console.error('Fetch error:', error);
@@ -72,14 +76,9 @@ export default function ArticleScreen() {
     ({type, value, fee})) : []; 
 
   // Prix total 
-  // const selectedFee = selectOption ? Number(options[0].fee) : 0;
-  // console.log("Fee for extra: ", selectedFee);
-  console.log("menuItem.price: ", menuItem.price);
   const selectedFee = (selectedIndex !== null && selectedIndex >= 0 && selectedIndex < options.length) 
   ? Number(options[selectedIndex].fee) : 0;
-  console.log("selectedFee : ", selectedFee); 
   const total = ((Number(menuItem.price) + Number(selectedFee)) * quantity).toFixed(2);
-  console.log("total : ", total);
 
   async function handleAddToCart(itemObj : Item){
     // fetch check

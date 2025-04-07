@@ -1,7 +1,8 @@
 import COLORS from "@/constants/Colors";
 import TYPOGRAPHY from "@/constants/Typography";
+import { useFocusEffect } from "expo-router";
 import { Minus, Plus } from "lucide-react-native";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
 interface CounterProps {
@@ -14,6 +15,13 @@ export default function Counter({count, setCount} : CounterProps ){
   // TODO: Add a max prop to limit the counter to a certain number
   const increment = () => setCount((prev) => prev + 1);
   const decrement = () => setCount((prev) => Math.max(1, prev - 1));
+  
+  // reset counter to one 
+  useFocusEffect(
+    useCallback(() => {
+      setCount(1);
+    }, [])
+  ); 
 
   return (
     <View style={styles.textInput}>
