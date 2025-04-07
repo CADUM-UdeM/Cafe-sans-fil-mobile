@@ -24,6 +24,7 @@ import {
   HelpCircle,
   DollarSign,
   CreditCard,
+  LucideIcon,
 } from "lucide-react-native";
 import {
   View,
@@ -69,6 +70,7 @@ export default function CafeScreen() {
     return savedFavorites.some((fav: Favoris) => fav.cafe_id === cafeId);
   };
   useEffect(() => {
+      console.log('this is id:',id)
       setIsLoading(true);
       fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
         .then((response) => response.json())
@@ -97,21 +99,25 @@ export default function CafeScreen() {
   
 
   // Getting icons depending on platform names
-  const getIcon = (platform : any) => {
-    const icons = {
+  const getIcon = (platform: string) => {
+    const icons: Record<string, LucideIcon> = {
       x: Twitter,
       instagram: Instagram,
       facebook: Facebook,
     };
-    return icons[platform] || HelpCircle;
-  };   
+
+    return icons[platform] ?? HelpCircle; // Fallback to HelpCircle if key is not found
+  };
   useEffect(() => {
     // api data fetching
     setIsLoading(true);
     const fetchCafe = async () => {
         try {
-          const response = await fetch(`https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}`);
+          const response = await fetch(
+            `https://cafesansfil-api-r0kj.onrender.com/api/cafes/${id}`
+          );
           const json = await response.json();
+          console.log('this is Json:',json)
           console.log("Social media: ", json.social_media);
           const updatedCafe = { ...json, cafe_id: json.id };
           setCafe(updatedCafe);
@@ -121,7 +127,7 @@ export default function CafeScreen() {
 
           // After setting the cafe data, filter the menu items
           // Directly use 'json' instead of 'cafe'
-          const filteredItems = filterMenu("", json.menu.categories);
+          const filteredItems = filterMenu("", json.menu.carrrtegories);
           setItemList(filteredItems);
       } catch (error) {
         console.error("Fetch error:", error);
@@ -169,13 +175,14 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
     ({plateform, link})) : [] ;
 
   // Méthode pour traduire en français
-  const translationPaymentMethod = (method) => {
-    const methodTranslated = {
-      CREDIT : "Crédit",
-      DEBIT : "Débit",
-      CASH : "Cash",
+  const translationPaymentMethod = (method: string) => {
+    const methodTranslated: Record<string, string> = {
+      CREDIT: "Crédit",
+      DEBIT: "Débit",
+      CASH: "Cash",
     };
-    return methodTranslated[method] || method;
+  
+    return methodTranslated[method] ?? method; // Fallback to original method if not found
   };
 
   // Tableau? des détails de payements
@@ -198,20 +205,20 @@ console.log(paymentDetails);
 
   // Handle saving/deleting favorite when user toggles it manually
   const toggleFavorite = async () => {
-    if (!cafe || !cafe.cafe_id) {
+    if (!cafe || !cafe.id) {
       console.error("Cannot toggle favorite: cafe data is missing");
       return;
     }
 
     try {
       if (favorited) {
-        await deleteFav(cafe.cafe_id);
-        console.log("Removed from favorites:", cafe.cafe_id);
+        await deleteFav(cafe.id);
+        console.log("Removed from favorites:", cafe.id);
       } else {
         const favObj = {
-          cafe_id: cafe.cafe_id,
-          image_url: cafe.image_url,
-          faculty: cafe.faculty,
+          cafe_id: cafe.id,
+          image_url: cafe.banner_url,
+          faculty: cafe.affiliation.faculty,
           is_open: cafe.is_open,
           location: cafe.location,
           name: cafe.name,
@@ -220,7 +227,7 @@ console.log(paymentDetails);
         };
 
         await saveFav(favObj);
-        console.log("Added to favorites:", cafe.cafe_id);
+        console.log("Added to favorites:", cafe.id);
       }
 
       setFavorited(!favorited);
