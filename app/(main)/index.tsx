@@ -268,7 +268,7 @@ function sortByDistance(current: Location.LocationObject, cafes: Cafe[]): Cafe[]
 
             {/* All Cafes Cards */}
             {/* Cafés groupés par pavillon */}
-            {data && (
+            {data && closest && (
             <View style={{ marginTop: SPACING["xl"] }}>
               
               {sortByPavillon(filterCafes(closest)).map((pavillonGroup, index) => {
