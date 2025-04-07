@@ -116,7 +116,6 @@ function sortByDistance(current: Location.LocationObject, cafes: Cafe[]): Cafe[]
       filteredCafesClose = filteredCafesClose.filter(cafe => cafe.is_open == true);
     }
     return filteredCafesClose;
-
   };
   
   // Mock implementation of search and filter functions.
