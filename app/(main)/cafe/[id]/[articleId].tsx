@@ -93,6 +93,37 @@ export default function ArticleScreen() {
     }
   }
 
+  // fonction show option view 
+  function showOptions(){
+    return (
+      <View style={{ borderBottomWidth: 3, borderColor: COLORS.lightGray, paddingHorizontal: 16 }}>
+      <View style={{ marginBlock: 20, gap: 8 }}>
+        <Text style={[TYPOGRAPHY.heading.small.bold]}>Options {options[0].type}</Text>
+        <Text
+        style={[
+          TYPOGRAPHY.body.large.base,
+          { color: COLORS.subtuleDark, lineHeight: 21 },
+        ]}
+      > 
+        Sélectionnez les options qui vous intéressent.
+      </Text>
+      </View >
+      <View style={{ flexDirection: "row", gap: 12, marginBottom: 24 }}>
+        <FlatList data={options} renderItem={({item, index}) => (
+          <Button onPress={()=> setSelectedIndex(prev => (prev === index ? null : index))} 
+          style={{ backgroundColor : selectedIndex === index ? COLORS.black : COLORS.lightGray, paddingHorizontal: 12, paddingVertical: 12, borderRadius: 10, flex: 1,}}>
+            <Text style={[TYPOGRAPHY.body.normal.semiBold, { textAlign: "center", color: selectedIndex === index ? COLORS.white : COLORS.subtuleDark, }]}>{item.value} (+${item.fee})</Text>
+          </Button> )}
+          keyExtractor={(item, index) => index.toString()}
+          horizontal
+          ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
+          // style={{paddingHorizontal: SPACING["sm"], paddingBottom: SPACING["md"]}}
+        />
+      </View> 
+      </View>
+        ) 
+      }
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -147,11 +178,7 @@ export default function ArticleScreen() {
           {loading ? "": menuItem.description}
         </Text>
       </View>
-      {/* <View>
-        <Text>Options</Text>
-        {options.map((options, index) => (<Text key={index}>{options.value} (+{options.fee}$)</Text>)) }
-        
-      </View> */}
+      
 {/*
       <View
         style={{
@@ -166,7 +193,7 @@ export default function ArticleScreen() {
         <Tooltip label="95%" Icon={ThumbsUp} showChevron={false}></Tooltip>
         <Tooltip label="Populaire" showChevron={false} /> 
       </View> */}
-
+      
 {/*
       <View style={{ borderTopWidth: 3, borderBottomWidth: 3, borderColor: COLORS.lightGray, paddingHorizontal: 16 }}>
         <View style={{ marginBlock: 20 }}>
@@ -184,47 +211,9 @@ export default function ArticleScreen() {
           </View>
         </View>
       </View> */}
-      {}
-      <View style={{ borderBottomWidth: 3, borderColor: COLORS.lightGray, paddingHorizontal: 16 }}>
-        <View style={{ marginBlock: 20, gap: 8 }}>
-          <Text style={[TYPOGRAPHY.heading.small.bold]}>Options extras</Text>
-          <Text
-          style={[
-            TYPOGRAPHY.body.large.base,
-            { color: COLORS.subtuleDark, lineHeight: 21 },
-          ]}
-        > 
-          Sélectionnez les options qui vous intéressent.
-        </Text>
-        </View >
-        <View style={{ flexDirection: "row", gap: 12, marginBottom: 24 }}>
-          <FlatList data={options} renderItem={({item, index}) => (
-            <Button onPress={()=> setSelectedIndex(prev => (prev === index ? null : index))} 
-            style={{ backgroundColor : selectedIndex === index ? COLORS.black : COLORS.lightGray, paddingHorizontal: 12, paddingVertical: 12, borderRadius: 10, flex: 1,}}>
-              <Text style={[TYPOGRAPHY.body.normal.semiBold, { textAlign: "center", color: selectedIndex === index ? COLORS.white : COLORS.subtuleDark, }]}>{item.value} (+${item.fee})</Text>
-            </Button> )}
-            keyExtractor={(item, index) => index.toString()}
-            horizontal
-            ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />} // padding
-            // style={{paddingHorizontal: SPACING["sm"], paddingBottom: SPACING["md"]}}
-          />
-        </View>
-        
-        {/* <View style={{ flexDirection: "row", gap: 12, marginBottom: 24 }}>
-          <View style={{ backgroundColor: COLORS.lightGray, paddingVertical: 12, borderRadius: 10, flex: 1,  }}>
-            <Text style={[TYPOGRAPHY.body.normal.semiBold, { textAlign: "center" }]}>Frites</Text>
-          </View>
-          <View style={{ backgroundColor: COLORS.lightGray, paddingVertical: 12, borderRadius: 10, flex: 1,  }}>
-            <Text style={[TYPOGRAPHY.body.normal.semiBold, { textAlign: "center" }]}>Burger</Text>
-          </View>
-          <View style={{ backgroundColor: COLORS.lightGray, paddingVertical: 12, borderRadius: 10, flex: 1,  }}>
-            <Text style={[TYPOGRAPHY.body.normal.semiBold, { textAlign: "center" }]}>Pizza</Text>
-          </View>
-          <View style={{ backgroundColor: COLORS.lightGray, paddingVertical: 12, borderRadius: 10, flex: 1,  }}>
-            <Text style={[TYPOGRAPHY.body.normal.semiBold, { textAlign: "center" }]}>Pomme</Text>
-          </View>
-        </View> */}
-      </View> 
+      {/* if options est vide don't show section */}
+      {options.length > 0 && (showOptions())}
+
       <View style={{ borderBottomWidth: 3, borderColor: COLORS.lightGray, paddingHorizontal: 16 }}>
         <View style={{ marginBlock: 20, gap: 8 }}>
           <Text style={[TYPOGRAPHY.heading.small.bold]}>Instructions</Text>
