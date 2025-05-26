@@ -391,9 +391,30 @@ export default function ParametreScreen() {
               style={styles.modernModalContent}
               showsVerticalScrollIndicator={false}
               >
-                <View style={styles.helpSection}>$
+                <View style={styles.helpSection}>
                   <Text style={styles.sectionTitle}>Contactez-nous</Text>
-                  <Text style={styles.sectionContent}></Text>
+                  <Text style={styles.sectionContent}>
+                    Vous avez des questions ou besoin d'aide? {"\n"}
+                    Ecrivez-nous sur notre adresse e-mail : blablabla@gmail.com {"\n"}
+                    Ou contactez-nous sur Discord
+                  </Text>
+                  <View style={styles.socialIcons}>
+                    <TouchableOpacity style={styles.socialButton}>
+                      <FontAwesome6 name="discord" size={24} color="white" />
+                    </TouchableOpacity>
+                  </View>
+
+                  <View style={styles.divider} />
+                  
+                  <Text style={styles.sectionTitle}>FAQ</Text>
+                  <Text style={styles.sectionSubtitle}>Vous ne recevez pas vos notifications?</Text>
+                  <Text style={styles.sectionContent}>
+                    Assurez-vous que les autorisations de notification sont activées dans les paramètres de votre téléphone.
+                  </Text>
+                  <Text style={styles.sectionSubtitle}>Vous ne pouvez pas vous connecter?</Text>
+                  <Text style={styles.sectionContent}>
+                    Essayez de réinitialiser votre mot de passe via l'écran de connexion.
+                  </Text>  
                 </View>
               </ScrollView>
                 
@@ -671,6 +692,12 @@ sectionTitle: {
   fontWeight: '600',
   marginBottom: 12,
   color: COLORS.black,
+},
+sectionSubtitle: {
+  fontSize: 15,
+  fontWeight: '600',
+  lineHeight: 24,
+  color: '#222'
 },
 sectionContent: {
   fontSize: 15,
