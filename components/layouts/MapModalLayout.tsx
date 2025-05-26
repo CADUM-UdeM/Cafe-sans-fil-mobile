@@ -1,8 +1,7 @@
 import { View, Text } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import * as Location from "expo-location";
 import COLORS from "@/constants/Colors";
-import { pavillonCoordinates } from "@/constants/Coordinates";
 import SPACING from "@/constants/Spacing";
 import TYPOGRAPHY from "@/constants/Typography";
 import MapView, { Marker, Callout } from "react-native-maps";
@@ -11,7 +10,7 @@ import FilterModalLayout from "./FilterModalLayout";
 export default function MapModalLayout({
     handleApplyFilter,
     handleResetFilter,
-    handleMarkerPress,
+    handleMarkerPress, // Updated to include coordinates
     location,
     currentLocalisation,
     isCurrentLocalisationModified,
@@ -19,12 +18,47 @@ export default function MapModalLayout({
 }: {
     handleApplyFilter: () => void;
     handleResetFilter: () => void;
-    handleMarkerPress: (pressedLocation: string) => void;
+    handleMarkerPress: (pressedLocation: string, lat: number, lng: number) => void; // Updated type definition
     location: Location.LocationObject;
     currentLocalisation: string;
     isCurrentLocalisationModified: boolean;
     locationLoaded: string;
 }) {
+  
+  interface Coordinate {
+    pavillon: string;
+    lat: number;
+    lng: number;
+  }
+
+  const [listCoordinates, setListCoordinates] = useState<(Coordinate | null)[]>([]);
+  const [pavillonCoordinates, setPavillonCoordinates] = useState<Coordinate[]>([]);
+
+  useEffect(() => {
+    fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
+      .then((response) => response.json())
+      .then((json) => {
+        // Process data in one go
+        const filteredCoordinates = json.items
+          .map((item: any) => {
+            if (item.location.geometry) {
+              return {
+                pavillon: item.location.pavillon,
+                lat: item.location.geometry.coordinates[1],
+                lng: item.location.geometry.coordinates[0],
+              };
+            }
+            return null;
+          })
+          .filter((coordinate : any): coordinate is Coordinate => coordinate !== null);
+        
+        // Single state update with filtered data
+        setListCoordinates(filteredCoordinates);
+      })
+      .catch((error) => console.error(error));
+  }, []);  // ← Remove location dependency to prevent re-fetching
+  
+
   return (
     <FilterModalLayout
       title="Localisation"
@@ -32,6 +66,7 @@ export default function MapModalLayout({
       handleResetFilter={handleResetFilter}
     >
       <MapView
+      key={`map-${listCoordinates.length}`} // Add this line to force re-render
         style={{
           width: "100%",
           height: 400,
@@ -41,25 +76,25 @@ export default function MapModalLayout({
         initialRegion={{
           latitude: location.coords.latitude,
           longitude: location.coords.longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
+          latitudeDelta: 0.0922,  // Increased from 0.0922
+          longitudeDelta: 0.0421, // Increased from 0.0421
         }}
         showsUserLocation
         showsMyLocationButton
         showsTraffic
-        minZoomLevel={15}
+        minZoomLevel={12}
         cameraZoomRange={{
           maxCenterCoordinateDistance: 3000,
         }}
         mapType="standard"
       >
-        {pavillonCoordinates.map((coordinate, index) =>
-          coordinate.pavillon ===
+        {listCoordinates.map((coordinate, index) =>
+          coordinate && coordinate.pavillon ===
           (isCurrentLocalisationModified
             ? locationLoaded
             : currentLocalisation) ? (
             <Marker
-              key={index}
+              key={`selected-${coordinate.pavillon}-${index}`}
               coordinate={{
                 latitude: coordinate.lat,
                 longitude: coordinate.lng,
@@ -93,15 +128,19 @@ export default function MapModalLayout({
               </Callout>
             </Marker>
           ) : (
-            <Marker
-              key={index}
+            coordinate && <Marker
+              key={`regular-${coordinate.pavillon}-${index}`}
               coordinate={{
                 latitude: coordinate.lat,
                 longitude: coordinate.lng,
               }}
               title={coordinate.pavillon}
-              pinColor="blue"
-              onPress={() => handleMarkerPress(coordinate.pavillon)}
+              pinColor= "blue"
+              onPress={() => handleMarkerPress(
+                coordinate.pavillon, 
+                coordinate.lat,
+                coordinate.lng
+              )}
             >
               <Callout>
                 <View

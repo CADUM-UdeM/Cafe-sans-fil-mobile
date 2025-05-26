@@ -1,67 +1,78 @@
-# Welcome to your Expo app 👋
+<br/>
+<br/>
+<p align="center">
+  <a href="https://cafesansfil.onrender.com/">
+    <img src="logo.png" width="300">
+  </a>
+</p>
+<br/>
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+# Café sans-fil Mobile
 
-## Videos
+Café sans-fil Mobile est une extension du [projet Café sans-fil](https://github.com/ceduni/cafe-sans-fil) développée par le Club de développement d'applications de l'Université de Montréal (CADUM). Cette application mobile complète la plateforme web en offrant une expérience optimisée pour les appareils mobiles.
 
-<!-- Embed a video -->
-### Prototype Figma
-<video controls>
-  <source src="./assets/videos/Prototype.mov">
-  Your browser does not support the video tag.
-</video>
+Le projet Café sans-fil vise à améliorer le service des cafés étudiants de l'UdeM en fournissant une plateforme commune facilitant leur gestion, découverte, communication des produits et prise de commande.
 
-### Bare Bones
-<video controls>
-  <source src="./assets/videos/Skeleton.mov">
-  Your browser does not support the video tag.
-</video>
+## 📱 Technologies
 
+L'application mobile est développée avec:
 
+- **React Native**: Framework pour le développement d'applications mobiles cross-platform
+- **Expo**: Plateforme facilitant le développement React Native
+- **TypeScript**: Langage de programmation typé basé sur JavaScript
+- **API REST**: Connexion à l'API du projet Café sans-fil principal
 
-## Get started
+## 📋 Fonctionnalités
 
-1. Install dependencies
+- **Découverte des cafés**
+  - Affichage de la liste des cafés du campus
+  - Filtrage et recherche avancée
+  - Affichage des informations détaillées
+  
+- **Gestion des commandes**
+  - Consultation des menus en temps réel
+  - Passage et suivi de commandes
+  - Historique des commandes
+  
+- **Profil utilisateur**
+  - Authentification sécurisée
+  - Gestion des préférences
+  - Favoris et commandes récentes
 
-   ```bash
-   npm install
-   ```
+- **Notifications**
+  - Alertes pour les commandes prêtes
+  - Promotions et événements spéciaux
 
-2. Start the app
+## 🔄 Lien avec Café sans-fil Web
 
-   ```bash
-    npx expo start
-   ```
+Cette application mobile partage la même base de données et API que la [version web](https://cafesansfil.onrender.com/), permettant une expérience cohérente sur tous les appareils. Les utilisateurs peuvent alterner entre les plateformes selon leurs besoins, avec une synchronisation complète des données.
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## 🚀 Installation
 
 ```bash
-npm run reset-project
+# Cloner le répertoire
+git clone https://github.com/Griselda15/Cafe-sans-fil-mobile.git
+
+# Installer les dépendances
+cd Cafe-sans-fil-mobile
+npm install
+
+# Lancer l'application
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 👥 Équipe de développement - CADUM
 
-## Learn more
+Le développement de cette application mobile est le fruit du travail des membres du Club de développement d'applications de l'Université de Montréal.
 
-To learn more about developing your project with Expo, look at the following resources:
+## 👨‍💻 Contributeurs
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- [Jalal Fatouaki](https://github.com/jalalfatouakii) 
+- [William Hayward](https://github.com/Griselda15)
+- [Thierno Diallo](https://github.com/dthierno/CafeSansFils) 
+- [Flora Kang](https://github.com/flower-png) 
+- [Ding Wen Li](https://github.com/echobat88) 
+- [Trung Nguyen](https://github.com/likeskymore) 
+- [Kevin Wang](https://github.com/Kevin-Wang78) 
+- [Louis Edouard Lafontant](https://github.com/lelafontant) 
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.

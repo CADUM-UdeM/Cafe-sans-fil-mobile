@@ -23,17 +23,20 @@ type SelectLocalisationProps = {
   currentLocalisation: string;
   location: Location.LocationObject;
   style?: StyleProp<ViewStyle>;
+  onLocationChange?: (pavilionName: string, coords: {latitude: number, longitude: number}) => void;
 };
 
 export default function SelectLocalisation({
   currentLocalisation,
   location,
   style,
+  onLocationChange,
 }: SelectLocalisationProps) {
   const [localisation, setLocalisation] = useState("");
-  const [isCurrentLocalisationModified, setisCurrentLocalisationModified] =
-    useState(false);
+  const [isCurrentLocalisationModified, setisCurrentLocalisationModified] = useState(false);
   const [locationLoaded, setLocationLoaded] = useState("");
+  const [selectedCoords, setSelectedCoords] = useState<{latitude: number; longitude: number}>();
+  const [newLocation, setNewLocation] = useState(""); // Add this line to store selected location name
 
   useEffect(() => {}, [localisation]);
 
@@ -41,17 +44,23 @@ export default function SelectLocalisation({
   const openModal = modalContext ? modalContext.openModal : () => {};
   const closeModal = modalContext ? modalContext.closeModal : () => {};
 
-  let newLocation: string;
-
-  function handleMarkerPress(pressedLocation: string) {
+  function handleMarkerPress(pressedLocation: string, lat: number, lng: number) {
     setLocalisation(pressedLocation);
-    newLocation = pressedLocation;
+    setNewLocation(pressedLocation); // Set newLocation when marker is pressed
+    setSelectedCoords({latitude: lat, longitude: lng});
   }
 
   function handleApplyFilter() {
     setLocationLoaded(newLocation);
     setLocalisation("");
     setisCurrentLocalisationModified(true);
+    
+    // Call the parent callback with the new location info
+    if(onLocationChange && selectedCoords) {
+      console.log("Updating location to:", newLocation, selectedCoords);
+      onLocationChange(newLocation, selectedCoords);
+    }
+    
     closeModal();
   }
 
@@ -62,7 +71,7 @@ export default function SelectLocalisation({
 
   function handlePress(event: GestureResponderEvent): void {
     openModal(
-      <MapModalLayout  
+      <MapModalLayout
         handleApplyFilter={handleApplyFilter}
         handleResetFilter={handleResetFilter}
         handleMarkerPress={handleMarkerPress}

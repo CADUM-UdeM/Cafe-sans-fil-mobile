@@ -41,6 +41,9 @@ import {
 import { Cafe, Category, Item } from "@/constants/types/GET_cafe";
 import { allCafe } from '@/constants/types/GET_list_cafe';
 import ScrollableLayout from '@/components/layouts/ScrollableLayout';
+const { Platform } = require('react-native');
+const ActionSheetIOS = require('react-native').ActionSheetIOS;
+const { Alert } = require('react-native');
 
 export default function CafeScreen() {
   const [isLoading, setIsLoading] = useState(true);
@@ -165,7 +168,117 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
       DEBIT : "Débit",
       CASH : "Cash",
     };
-    return methodTranslated[method] || method;
+    return methodTranslated.method || method;
+  };
+  const openLocation = (location) => {
+    console.log("Location: ", location);
+    
+    // Extract latitude and longitude from the location array
+    const latitude = location[1];
+    const longitude = location[0];
+
+    // Define URLs for different map applications
+    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+    const appleMapsUrl = `maps://app?daddr=${latitude},${longitude}`;
+    const wazeUrl = `waze://?ll=${latitude},${longitude}&navigate=yes`;
+    const genericMapsUrl = Platform.OS === 'android' ? `geo:${latitude},${longitude}` : appleMapsUrl;
+
+    // Use Alert to present app choices to the user
+    if (Platform.OS === 'ios') {
+      // For iOS we can use ActionSheetIOS
+      
+      // First check which apps are installed before showing options
+      Promise.all([
+        Linking.canOpenURL(appleMapsUrl),
+        Linking.canOpenURL("https://www.google.com/maps"),
+        Linking.canOpenURL("waze://")
+      ]).then(([appleSupported, googleSupported, wazeSupported]) => {
+        // Build options array with only installed apps
+        const options = ['Annuler'];
+        const availableApps : any[] = [];
+        
+        if (appleSupported) {
+          options.push('Apple Plans');
+          availableApps.push('apple');
+        }
+        
+        if (googleSupported) {
+          options.push('Google Maps');
+          availableApps.push('google');
+        }
+        
+        if (wazeSupported) {
+          options.push('Waze');
+          availableApps.push('waze');
+        }
+        
+        // Only show ActionSheet if there's at least one map app available
+        if (availableApps.length > 0) {
+          ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options,
+          cancelButtonIndex: 0,
+        },
+        (buttonIndex : number) => {
+          if (buttonIndex === 0) return; // Cancel
+          
+          const selectedApp = availableApps[buttonIndex - 1];
+          
+          if (selectedApp === 'apple') {
+            Linking.openURL(appleMapsUrl).catch(err => 
+          console.error("Failed to open Apple Maps:", err));
+          } else if (selectedApp === 'google') {
+            Linking.openURL(googleMapsUrl).catch(err => 
+          console.error("Failed to open Google Maps:", err));
+          } else if (selectedApp === 'waze') {
+            Linking.openURL(wazeUrl).catch(err => 
+          console.error("Failed to open Waze:", err));
+          }
+        }
+          );
+        } else {
+          // No map apps available, open with default URL scheme
+          Linking.openURL(genericMapsUrl).catch(err => 
+        console.error("Failed to open Maps:", err));
+        }
+      }).catch(err => {
+        console.error("Error checking for installed map apps:", err);
+        // Fallback to generic map URL
+        Linking.openURL(genericMapsUrl).catch(err => 
+          console.error("Failed to open Maps:", err));
+      });
+    } else {
+      // For Android use Alert
+      
+      Alert.alert(
+        'Choisir une application',
+        'Quelle application souhaitez-vous utiliser pour afficher cet itinéraire?',
+        [
+          {
+            text: 'Google Maps',
+            onPress: () => Linking.openURL(googleMapsUrl)
+              .catch(err => console.error("Failed to open Google Maps:", err))
+          },
+          {
+            text: 'Waze',
+            onPress: () => Linking.canOpenURL(wazeUrl)
+              .then(supported => {
+                if (supported) {
+                  return Linking.openURL(wazeUrl);
+                } else {
+                  // Fallback to Google Maps
+                  Alert.alert('Waze non installé', 'Voulez-vous ouvrir avec Google Maps?', [
+                    { text: 'Non', style: 'cancel' },
+                    { text: 'Oui', onPress: () => Linking.openURL(googleMapsUrl) }
+                  ]);
+                }
+              })
+              .catch(err => console.error("Failed to open Waze:", err))
+          },
+          { text: 'Annuler', style: 'cancel' },
+        ]
+      );
+    }
   };
 
   // Tableau? des détails de payements
@@ -206,11 +319,15 @@ console.log(paymentDetails);
             onPress={() => router.back()}
             style={styles.cafeHeaderIconButtons}
           />
-          <View style={styles.cafeHeaderButtonsRight}>
+            <View style={styles.cafeHeaderButtonsRight}>
             <IconButton Icon={Search} style={styles.cafeHeaderIconButtons} />
-            <IconButton Icon={Locate} style={styles.cafeHeaderIconButtons} />
+            <IconButton 
+              Icon={Locate} 
+              style={styles.cafeHeaderIconButtons} 
+              onPress={() => cafe?.location && openLocation(cafe.location.geometry.coordinates)} 
+            />
             <IconButton Icon={Heart} style={styles.cafeHeaderIconButtons} />
-          </View>
+            </View>
         </View>
 
         <View style={styles.cafeHeaderOpenStatus}>
@@ -236,6 +353,7 @@ console.log(paymentDetails);
             gap: 10,}}>
 
               {socialMediaTab.map(({plateform, link}) => ( link ? (
+
                 <View key={plateform}>
                   <Tooltip
                   label={plateform.charAt(0).toUpperCase() + plateform.slice(1)}
@@ -243,6 +361,7 @@ console.log(paymentDetails);
                   Icon={getIcon(plateform)}
                   showChevron={false} color='white'/>
                 </View>
+
               ) : null ))}
           </View>
 
@@ -269,6 +388,7 @@ console.log(paymentDetails);
           {paymentDetails.map(({method, minimum}) => ( minimum ? (
             <View key={method}>
               <Tooltip
+                key={`${method}-${minimum}`}
                 label={`${method}`}
                 showChevron={true }
                 color="white"
@@ -280,6 +400,7 @@ console.log(paymentDetails);
                 (
               <View key={method}>
                 <Tooltip
+                key={method} 
                   label={method}
                   showChevron={false}
                   color="white"
@@ -291,36 +412,35 @@ console.log(paymentDetails);
         </View>
 
       </View>
-      <View
-        style={{
-          marginHorizontal: 16,
-          marginTop: 20,
-          backgroundColor: COLORS.lightGray,
-          paddingBlock: 28,
-        }}
-      >
-
-        {/* Horaires du café*/}
-        <Text
-          style={[
-            TYPOGRAPHY.heading.medium.bold,
-            { color: "black", textAlign: "center", marginBottom:8},
-          ]}
-        >
-          Horaires
+      {/* Horaires du café */}
+<View style={styles.hoursContainer}>
+  <Text style={styles.hoursTitle}>Horaires</Text>
+  <FlatList 
+    data={cafe?.opening_hours} 
+    horizontal
+    showsHorizontalScrollIndicator={false}
+    keyExtractor={item => item.day}
+    contentContainerStyle={styles.hoursListContent}
+    renderItem={({ item }) => (
+      <View style={styles.dayCard}>
+        <Text style={styles.dayName}>
+          {item.day.slice(0, 3)}
         </Text>
-        <FlatList data={cafe?.opening_hours} horizontal
-          keyExtractor={item => item.day}
-          ItemSeparatorComponent={(item) => 
-            <View key={item.day}
-              style={{margin:10, borderColor: "black", borderWidth: 0.5}}></View>
-          }
-          renderItem={({ item }) => (
-              <DayCard day={item.day} blocks={item.blocks} />
+        <View style={styles.timeBlocks}>
+          {item.blocks.map((block, index) => (
+            <View key={index} style={styles.timeBlock}>
+              <Text style={styles.timeText}>{block.start} - {block.end}</Text>
+            </View>
+          ))}
+          {item.blocks.length === 0 && (
+            <Text style={styles.closedText}>Fermé</Text>
           )}
-          style={{borderColor: "black", borderWidth: 0.25, borderRadius: 10, padding: SPACING["sm"]}}
-        />
+        </View>
       </View>
+    )}
+    ItemSeparatorComponent={() => <View style={styles.daySeparator} />}
+  />
+</View>
 
       {/* Menu */}
       <Text 
@@ -484,5 +604,63 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     marginTop: SPACING["xs"],
     textAlign: "center",
+  },
+  hoursContainer: {
+    marginHorizontal: 16,
+    marginTop: 20,
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  hoursTitle: {
+    ...TYPOGRAPHY.heading.medium.bold,
+    color: COLORS.black,
+    marginBottom: 15,
+    textAlign: "center",
+  },
+  hoursListContent: {
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+  },
+  dayCard: {
+    backgroundColor: '#f9f9f9',
+    borderRadius: 12,
+    padding: 12,
+    minWidth: 90,
+    alignItems: 'center',
+  },
+  dayName: {
+    ...TYPOGRAPHY.body.normal.semiBold,
+    color: COLORS.black,
+    textTransform: 'uppercase',
+    marginBottom: 8,
+  },
+  timeBlocks: {
+    width: '100%',
+  },
+  timeBlock: {
+    marginVertical: 3,
+  },
+  timeText: {
+    ...TYPOGRAPHY.body.small.base,
+    color: COLORS.subtuleDark,
+    textAlign: 'center',
+  },
+  closedText: {
+    ...TYPOGRAPHY.body.small.semiBold,
+    color: COLORS.status.red,
+    textAlign: 'center',
+    marginTop: 4,
+  },
+  daySeparator: {
+    width: 10,
   },
 });
