@@ -27,6 +27,7 @@ export default function Announcements() {
         
     }, []);
 
+
     if (isLoading){
         return(
             <View style={{flex:1, alignContent:'center', justifyContent:'center'}}>
@@ -34,21 +35,25 @@ export default function Announcements() {
             </View>
         )
     }
+
+    // for announ in announcements?.items:
+    //    id = announ.items.id
+
     return (
         <View>
             <FlatList data={announcements?.items}
-                renderItem={(item) =>
-                    <AnnouncementCard 
-                        id={item.item.id}
-                        cafe_id={item.item.cafe_id}
-                        title={item.item.title}
-                        content={item.item.content}
-                        created_at={item.item.created_at}
-                        updated_at={item.item.updated_at}
-                        active_until={item.item.active_until}
-                        tags={item.item.tags}
-                        author={item.item.author}
-                        interactions={item.item.interactions}
+                renderItem={(announ) =>
+                    <AnnouncementCard
+                        id={announ.item.id}
+                        cafe_id={announ.item.cafe_id}
+                        title={announ.item.title}
+                        content={announ.item.content}
+                        created_at={announ.item.created_at}
+                        updated_at={announ.item.updated_at}
+                        active_until={announ.item.active_until}
+                        tags={announ.item.tags}
+                        author={announ.item.author}
+                        interactions={announ.item.interactions}
                     />
                 }
             />
