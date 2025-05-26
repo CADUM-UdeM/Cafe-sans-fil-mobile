@@ -8,11 +8,8 @@ export default function Events() {
     
     return (
         <SafeAreaView>
-            <View style={{alignItems: 'center'}}>
+            <View style={{alignItems: 'center', justifyContent: 'center'}}>
                 <Announcements/>
-                <Text>
-                    aaa
-                </Text>
             </View>
         </SafeAreaView>
     )

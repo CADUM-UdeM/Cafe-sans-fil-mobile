@@ -1,6 +1,7 @@
 import { AnnouncementsData } from '@/constants/types/announcements';
 import { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, FlatList } from 'react-native';
+import AnnouncementCard from './AnnouncementCard';
 
 
 export default function Announcements() {
@@ -35,14 +36,20 @@ export default function Announcements() {
     }
     return (
         <View>
-            <Text>
-                Announcements
-            </Text>
             <FlatList data={announcements?.items}
                 renderItem={(item) =>
-                    <Text>
-                        {item.item.title}
-                    </Text>
+                    <AnnouncementCard 
+                        id={item.item.id}
+                        cafe_id={item.item.cafe_id}
+                        title={item.item.title}
+                        content={item.item.content}
+                        created_at={item.item.created_at}
+                        updated_at={item.item.updated_at}
+                        active_until={item.item.active_until}
+                        tags={item.item.tags}
+                        author={item.item.author}
+                        interactions={item.item.interactions}
+                    />
                 }
             />
         </View>
