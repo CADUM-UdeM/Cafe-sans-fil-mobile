@@ -47,7 +47,8 @@ export default function ParametreScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [accountModalVisible, setAccountModalVisible] = useState(false);
   const [ordersModalVisible, setOrdersModalVisible] = useState(false);
-  const [prferencesModalVisible, setPreferencesModalVisible] = useState(false);
+  const [preferencesModalVisible, setPreferencesModalVisible] = useState(false);
+  const [helpModalVisible, setHelpModalVisible] = useState(false);
   
 
   const orders = [
@@ -129,7 +130,7 @@ export default function ParametreScreen() {
       icon: <HelpCircle size={26} strokeWidth={2.5} color={COLORS.black} />,
       title: "Aide et support",
       subtitle: "Obtenez de l'aide et contactez le support.",
-      onPress: () => console.log("Support pressed"),
+      onPress: () => setHelpModalVisible(true),
     },
     {
       icon: <Info size={26} strokeWidth={2.5} color={COLORS.black} />,
@@ -370,6 +371,36 @@ export default function ParametreScreen() {
             </View>
           </View>
         </Modal>
+
+        <Modal
+          animationType ="slide"
+          transparent={true}
+          visible={helpModalVisible}
+          onRequestClose={() => setHelpModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modernModalTitle}>Aide et Support</Text>
+                <TouchableOpacity onPress={() => setHelpModalVisible(false)}>
+                  <AntDesign name="close" size={24} color={COLORS.black} />
+                </TouchableOpacity>
+              </View>
+
+              <ScrollView 
+              style={styles.modernModalContent}
+              showsVerticalScrollIndicator={false}
+              >
+                <View style={styles.helpSection}>$
+                  <Text style={styles.sectionTitle}>Contactez-nous</Text>
+                  <Text style={styles.sectionContent}></Text>
+                </View>
+              </ScrollView>
+                
+            </View>
+          </View>
+        </Modal>
+        
 
         
       </SafeAreaView>
@@ -630,6 +661,9 @@ modernModalContent: {
   padding: 20,
 },
 aboutSection: {
+  marginBottom: 25,
+},
+helpSection: {
   marginBottom: 25,
 },
 sectionTitle: {
