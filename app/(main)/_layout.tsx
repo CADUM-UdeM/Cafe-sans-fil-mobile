@@ -10,6 +10,7 @@ import { Platform } from "react-native";
 export default function TabLayout() {
     const { isSignedIn } = useAuth();
   return (
+    <SafeAreaView style={{ flex: 1 }}>
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: "black",
@@ -17,7 +18,7 @@ export default function TabLayout() {
           tabBarStyle: {
             ...Platform.select({
               ios:{padding: 6},
-              android:{padding: 8, height:"7%"}
+              android:{padding: 8, height:"13%"}
             })},
         }}
       >
@@ -46,7 +47,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="pannier"
           options={{
-            title: "Pannier",
+            title: "Panier",
             headerShown: false,
             tabBarIcon: ({ color }) => (
               <ShoppingBasket size={28} color={color} />
@@ -97,5 +98,6 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
+  </SafeAreaView>
   );
 }

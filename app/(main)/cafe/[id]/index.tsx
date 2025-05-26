@@ -168,7 +168,7 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
       DEBIT : "Débit",
       CASH : "Cash",
     };
-    return methodTranslated[method] || method;
+    return methodTranslated.method || method;
   };
   const openLocation = (location) => {
     console.log("Location: ", location);
@@ -195,7 +195,7 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
       ]).then(([appleSupported, googleSupported, wazeSupported]) => {
         // Build options array with only installed apps
         const options = ['Annuler'];
-        const availableApps = [];
+        const availableApps : any[] = [];
         
         if (appleSupported) {
           options.push('Apple Plans');
@@ -219,7 +219,7 @@ function filterMenu(filter?: string, menuData?: any): Item[] {
           options,
           cancelButtonIndex: 0,
         },
-        (buttonIndex) => {
+        (buttonIndex : number) => {
           if (buttonIndex === 0) return; // Cancel
           
           const selectedApp = availableApps[buttonIndex - 1];
