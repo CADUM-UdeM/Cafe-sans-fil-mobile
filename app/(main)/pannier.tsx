@@ -45,29 +45,39 @@ const Panier = () => {
     }
     for(const item of items){
       let itemPrice = Number(fetchSync(item.id).price);
-      total = total + itemPrice;
+      total = total + itemPrice*item.quantity;
     }
     return total;
   }
 
   // Fonction pour augmenter la quantité d'un item
   const increaseQuantity = (id) => {
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
+    let currPanier = items;
+    for(const item of currPanier){
+      if(item.id == id){
+        item.quantity = item.quantity+1;
+        break;
+      }
+    }
+    setItems(currPanier);
+    saveSync(panierID, currPanier);
+    refreshPanier();
   };
 
   // Fonction pour diminuer la quantité d'un item
   const decreaseQuantity = (id) => {
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-    );
+    let currPanier = items;
+    for(const item of currPanier){
+      if(item.id == id){
+        if(item.quantity>1){
+          item.quantity = item.quantity -1
+        }
+        break;
+      }
+    }
+    setItems(currPanier);
+    saveSync(panierID, currPanier);
+    refreshPanier();
   };
 
   function deletePanierItem(id){
@@ -119,7 +129,7 @@ const Panier = () => {
   function panierItemDisplay(panierItem){
     let item = panierItemToItem(panierItem);
     return(
-      <View style={styles.itemContainer}>
+      <TouchableOpacity style={styles.itemContainer} onPress={()=>router.push(`/cafe/${item.cafe_id}/${item.id}`)}>
                 <Image source={{ uri: item.image_url }} style={styles.itemImage} />
                 <View style={styles.textContainer}>
                   <Text style={styles.itemTitle}>{item.name}</Text>
@@ -139,7 +149,7 @@ const Panier = () => {
                     <Feather name="trash" size={20} color="red" />
                   </TouchableOpacity>
                 </View>
-              </View>
+        </TouchableOpacity>
     )
   }
 

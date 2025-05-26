@@ -62,6 +62,7 @@
     "react-native-swipeable-row": "^0.8.1",
     "react-native-web": "^0.20.0",
     "react-native-webview": "13.13.5"
+    "react-router-dom": "^7.5.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
