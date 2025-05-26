@@ -49,9 +49,16 @@
     "expo-system-ui": "~5.0.7",
     "expo-web-browser": "~14.1.6",
     "lucide-react-native": "^0.460.0",
+<<<<<<< HEAD
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-native": "0.79.2",
+=======
+    "object-hash": "^3.0.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-native": "0.76.2",
+>>>>>>> origin
     "react-native-gesture-handler": "^2.24.0",
     "react-native-maps": "1.20.1",
     "react-native-reanimated": "~3.17.4",
