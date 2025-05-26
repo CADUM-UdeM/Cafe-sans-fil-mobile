@@ -5,11 +5,14 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import HeaderLayout from "@/components/layouts/HeaderLayout";
 import { Home, Settings, ShoppingBasket, UserRound} from "lucide-react-native";
 import { SafeAreaView } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Platform } from "react-native";
 
 export default function TabLayout() {
     const { isSignedIn } = useAuth();
+    const insets = useSafeAreaInsets();
   return (
+    <SafeAreaView style={{ flex: 1 }}>
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: "black",
@@ -17,7 +20,7 @@ export default function TabLayout() {
           tabBarStyle: {
             ...Platform.select({
               ios:{padding: 6},
-              android:{padding: 8, height:"7%"}
+              android:{padding: 8, height:"13%"}
             })},
         }}
       >
@@ -97,5 +100,6 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
+  </SafeAreaView>
   );
 }
