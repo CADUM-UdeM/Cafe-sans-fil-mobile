@@ -3,7 +3,6 @@ import React from "react";
 import {Text, View, Image, TextInput, ScrollView, KeyboardAvoidingView, Platform} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {useRouter} from "expo-router";
-import ScrollableLayout from "@/components/layouts/ScrollableLayout";
 
 
 
@@ -15,6 +14,36 @@ export default function SignInScreen() {
   const [password, onChangePassword] = React.useState('');
   const emailInputRef = React.useRef<TextInput>(null);
   const passwordInputRef = React.useRef<TextInput>(null);
+
+  const login = async (email : string , password : string) => {
+    const url = 'https://cafesansfil-api-r0kj.onrender.com/api/auth/login';
+
+    const formBody = new URLSearchParams({
+      grant_type: 'password',
+      username: email,
+      password: password,
+      scope: '',
+      client_id: 'string',
+      client_secret: 'string'
+    }).toString();
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: formBody
+      });
+
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
+  };
+
 
   return (
     <SafeAreaView>
@@ -94,7 +123,7 @@ export default function SignInScreen() {
 
 
       <View style={styles.buttonView}>
-      <Button onPress={() => console.log("Sign In")}>Se connecter</Button>
+      <Button onPress={() => login(email,password)}>Se connecter</Button>
       </View>
       <Button onPress={() => router.push("/sign-up")} type="secondary">Pas de compte ?</Button>
       </ScrollView>
