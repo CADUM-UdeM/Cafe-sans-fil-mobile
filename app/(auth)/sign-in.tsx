@@ -1,19 +1,29 @@
 import Button from "@/components/common/Buttons/Button";
 import React from "react";
-import {Text, View, Image, TextInput} from "react-native";
+import {Text, View, Image, TextInput, ScrollView, KeyboardAvoidingView, Platform} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {useRouter} from "expo-router";
+import ScrollableLayout from "@/components/layouts/ScrollableLayout";
+
 
 
 
 export default function SignInScreen() {
-
+  const scrollViewRef = React.useRef<ScrollView>(null);
   const router = useRouter();
   const [email, onChangeEmail] = React.useState('');
   const [password, onChangePassword] = React.useState('');
+  const emailInputRef = React.useRef<TextInput>(null);
+  const passwordInputRef = React.useRef<TextInput>(null);
 
   return (
     <SafeAreaView>
+      <KeyboardAvoidingView 
+    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    
+  >
+      <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false}
+  keyboardShouldPersistTaps="handled" >
       <Image source={require("@/logo.png")} style={styles.logo}/>
       <View style={styles.header}>
       <Text style={styles.textHeader}>
@@ -29,13 +39,25 @@ export default function SignInScreen() {
 
       <TextInput
           style={styles.input}
+          ref={emailInputRef}
           onChangeText={onChangeEmail}
           value={email}
           placeholder="email@email.com"
           keyboardType="email-address"
           autoComplete="email"
-          autoFocus
+          returnKeyType="next"
+          onSubmitEditing={() => passwordInputRef.current?.focus()}
           placeholderTextColor={"#A1A1A1"}
+          onFocus={() => {
+  setTimeout(() => {
+    emailInputRef.current?.measureLayout(
+      scrollViewRef.current as any,
+      (x, y) => {
+        scrollViewRef.current?.scrollTo({ y: y - 100, animated: true });
+      }
+    );
+  }, 100);
+}}
         />
 
       <Text style={styles.textForm}>
@@ -44,14 +66,26 @@ export default function SignInScreen() {
 
       <TextInput
           style={styles.input}
+          ref={passwordInputRef}
           onChangeText={onChangePassword}
           value={password}
           placeholder="********"
           keyboardType="default"
           autoComplete="password"
-          autoFocus
+          returnKeyType="done"
           placeholderTextColor={"#A1A1A1"}
           secureTextEntry
+          onFocus={() => {
+  setTimeout(() => {
+    passwordInputRef.current?.measureLayout(
+      scrollViewRef.current as any,
+      (x, y) => {
+        scrollViewRef.current?.scrollTo({ y: y - 100, animated: true });
+      }
+    );
+  }, 100);
+}}
+
         />
       
       <Button onPress={() => console.log("Forgot Password")} type="secondary">
@@ -63,6 +97,8 @@ export default function SignInScreen() {
       <Button onPress={() => console.log("Sign In")}>Se connecter</Button>
       </View>
       <Button onPress={() => router.push("/sign-up")} type="secondary">Pas de compte ?</Button>
+      </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 
@@ -70,22 +106,26 @@ export default function SignInScreen() {
 }
 
 const styles = {
+  scrollableLayout: {
+    height: "100%",
+    flexGrow: 1,
+  },
+
   logo:{
     width: 150,
     height: 150,
-    alignSelf: "center",
-    marginBottom: 10,
+    alignSelf: "center" as const,
   },
   header : {
     padding: 30,
   },
   textHeader:{
     fontSize: 34,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontWeight: "bold" as const,
+    textAlign: "center" as const,
   },
   textForm: {
-    textAlign: "left",
+    textAlign: "left" as const,
     paddingLeft: 30,
   },
   input: {
