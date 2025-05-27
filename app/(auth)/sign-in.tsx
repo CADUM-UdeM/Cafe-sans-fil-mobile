@@ -14,6 +14,8 @@ export default function SignInScreen() {
   const [password, onChangePassword] = React.useState('');
   const emailInputRef = React.useRef<TextInput>(null);
   const passwordInputRef = React.useRef<TextInput>(null);
+  const [token, setToken] = React.useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = React.useState<string | null>(null);
 
   const login = async (email : string , password : string) => {
     const url = 'https://cafesansfil-api-r0kj.onrender.com/api/auth/login';
@@ -38,6 +40,8 @@ export default function SignInScreen() {
       });
 
       const data = await response.json();
+      data.access_token && setToken(data.access_token);
+      data.refresh_token && setRefreshToken(data.refresh_token);
       console.log(data);
     } catch (error) {
       console.error('Login failed:', error);
