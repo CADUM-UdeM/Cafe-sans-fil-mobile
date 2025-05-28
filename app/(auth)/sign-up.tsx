@@ -17,16 +17,17 @@ export default function SignInScreen() {
   const [token, setToken] = React.useState<string | null>(null);
   const [refreshToken, setRefreshToken] = React.useState<string | null>(null);
 
-  const login = async (email : string , password : string) => {
-    const url = 'https://cafesansfil-api-r0kj.onrender.com/api/auth/login';
+  const signup = async (username: string, first_name: string, last_name: string, matricule: number ,email : string , password : string) => {
+    const url = 'https://cafesansfil-api-r0kj.onrender.com/api/auth/register';
 
     const formBody = new URLSearchParams({
-      grant_type: 'password',
-      username: email,
+      username: username,
+      first_name: first_name, 
+      last_name: last_name,
+      matricule: matricule.toString(),
+      email: email,
       password: password,
-      scope: '',
-      client_id: 'string',
-      client_secret: 'string'
+      photo_url: "https://example.com/",
     }).toString();
 
     try {
@@ -34,17 +35,15 @@ export default function SignInScreen() {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/json'
         },
         body: formBody
       });
 
       const data = await response.json();
-      data.access_token && setToken(data.access_token);
-      data.refresh_token && setRefreshToken(data.refresh_token);
       console.log(data);
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error('Sign up failed:', error);
     }
   };
 
@@ -232,7 +231,7 @@ export default function SignInScreen() {
 
 
       <View style={styles.buttonView}>
-      <Button onPress={() => login(email,password)}>S'inscrire</Button>
+      <Button onPress={() => console.log()}>S'inscrire</Button>
       </View>
       <Button onPress={() => router.push("/sign-in")} type="secondary">Déjà un compte ?</Button>
       </ScrollView>
