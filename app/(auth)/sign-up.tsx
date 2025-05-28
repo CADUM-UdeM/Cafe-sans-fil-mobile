@@ -12,10 +12,17 @@ export default function SignInScreen() {
   const router = useRouter();
   const [email, onChangeEmail] = React.useState('');
   const [password, onChangePassword] = React.useState('');
+  const [username, onChangeUsername] = React.useState('');
+  const [firstName, onChangeFirstName] = React.useState('');
+  const [lastName, onChangeLastName] = React.useState('');
+  const [matricule, onChangeMatricule] = React.useState<number | null>(null);
   const emailInputRef = React.useRef<TextInput>(null);
   const passwordInputRef = React.useRef<TextInput>(null);
-  const [token, setToken] = React.useState<string | null>(null);
-  const [refreshToken, setRefreshToken] = React.useState<string | null>(null);
+  const usernameInputRef = React.useRef<TextInput>(null);
+  const firstNameInputRef = React.useRef<TextInput>(null);
+  const lastNameInputRef = React.useRef<TextInput>(null);
+  const matriculeInputRef = React.useRef<TextInput>(null);
+
 
   const signup = async (username: string, first_name: string, last_name: string, matricule: number ,email : string , password : string) => {
     const url = 'https://cafesansfil-api-r0kj.onrender.com/api/auth/register';
@@ -47,8 +54,19 @@ export default function SignInScreen() {
     }
   };
 
+  const debug = () =>{
+    console.log("Username:", username);
+    console.log("First Name:", firstName);
+    console.log("Last Name:", lastName);
+    console.log("Matricule:", matricule);
+    console.log("Email:", email);
+    console.log("Password:", password);
+
+  }
+
 
   return (
+    
     <SafeAreaView>
       <KeyboardAvoidingView 
     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -56,6 +74,7 @@ export default function SignInScreen() {
   >
       <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false}
   keyboardShouldPersistTaps="handled" >
+    
       <Image source={require("@/logo.png")} style={styles.logo}/>
       <View style={styles.header}>
       <Text style={styles.textHeader}>
@@ -69,14 +88,14 @@ export default function SignInScreen() {
 
       <TextInput
           style={styles.input}
-          ref={emailInputRef}
-          onChangeText={onChangeEmail}
-          value={email}
+          ref={lastNameInputRef}
+          onChangeText={onChangeLastName}
+          value={lastName}
           placeholder="Tremblay"
           keyboardType="default"
           autoComplete="name"
           returnKeyType="next"
-          onSubmitEditing={() => passwordInputRef.current?.focus()}
+          onSubmitEditing={() => firstNameInputRef.current?.focus()}
           placeholderTextColor={"#A1A1A1"}
           onFocus={() => {
   setTimeout(() => {
@@ -96,14 +115,14 @@ export default function SignInScreen() {
 
       <TextInput
           style={styles.input}
-          ref={emailInputRef}
-          onChangeText={onChangeEmail}
-          value={email}
+          ref={firstNameInputRef}
+          onChangeText={onChangeFirstName}
+          value={firstName}
           placeholder="Jean"
           keyboardType="default"
           returnKeyType="next"
           autoComplete="name"
-          onSubmitEditing={() => passwordInputRef.current?.focus()}
+          onSubmitEditing={() => usernameInputRef.current?.focus()}
           placeholderTextColor={"#A1A1A1"}
           onFocus={() => {
   setTimeout(() => {
@@ -123,14 +142,14 @@ export default function SignInScreen() {
 
       <TextInput
           style={styles.input}
-          ref={emailInputRef}
-          onChangeText={onChangeEmail}
-          value={email}
+          ref={usernameInputRef}
+          onChangeText={onChangeUsername}
+          value={username}
           placeholder="nom_utilisateur"
           keyboardType="default"
           autoComplete="username"
           returnKeyType="next"
-          onSubmitEditing={() => passwordInputRef.current?.focus()}
+          onSubmitEditing={() => emailInputRef.current?.focus()}
           placeholderTextColor={"#A1A1A1"}
           onFocus={() => {
   setTimeout(() => {
@@ -160,7 +179,7 @@ export default function SignInScreen() {
           keyboardType="email-address"
           autoComplete="email"
           returnKeyType="next"
-          onSubmitEditing={() => passwordInputRef.current?.focus()}
+          onSubmitEditing={() => matriculeInputRef.current?.focus()}
           placeholderTextColor={"#A1A1A1"}
           onFocus={() => {
   setTimeout(() => {
@@ -180,9 +199,9 @@ export default function SignInScreen() {
 
       <TextInput
           style={styles.input}
-          ref={emailInputRef}
-          onChangeText={onChangeEmail}
-          value={email}
+          ref={matriculeInputRef}
+          onChangeText={(text) => onChangeMatricule(text ? parseInt(text, 10) : null)}
+          value={matricule !== null ? matricule.toString() : ''}
           placeholder="12345678"
           keyboardType="numeric"
           returnKeyType="next"
@@ -231,7 +250,7 @@ export default function SignInScreen() {
 
 
       <View style={styles.buttonView}>
-      <Button onPress={() => console.log()}>S'inscrire</Button>
+      <Button onPress={() => debug()}>S'inscrire</Button>
       </View>
       <Button onPress={() => router.push("/sign-in")} type="secondary">Déjà un compte ?</Button>
       </ScrollView>
