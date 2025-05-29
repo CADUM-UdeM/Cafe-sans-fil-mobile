@@ -1,8 +1,9 @@
 import Button from "@/components/common/Buttons/Button";
 import React from "react";
-import {Text, View, Image, TextInput, ScrollView, KeyboardAvoidingView, Platform} from "react-native";
+import {Text, View, Image, TextInput, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {useRouter} from "expo-router";
+import { Ionicons } from '@expo/vector-icons';
 
 
 
@@ -77,6 +78,12 @@ export default function SignInScreen() {
   >
       <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false}
   keyboardShouldPersistTaps="handled" >
+    <TouchableOpacity 
+  style={styles.backButton} 
+  onPress={() => router.push("/sign-in")}
+>
+  <Ionicons name="arrow-back" size={24} color="#000" />
+</TouchableOpacity>
     
       <Image source={require("@/logo.png")} style={styles.logo}/>
       <View style={styles.header}>
@@ -265,6 +272,13 @@ export default function SignInScreen() {
 }
 
 const styles = {
+  backButton: {
+    position: "absolute" as const,
+    top: 10,
+    left: 20,
+    zIndex: 1,
+    padding: 10,
+  },
   scrollableLayout: {
     height: "100%",
     flexGrow: 1,
