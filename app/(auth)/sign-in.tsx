@@ -121,16 +121,17 @@ export default function SignInScreen() {
 }}
 
         />
-      
-      <Button onPress={() => console.log("Forgot Password")} type="secondary">
+      <View style={{marginLeft: "50%"}}>
+      <Button style={{}} onPress={() => console.log("Forgot Password")} type="secondary">
         Mot de passe oublié ?
       </Button>
+      </View>
 
 
       <View style={styles.buttonView}>
       <Button onPress={() => login(email,password)}>Se connecter</Button>
       </View>
-      <Button onPress={() => router.push("/sign-up")} type="secondary">Pas de compte ?</Button>
+      <Button style={{margin:-10}} onPress={() => router.push("/sign-up")} type="secondary">Pas de compte ?</Button>
       </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -161,6 +162,7 @@ const styles = {
   textForm: {
     textAlign: "left" as const,
     paddingLeft: 30,
+    
   },
   input: {
     height: 40,
@@ -170,6 +172,9 @@ const styles = {
     borderRadius: 8,
     marginTop: 10,
     marginBottom: 15,
+    borderColor: "#CCCCCC",
+    
+    
     
   },
   buttonView:{

@@ -295,6 +295,7 @@ const styles = {
     borderRadius: 8,
     marginTop: 10,
     marginBottom: 15,
+    borderColor: "#CCCCCC",
     
   },
   buttonView:{
