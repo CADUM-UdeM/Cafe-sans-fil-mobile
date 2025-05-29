@@ -72,7 +72,11 @@ export default function SignInScreen() {
     console.log("Email:", email);
     console.log("Password:", password);
     
-    signup(username, firstName, lastName, matricule, email, password);
+    if (matricule !== null) {
+      signup(username, firstName, lastName, matricule, email, password);
+    } else {
+      alert('Veuillez entrer un numéro de matricule valide.');
+    }
   }
 
 
