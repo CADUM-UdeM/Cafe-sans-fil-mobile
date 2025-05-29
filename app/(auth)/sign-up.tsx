@@ -52,6 +52,13 @@ export default function SignInScreen() {
       const data = await response.json();
       console.log(data);
       console.log(data.detail)
+      if (response.ok) {
+        alert('Inscription réussie !');
+        // Optionally, navigate to a confirmation screen or show a success message
+        router.push("/sign-in");
+      } else {
+        alert(data.detail[0].ctx.reason || 'Une erreur est survenue lors de l\'inscription.');
+      }
     } catch (error) {
       console.error('Sign up failed:', error);
     }
@@ -95,6 +102,34 @@ export default function SignInScreen() {
       </View>
 
       <Text style={styles.textForm}>
+        Prénom
+      </Text>
+
+      <TextInput
+          style={styles.input}
+          ref={firstNameInputRef}
+          onChangeText={onChangeFirstName}
+          autoCapitalize="words"
+          value={firstName}
+          placeholder="Jean"
+          keyboardType="default"
+          returnKeyType="next"
+          autoComplete="name"
+          onSubmitEditing={() => lastNameInputRef.current?.focus()}
+          placeholderTextColor={"#A1A1A1"}
+          onFocus={() => {
+  setTimeout(() => {
+    emailInputRef.current?.measureLayout(
+      scrollViewRef.current as any,
+      (x, y) => {
+        scrollViewRef.current?.scrollTo({ y: y - 300, animated: true });
+      }
+    );
+  }, 100);
+}}
+        />
+
+      <Text style={styles.textForm}>
         Nom
       </Text>
 
@@ -103,37 +138,11 @@ export default function SignInScreen() {
           ref={lastNameInputRef}
           onChangeText={onChangeLastName}
           value={lastName}
+          autoCapitalize="words"
           placeholder="Tremblay"
           keyboardType="default"
           autoComplete="name"
           returnKeyType="next"
-          onSubmitEditing={() => firstNameInputRef.current?.focus()}
-          placeholderTextColor={"#A1A1A1"}
-          onFocus={() => {
-  setTimeout(() => {
-    emailInputRef.current?.measureLayout(
-      scrollViewRef.current as any,
-      (x, y) => {
-        scrollViewRef.current?.scrollTo({ y: y - 100, animated: true });
-      }
-    );
-  }, 100);
-}}
-        />
-
-        <Text style={styles.textForm}>
-        Prénom
-      </Text>
-
-      <TextInput
-          style={styles.input}
-          ref={firstNameInputRef}
-          onChangeText={onChangeFirstName}
-          value={firstName}
-          placeholder="Jean"
-          keyboardType="default"
-          returnKeyType="next"
-          autoComplete="name"
           onSubmitEditing={() => usernameInputRef.current?.focus()}
           placeholderTextColor={"#A1A1A1"}
           onFocus={() => {
@@ -141,12 +150,14 @@ export default function SignInScreen() {
     emailInputRef.current?.measureLayout(
       scrollViewRef.current as any,
       (x, y) => {
-        scrollViewRef.current?.scrollTo({ y: y - 100, animated: true });
+        scrollViewRef.current?.scrollTo({ y: y - 250, animated: true });
       }
     );
   }, 100);
 }}
         />
+
+        
 
     <Text style={styles.textForm}>
         Nom d'utilisateur

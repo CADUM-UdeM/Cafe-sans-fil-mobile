@@ -123,7 +123,7 @@ export default function SignInScreen() {
         />
       <View style={{marginRight: "5%"}}>
         <Pressable
-          onPress={() => console.log("Forgot Password")}
+          onPress={() => router.push("/forgot")}
           style={({ pressed }) => [
         {
           opacity: pressed ? 0.5 : 1,
