@@ -1,6 +1,6 @@
 import Button from "@/components/common/Buttons/Button";
 import React from "react";
-import {Text, View, Image, TextInput, ScrollView, KeyboardAvoidingView, Platform, StatusBar} from "react-native";
+import {Text, View, Image, TextInput, ScrollView, KeyboardAvoidingView, Platform, StatusBar, Pressable} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {useRouter} from "expo-router";
 
@@ -121,10 +121,28 @@ export default function SignInScreen() {
 }}
 
         />
-      <View style={{marginLeft: "50%"}}>
-      <Button style={{}} onPress={() => console.log("Forgot Password")} type="secondary">
-        Mot de passe oublié ?
-      </Button>
+      <View style={{marginRight: "5%"}}>
+        <Pressable
+          onPress={() => console.log("Forgot Password")}
+          style={({ pressed }) => [
+        {
+          opacity: pressed ? 0.5 : 1,
+        }
+          ]}
+        >
+          {({ pressed }) => (
+        <Text 
+          style={{
+            color: pressed ? "#000000" : "#000000", 
+            textAlign: "right",
+            padding: 8,
+            fontWeight: "500"
+          }}
+        >
+          Mot de passe oublié ?
+        </Text>
+          )}
+        </Pressable>
       </View>
 
 
