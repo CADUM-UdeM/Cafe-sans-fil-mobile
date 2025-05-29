@@ -27,7 +27,7 @@ export default function SignInScreen() {
   const signup = async (username: string, first_name: string, last_name: string, matricule: number ,email : string , password : string) => {
     const url = 'https://cafesansfil-api-r0kj.onrender.com/api/auth/register';
 
-    const formBody = new URLSearchParams({
+    const formBody = {
       username: username,
       first_name: first_name, 
       last_name: last_name,
@@ -35,7 +35,7 @@ export default function SignInScreen() {
       email: email,
       password: password,
       photo_url: "https://example.com/",
-    }).toString();
+    };
 
     try {
       const response = await fetch(url, {
@@ -44,11 +44,13 @@ export default function SignInScreen() {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: formBody
+        body: JSON.stringify(formBody)
       });
-
+      console.log("Response status:", response.status);
+      
       const data = await response.json();
       console.log(data);
+      console.log(data.detail)
     } catch (error) {
       console.error('Sign up failed:', error);
     }
@@ -61,7 +63,8 @@ export default function SignInScreen() {
     console.log("Matricule:", matricule);
     console.log("Email:", email);
     console.log("Password:", password);
-
+    
+    signup(username, firstName, lastName, matricule, email, password);
   }
 
 
