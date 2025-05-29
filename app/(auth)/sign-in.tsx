@@ -67,7 +67,7 @@ export default function SignInScreen() {
 
 
       <Text style={styles.textForm}>
-        Adresse e-mail ou nom d'utilisateur
+        Adresse e-mail
       </Text>
 
       <TextInput
