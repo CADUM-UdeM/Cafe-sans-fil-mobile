@@ -50,14 +50,14 @@ export default function SignInScreen() {
 
 
   return (
-    <SafeAreaView>
+    <SafeAreaView  >
        <StatusBar />
       <KeyboardAvoidingView 
     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     
   >
       <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false}
-  keyboardShouldPersistTaps="handled" >
+  keyboardShouldPersistTaps="handled" style={{  minHeight: "100%" }}>
       <Image source={require("@/logo.png")} style={styles.logo}/>
       <View style={styles.header}>
       <Text style={styles.textHeader}>

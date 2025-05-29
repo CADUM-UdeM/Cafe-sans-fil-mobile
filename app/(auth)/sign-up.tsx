@@ -71,13 +71,15 @@ export default function SignInScreen() {
 
   return (
     
-    <SafeAreaView>
+    <SafeAreaView >
       <KeyboardAvoidingView 
     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     
+    
   >
       <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false}
-  keyboardShouldPersistTaps="handled" >
+  keyboardShouldPersistTaps="handled" 
+  >
     <TouchableOpacity 
   style={styles.backButton} 
   onPress={() => router.push("/sign-in")}
@@ -272,6 +274,9 @@ export default function SignInScreen() {
 }
 
 const styles = {
+  container: {
+    flex: 1,
+  },
   backButton: {
     position: "absolute" as const,
     top: 10,
