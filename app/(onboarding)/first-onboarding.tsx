@@ -1,6 +1,6 @@
 import React, { act } from "react";
 import { Link, router } from "expo-router";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, StatusBar } from "react-native";
 import OnboardingLayout from "@/components/layouts/OnboardingLayout";
 import TYPOGRAPHY from "@/constants/Typography";
 import COLORS from "@/constants/Colors";
@@ -10,6 +10,7 @@ import Button from "@/components/common/Buttons/Button";
 export default function FirstOnboardingScreen() {
   return (
     <View style={styles.screenContainer}>
+       <StatusBar />
       <View style={styles.currentPage}>
         <View style={[styles.currentPageItem, styles.activePageItem]}></View>
         <View style={styles.currentPageItem}></View>
