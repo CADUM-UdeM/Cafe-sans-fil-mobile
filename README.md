@@ -73,6 +73,8 @@ Le développement de cette application mobile est le fruit du travail des membre
 - [Flora Kang](https://github.com/flower-png) 
 - [Ding Wen Li](https://github.com/echobat88) 
 - [Trung Nguyen](https://github.com/likeskymore) 
-- [Kevin Wang](https://github.com/Kevin-Wang78) 
-- [Louis Edouard Lafontant](https://github.com/lelafontant) 
+- [Kevin Wang](https://github.com/Kevin-Wang78)
+- [Lyna Benkherouf](https://github.com/Lylyyyz)
+- [Udeme-Obong Itoro Samuel](https://github.com/udeme-sml)
+- [Louis Edouard Lafontant](https://github.com/lelafontant)
 
