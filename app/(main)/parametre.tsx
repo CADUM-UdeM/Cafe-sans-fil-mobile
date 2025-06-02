@@ -409,12 +409,25 @@ export default function ParametreScreen() {
                   <Text style={styles.sectionTitle}>FAQ</Text>
                   <Text style={styles.sectionSubtitle}>Vous ne recevez pas vos notifications?</Text>
                   <Text style={styles.sectionContent}>
-                    Assurez-vous que les autorisations de notification sont activées dans les paramètres de votre téléphone.
+                    Assurez-vous que les autorisations de notification sont activées dans les paramètres de votre téléphone. {"\n"}
                   </Text>
                   <Text style={styles.sectionSubtitle}>Vous ne pouvez pas vous connecter?</Text>
                   <Text style={styles.sectionContent}>
                     Essayez de réinitialiser votre mot de passe via l'écran de connexion.
-                  </Text>  
+                  </Text>
+                  
+                  <View style={styles.divider} />
+                  
+                  <Text style={styles.sectionTitle}>Conseils d'utilisation</Text>
+                  <Text style={styles.sectionContent}>
+                    - Gardez vos notifications activées pour ne jamais rater une mise à jour.{"\n"}{"\n"}
+                    - Vérifiez régulièrement l'onglet commandes pour vos suivis.
+                  </Text>
+                  
+                </View>
+                <View style={styles.footerSection}>
+                  <Text style={styles.versionText}>Version 1.0.0</Text>
+                  <Text style={styles.copyrightText}>© 2025 CADUM. Tous droits réservés.</Text>
                 </View>
               </ScrollView>
                 
@@ -736,6 +749,7 @@ socialButton: {
 },
 footerSection: {
   marginTop: 20,
+  marginBottom: 20,
   alignItems: 'center',
   paddingVertical: 15,
 },
