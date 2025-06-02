@@ -27,6 +27,11 @@ export default function SignInScreen() {
   const matriculeInputRef = React.useRef<TextInput>(null);
   const [isPassword, setIsPassword] = React.useState(true);
   const [matriculeError, setMatriculeError] = React.useState(false);
+  const [isLengthValid, setIsLengthValid] = React.useState(false);
+  const [isUppercaseValid, setIsUppercaseValid] = React.useState(false);
+  const [isNumberValid, setIsNumberValid] = React.useState(false);
+  const [isSpecialCharValid, setIsSpecialCharValid] = React.useState(false);
+  const [isVisible, setIsVisible] = React.useState(true);
 
 
   const signup = async (username: string, first_name: string, last_name: string, matricule: number ,email : string , password : string) => {
@@ -95,7 +100,14 @@ export default function SignInScreen() {
     
   }
 
-  const validateMatricule = (matricule ) => {
+  const validatePassword = (password: string) => {
+    setIsLengthValid(password.length >= 6);
+    setIsUppercaseValid(/[A-Z]/.test(password));
+    setIsNumberValid(/\d/.test(password));
+    setIsSpecialCharValid(/[@$!%*?&]/.test(password));
+  }
+
+  const validateMatricule = (matricule: { toString: () => string; } ) => {
     if (matricule && !/^\d{8}$/.test(matricule.toString())) {
       setMatriculeError(true);
       alert("Le numéro de matricule doit contenir exactement 8 chiffres.");
@@ -293,11 +305,12 @@ export default function SignInScreen() {
             </Text>
             <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
           </Text>
-
+  <View>
       <TextInput
-          style={styles.input}
+          style={isPassword ? styles.input : styles.inputR}
           ref={passwordInputRef}
           onChangeText={onChangePassword}
+          onChange={(e) => validatePassword(e.nativeEvent.text)}
           value={password}
           placeholder="********"
           keyboardType="default"
@@ -305,7 +318,7 @@ export default function SignInScreen() {
           returnKeyType="next"
           onSubmitEditing={() => passwordConfInputRef.current?.focus()}
           placeholderTextColor={"#A1A1A1"}
-          secureTextEntry
+          secureTextEntry={isVisible}
           onFocus={() => {
   setTimeout(() => {
     passwordInputRef.current?.measureLayout(
@@ -317,7 +330,35 @@ export default function SignInScreen() {
   }, 100);
 }}
 
+     
         />
+        <TouchableOpacity 
+          style={styles.showPasswordButton}
+          onPress={() => setIsVisible(!isVisible)}
+        >
+          <Ionicons 
+            name={isVisible ? 'eye-off' : 'eye'} 
+            size={24} 
+            color="#A1A1A1" 
+          />
+        </TouchableOpacity>
+        </View>
+
+        <Text style={styles.validateText}>
+          <Text >
+            Le mot de passe doit contenir :
+          </Text>
+          {"\n"}
+         <Text style={{color: isLengthValid ? "#00AA00" : "#FF0000"}}>- 6 characteres </Text>
+         {"\n"}
+         <Text style={{color : isUppercaseValid ? "#00AA00" : "#FF0000"}} >- 1 majuscule </Text>
+         {"\n"}
+          <Text style={{color : isNumberValid ? "#00AA00" : "#FF0000"}}>- 1 chiffre </Text>
+          {"\n"}
+          <Text style={{color : isSpecialCharValid ? "#00AA00" : "#FF0000"}}>- 1 caractère spécial (Exemple : !@#$%*&...)</Text>
+          {"\n"}
+        </Text>
+
 
 
         <Text style={isPassword ? styles.textForm : styles.textFormR}>
@@ -327,8 +368,9 @@ export default function SignInScreen() {
             <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
           </Text>
 
+      <View>
       <TextInput
-          style={styles.input}
+          style={isPassword ? styles.input : styles.inputR}
           ref={passwordConfInputRef}
           onChangeText={onChangePasswordConf}
           value={passwordConf}
@@ -337,8 +379,10 @@ export default function SignInScreen() {
           autoComplete="password"
           returnKeyType="done"
           placeholderTextColor={"#A1A1A1"}
-          onSubmitEditing={() => checkMatch(password, passwordConf)}
-          secureTextEntry
+          onSubmitEditing={() => {
+            checkMatch(password, passwordConf);
+          }}
+          secureTextEntry={isVisible}
           onFocus={() => {
   setTimeout(() => {
     passwordConfInputRef.current?.measureLayout(
@@ -351,6 +395,24 @@ export default function SignInScreen() {
 }}
 
         />
+
+        {!isPassword && (
+          <Text style={styles.validateTextR}>
+            Les mots de passe ne correspondent pas.
+          </Text>
+        )}
+
+        <TouchableOpacity 
+          style={styles.showPasswordButton}
+          onPress={() => setIsVisible(!isVisible)}
+        >
+          <Ionicons 
+            name={isVisible ? 'eye-off' : 'eye'} 
+            size={24} 
+            color="#A1A1A1" 
+          />
+        </TouchableOpacity>
+        </View>
 
 
       
@@ -417,9 +479,38 @@ const styles = {
     borderColor: "#CCCCCC",
     
   },
+
+  inputR: {
+    height: 40,
+    margin: 20,
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 8,
+    marginTop: 10,
+    marginBottom: 15,
+    borderColor: "#FF0000",
+    
+  },
   buttonView:{
     marginTop: -10,
     padding:20
+  },
+  validateText: {
+    textAlign: "left" as const,
+    paddingLeft: 30,
+    color: "#A1A1A1",
+  },
+  validateTextR: {
+    textAlign: "left" as const,
+    paddingLeft: 30,
+    color: "#FF0000",
+
+  },
+  showPasswordButton: {
+    position: "absolute" as const,
+    right: 30,
+    top: 13,
+    padding: 5
   }
   
 }
