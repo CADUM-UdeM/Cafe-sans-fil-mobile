@@ -69,11 +69,12 @@ export default function SignInScreen() {
       </View>
 
 
-
-      <Text style={styles.textForm}>
+    <Text style={styles.textForm}>
+      <Text >
         Adresse e-mail
       </Text>
-
+      <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
+    </Text>
       <TextInput
           style={styles.input}
           ref={emailInputRef}
@@ -98,8 +99,11 @@ export default function SignInScreen() {
         />
 
       <Text style={styles.textForm}>
+      <Text >
         Mot de passe
       </Text>
+      <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
+    </Text>
 
       <TextInput
           style={styles.input}

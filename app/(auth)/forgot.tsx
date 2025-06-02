@@ -70,7 +70,10 @@ export default function SignInScreen() {
 
 
       <Text style={styles.textForm}>
-        Adresse e-mail
+          <Text >
+              Adresse e-mail
+          </Text>
+          <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
       </Text>
 
       <TextInput

@@ -13,20 +13,27 @@ export default function SignInScreen() {
   const router = useRouter();
   const [email, onChangeEmail] = React.useState('');
   const [password, onChangePassword] = React.useState('');
+  const [passwordConf, onChangePasswordConf] = React.useState('');
   const [username, onChangeUsername] = React.useState('');
   const [firstName, onChangeFirstName] = React.useState('');
   const [lastName, onChangeLastName] = React.useState('');
   const [matricule, onChangeMatricule] = React.useState<number | null>(null);
   const emailInputRef = React.useRef<TextInput>(null);
   const passwordInputRef = React.useRef<TextInput>(null);
+  const passwordConfInputRef = React.useRef<TextInput>(null);
   const usernameInputRef = React.useRef<TextInput>(null);
   const firstNameInputRef = React.useRef<TextInput>(null);
   const lastNameInputRef = React.useRef<TextInput>(null);
   const matriculeInputRef = React.useRef<TextInput>(null);
+  const [isPassword, setIsPassword] = React.useState(true);
+  const [matriculeError, setMatriculeError] = React.useState(false);
 
 
   const signup = async (username: string, first_name: string, last_name: string, matricule: number ,email : string , password : string) => {
     const url = 'https://cafesansfil-api-r0kj.onrender.com/api/auth/register';
+
+
+  
 
     const formBody = {
       username: username,
@@ -78,6 +85,25 @@ export default function SignInScreen() {
       alert('Veuillez entrer un numéro de matricule valide.');
     }
   }
+  const checkMatch = (password: string, passwordConf: string) => {
+    if (password !== passwordConf) {
+      setIsPassword(false);
+    }
+    else{
+      setIsPassword(true);
+    }
+    
+  }
+
+  const validateMatricule = (matricule ) => {
+    if (matricule && !/^\d{8}$/.test(matricule.toString())) {
+      setMatriculeError(true);
+      alert("Le numéro de matricule doit contenir exactement 8 chiffres.");
+    } else {
+      setMatriculeError(false);
+    }
+  }
+
 
 
   return (
@@ -106,7 +132,10 @@ export default function SignInScreen() {
       </View>
 
       <Text style={styles.textForm}>
-        Prénom
+            <Text >
+              Prénom
+            </Text>
+            <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
       </Text>
 
       <TextInput
@@ -134,8 +163,11 @@ export default function SignInScreen() {
         />
 
       <Text style={styles.textForm}>
-        Nom
-      </Text>
+            <Text >
+              Nom
+            </Text>
+            <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
+          </Text>
 
       <TextInput
           style={styles.input}
@@ -164,8 +196,11 @@ export default function SignInScreen() {
         
 
     <Text style={styles.textForm}>
-        Nom d'utilisateur
-      </Text>
+          <Text >
+            Nom d'utilisateur
+          </Text>
+          <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
+        </Text>
 
       <TextInput
           style={styles.input}
@@ -194,8 +229,11 @@ export default function SignInScreen() {
 
 
       <Text style={styles.textForm}>
-        Adresse e-mail
-      </Text>
+            <Text >
+              Adresse e-mail
+            </Text>
+            <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
+          </Text>
 
       <TextInput
           style={styles.input}
@@ -221,8 +259,11 @@ export default function SignInScreen() {
         />
 
         <Text style={styles.textForm}>
-        Numéro de matricule
-      </Text>
+              <Text >
+                Numéro de matricule
+              </Text>
+              <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
+            </Text>
 
       <TextInput
           style={styles.input}
@@ -246,9 +287,12 @@ export default function SignInScreen() {
 }}
         />
 
-      <Text style={styles.textForm}>
-        Mot de passe
-      </Text>
+      <Text style={isPassword ? styles.textForm : styles.textFormR}>
+            <Text >
+              Mot de passe
+            </Text>
+            <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
+          </Text>
 
       <TextInput
           style={styles.input}
@@ -258,7 +302,8 @@ export default function SignInScreen() {
           placeholder="********"
           keyboardType="default"
           autoComplete="password"
-          returnKeyType="done"
+          returnKeyType="next"
+          onSubmitEditing={() => passwordConfInputRef.current?.focus()}
           placeholderTextColor={"#A1A1A1"}
           secureTextEntry
           onFocus={() => {
@@ -273,6 +318,41 @@ export default function SignInScreen() {
 }}
 
         />
+
+
+        <Text style={isPassword ? styles.textForm : styles.textFormR}>
+            <Text >
+              Confirmer le mot de passe
+            </Text>
+            <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
+          </Text>
+
+      <TextInput
+          style={styles.input}
+          ref={passwordConfInputRef}
+          onChangeText={onChangePasswordConf}
+          value={passwordConf}
+          placeholder="********"
+          keyboardType="default"
+          autoComplete="password"
+          returnKeyType="done"
+          placeholderTextColor={"#A1A1A1"}
+          onSubmitEditing={() => checkMatch(password, passwordConf)}
+          secureTextEntry
+          onFocus={() => {
+  setTimeout(() => {
+    passwordConfInputRef.current?.measureLayout(
+      scrollViewRef.current as any,
+      (x, y) => {
+        scrollViewRef.current?.scrollTo({ y: y - 100, animated: true });
+      }
+    );
+  }, 100);
+}}
+
+        />
+
+
       
 
 
@@ -320,6 +400,11 @@ const styles = {
   textForm: {
     textAlign: "left" as const,
     paddingLeft: 30,
+  },
+  textFormR: {
+    textAlign: "left" as const,
+    paddingLeft: 30,
+    color : "#FF0000",
   },
   input: {
     height: 40,
