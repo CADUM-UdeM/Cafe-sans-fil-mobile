@@ -8,7 +8,7 @@ import { SafeAreaView } from "react-native";
 import { Platform } from "react-native";
 
 export default function TabLayout() {
-    const { isSignedIn } = useAuth();
+    const {isSignedIn} = useAuth();
     if (!isSignedIn) return Redirect({ href: "/first-onboarding" });
   return (
       <Tabs

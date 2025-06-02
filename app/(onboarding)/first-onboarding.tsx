@@ -7,6 +7,7 @@ import COLORS from "@/constants/Colors";
 import SPACING from "@/constants/Spacing";
 import Button from "@/components/common/Buttons/Button";
 
+
 export default function FirstOnboardingScreen() {
   return (
     <View style={styles.screenContainer}>

@@ -43,6 +43,9 @@ export default function SignInScreen() {
       data.access_token && setToken(data.access_token);
       data.refresh_token && setRefreshToken(data.refresh_token);
       console.log(data);
+      if (data.access_token && data.refresh_token) {
+        router.push("/");
+      }
     } catch (error) {
       console.error('Login failed:', error);
     }
