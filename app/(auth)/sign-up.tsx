@@ -1,220 +1,426 @@
 import Button from "@/components/common/Buttons/Button";
-import SocialButton from "@/components/common/Buttons/SocialButton";
-import COLORS from "@/constants/Colors";
-import TYPOGRAPHY from "@/constants/Typography";
-import { Link, useRouter } from "expo-router";
 import React from "react";
-import TextInput from "@/components/common/Inputs/TextInput";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
-import { useSignUp } from "@clerk/clerk-expo";
+import {Text, View, Image, TextInput, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {useRouter} from "expo-router";
+import { Ionicons } from '@expo/vector-icons';
 
-type FullNameType = {
-  firstName: string;
-  lastName: string;
-}
 
-export default function SignUpScreen() {
-  const { isLoaded, signUp, setActive } = useSignUp();
+
+
+export default function SignInScreen() {
+  const scrollViewRef = React.useRef<ScrollView>(null);
   const router = useRouter();
+  const [email, onChangeEmail] = React.useState('');
+  const [password, onChangePassword] = React.useState('');
+  const [passwordConf, onChangePasswordConf] = React.useState('');
+  const [username, onChangeUsername] = React.useState('');
+  const [firstName, onChangeFirstName] = React.useState('');
+  const [lastName, onChangeLastName] = React.useState('');
+  const [matricule, onChangeMatricule] = React.useState<number | null>(null);
+  const emailInputRef = React.useRef<TextInput>(null);
+  const passwordInputRef = React.useRef<TextInput>(null);
+  const passwordConfInputRef = React.useRef<TextInput>(null);
+  const usernameInputRef = React.useRef<TextInput>(null);
+  const firstNameInputRef = React.useRef<TextInput>(null);
+  const lastNameInputRef = React.useRef<TextInput>(null);
+  const matriculeInputRef = React.useRef<TextInput>(null);
+  const [isPassword, setIsPassword] = React.useState(true);
+  const [matriculeError, setMatriculeError] = React.useState(false);
 
-  const [code, setCode] = React.useState('');
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [fullName, setFullName] = React.useState<FullNameType|undefined>();
-  const [pendingVerification, setPendingVerification] = React.useState(false);
 
-  function handleEmail(text: string) {
-    setEmail(text); 
-  }
+  const signup = async (username: string, first_name: string, last_name: string, matricule: number ,email : string , password : string) => {
+    const url = 'https://cafesansfil-api-r0kj.onrender.com/api/auth/register';
 
-  function handlePassword(text: string) {
-    setPassword(text);
-  }
 
-  async function handleCreateAccount() {
-    if (!isLoaded) {
-      return
-    }
+  
 
-    try {
-      await signUp.create({
-        emailAddress: email,
-        password,
-        firstName: fullName?.firstName,
-        lastName: fullName?.lastName,
-      })
-
-      await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
-      setPendingVerification(true)
-
-      // if (signUpAttempt.status === 'complete') {
-      //   await setActive({ session: signUpAttempt.createdSessionId })
-      //   router.replace('/')
-      // }
-    } catch (err: any) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
-      console.error(JSON.stringify(err, null, 2))
-    }
-  }
-
-  function handleFullName(text: string): void {
-    const decomposedName = text.split(" ");
-    if (decomposedName.length < 2) {
-      throw new Error("Please enter your full name");
-    }
-
-    const lastName = decomposedName.pop() as string;
-    const firstName = decomposedName.join(" ");
-
-    setFullName({ firstName, lastName });
-  }
-
-  const onPressVerify = async () => {
-    if (!isLoaded) {
-      return
-    }
+    const formBody = {
+      username: username,
+      first_name: first_name, 
+      last_name: last_name,
+      matricule: matricule.toString(),
+      email: email,
+      password: password,
+      photo_url: "https://example.com/",
+    };
 
     try {
-      const completeSignUp = await signUp.attemptEmailAddressVerification({
-        code,
-      })
-
-      if (completeSignUp.status === 'complete') {
-        await setActive({ session: completeSignUp.createdSessionId })
-        router.replace('/')
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formBody)
+      });
+      console.log("Response status:", response.status);
+      
+      const data = await response.json();
+      console.log(data);
+      console.log(data.detail)
+      if (response.ok) {
+        alert('Inscription réussie !');
+        // Optionally, navigate to a confirmation screen or show a success message
+        router.push("/sign-in");
       } else {
-        console.error(JSON.stringify(completeSignUp, null, 2))
+        alert(data.detail[0].ctx.reason || 'Une erreur est survenue lors de l\'inscription.');
       }
-    } catch (err: any) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
-      console.error(JSON.stringify(err, null, 2))
+    } catch (error) {
+      console.error('Sign up failed:', error);
+    }
+  };
+
+  const debug = () =>{
+    console.log("Username:", username);
+    console.log("First Name:", firstName);
+    console.log("Last Name:", lastName);
+    console.log("Matricule:", matricule);
+    console.log("Email:", email);
+    console.log("Password:", password);
+    
+    if (matricule !== null) {
+      signup(username, firstName, lastName, matricule, email, password);
+    } else {
+      alert('Veuillez entrer un numéro de matricule valide.');
+    }
+  }
+  const checkMatch = (password: string, passwordConf: string) => {
+    if (password !== passwordConf) {
+      setIsPassword(false);
+    }
+    else{
+      setIsPassword(true);
+    }
+    
+  }
+
+  const validateMatricule = (matricule ) => {
+    if (matricule && !/^\d{8}$/.test(matricule.toString())) {
+      setMatriculeError(true);
+      alert("Le numéro de matricule doit contenir exactement 8 chiffres.");
+    } else {
+      setMatriculeError(false);
     }
   }
 
-  if (pendingVerification) {
-    return (
-      <View style={styles.signInContainer}>
-        <View style={styles.container}>
-          <Image source={require("@/assets/images/placeholder/logo.png")} style={styles.logo} />
-          <Text style={[TYPOGRAPHY.heading.large.bold, styles.heading]}>Vérifiez votre email</Text>
-          <Text style={[TYPOGRAPHY.body.large.base, { textAlign: "center", lineHeight: 22, marginTop:-16, marginBottom: 32 }]}>
-            Un code de vérification a été envoyé à votre adresse électronique.
-            Veuillez entrer le code pour vérifier votre compte.  
-          </Text>
 
-          <TextInput label="Code de vérification" placeholder="123456" handleOnChangeText={setCode} />
-          <Button onPress={onPressVerify} style={styles.mainButton}>Vérifier</Button>
-        </View>
-      </View>
-    );
-  }
 
   return (
-    <View style={styles.signInContainer}>
-      <View style={styles.container}>
-        <Image source={require("@/assets/images/placeholder/logo.png")} style={styles.logo} />
-        <Text style={[TYPOGRAPHY.heading.large.bold, styles.heading]}>Créez un compte</Text>
-
-        <View>
-          <TextInput label="Nom Complet *" placeholder="Darlene Robertson" handleOnChangeText={handleFullName}/>
-          <TextInput label="Adresse électronique *" placeholder="menum@cadum.ca" handleOnChangeText={handleEmail}/>
-          <TextInput label="Mot de passe *" placeholder="*******************" secureTextEntry helpLinkHref="/sign-up" helpLinkText="Mot de passe oublié ?" handleOnChangeText={handlePassword} helpLink/>
-        </View>
-
-        <Button onPress={handleCreateAccount} style={styles.mainButton}>S'inscrire</Button>
-
-        <View style={styles.sectionDivider}>
-          <View style={styles.divider}></View>
-          <Text style={[TYPOGRAPHY.body.normal.base, { textAlign: "right" }]}>Ou</Text>
-          <View style={styles.divider}></View>
-        </View>
-
-        <SocialButton type="google" style={{marginBottom: 16}}/>
-        <SocialButton type="facebook" style={{marginBottom: 16}} />
-
-        <View style={styles.otherOptionText}>
-          <Text style={TYPOGRAPHY.body.normal.base}>Déjà un compte?</Text>
-          <Link href={"/sign-in"} style={TYPOGRAPHY.body.normal.semiBold}>Connectez-vous</Link>
-        </View>
+    
+    <SafeAreaView >
+      <KeyboardAvoidingView 
+    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    
+    
+  >
+      <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false}
+  keyboardShouldPersistTaps="handled" 
+  >
+    <TouchableOpacity 
+  style={styles.backButton} 
+  onPress={() => router.push("/sign-in")}
+>
+  <Ionicons name="arrow-back" size={24} color="#000" />
+</TouchableOpacity>
+    
+      <Image source={require("@/logo.png")} style={styles.logo}/>
+      <View style={styles.header}>
+      <Text style={styles.textHeader}>
+        Créez un compte
+      </Text>
       </View>
-    </View>
+
+      <Text style={styles.textForm}>
+            <Text >
+              Prénom
+            </Text>
+            <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
+      </Text>
+
+      <TextInput
+          style={styles.input}
+          ref={firstNameInputRef}
+          onChangeText={onChangeFirstName}
+          autoCapitalize="words"
+          value={firstName}
+          placeholder="Jean"
+          keyboardType="default"
+          returnKeyType="next"
+          autoComplete="name"
+          onSubmitEditing={() => lastNameInputRef.current?.focus()}
+          placeholderTextColor={"#A1A1A1"}
+          onFocus={() => {
+  setTimeout(() => {
+    emailInputRef.current?.measureLayout(
+      scrollViewRef.current as any,
+      (x, y) => {
+        scrollViewRef.current?.scrollTo({ y: y - 300, animated: true });
+      }
+    );
+  }, 100);
+}}
+        />
+
+      <Text style={styles.textForm}>
+            <Text >
+              Nom
+            </Text>
+            <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
+          </Text>
+
+      <TextInput
+          style={styles.input}
+          ref={lastNameInputRef}
+          onChangeText={onChangeLastName}
+          value={lastName}
+          autoCapitalize="words"
+          placeholder="Tremblay"
+          keyboardType="default"
+          autoComplete="name"
+          returnKeyType="next"
+          onSubmitEditing={() => usernameInputRef.current?.focus()}
+          placeholderTextColor={"#A1A1A1"}
+          onFocus={() => {
+  setTimeout(() => {
+    emailInputRef.current?.measureLayout(
+      scrollViewRef.current as any,
+      (x, y) => {
+        scrollViewRef.current?.scrollTo({ y: y - 250, animated: true });
+      }
+    );
+  }, 100);
+}}
+        />
+
+        
+
+    <Text style={styles.textForm}>
+          <Text >
+            Nom d'utilisateur
+          </Text>
+          <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
+        </Text>
+
+      <TextInput
+          style={styles.input}
+          ref={usernameInputRef}
+          onChangeText={onChangeUsername}
+          value={username}
+          placeholder="nom_utilisateur"
+          keyboardType="default"
+          autoComplete="username"
+          returnKeyType="next"
+          onSubmitEditing={() => emailInputRef.current?.focus()}
+          placeholderTextColor={"#A1A1A1"}
+          onFocus={() => {
+  setTimeout(() => {
+    emailInputRef.current?.measureLayout(
+      scrollViewRef.current as any,
+      (x, y) => {
+        scrollViewRef.current?.scrollTo({ y: y - 100, animated: true });
+      }
+    );
+  }, 100);
+}}
+        />
+
+        
+
+
+      <Text style={styles.textForm}>
+            <Text >
+              Adresse e-mail
+            </Text>
+            <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
+          </Text>
+
+      <TextInput
+          style={styles.input}
+          ref={emailInputRef}
+          onChangeText={onChangeEmail}
+          value={email}
+          placeholder="email@email.com"
+          keyboardType="email-address"
+          autoComplete="email"
+          returnKeyType="next"
+          onSubmitEditing={() => matriculeInputRef.current?.focus()}
+          placeholderTextColor={"#A1A1A1"}
+          onFocus={() => {
+  setTimeout(() => {
+    emailInputRef.current?.measureLayout(
+      scrollViewRef.current as any,
+      (x, y) => {
+        scrollViewRef.current?.scrollTo({ y: y - 100, animated: true });
+      }
+    );
+  }, 100);
+}}
+        />
+
+        <Text style={styles.textForm}>
+              <Text >
+                Numéro de matricule
+              </Text>
+              <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
+            </Text>
+
+      <TextInput
+          style={styles.input}
+          ref={matriculeInputRef}
+          onChangeText={(text) => onChangeMatricule(text ? parseInt(text, 10) : null)}
+          value={matricule !== null ? matricule.toString() : ''}
+          placeholder="12345678"
+          keyboardType="numeric"
+          returnKeyType="next"
+          onSubmitEditing={() => passwordInputRef.current?.focus()}
+          placeholderTextColor={"#A1A1A1"}
+          onFocus={() => {
+  setTimeout(() => {
+    emailInputRef.current?.measureLayout(
+      scrollViewRef.current as any,
+      (x, y) => {
+        scrollViewRef.current?.scrollTo({ y: y - 100, animated: true });
+      }
+    );
+  }, 100);
+}}
+        />
+
+      <Text style={isPassword ? styles.textForm : styles.textFormR}>
+            <Text >
+              Mot de passe
+            </Text>
+            <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
+          </Text>
+
+      <TextInput
+          style={styles.input}
+          ref={passwordInputRef}
+          onChangeText={onChangePassword}
+          value={password}
+          placeholder="********"
+          keyboardType="default"
+          autoComplete="password"
+          returnKeyType="next"
+          onSubmitEditing={() => passwordConfInputRef.current?.focus()}
+          placeholderTextColor={"#A1A1A1"}
+          secureTextEntry
+          onFocus={() => {
+  setTimeout(() => {
+    passwordInputRef.current?.measureLayout(
+      scrollViewRef.current as any,
+      (x, y) => {
+        scrollViewRef.current?.scrollTo({ y: y - 100, animated: true });
+      }
+    );
+  }, 100);
+}}
+
+        />
+
+
+        <Text style={isPassword ? styles.textForm : styles.textFormR}>
+            <Text >
+              Confirmer le mot de passe
+            </Text>
+            <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
+          </Text>
+
+      <TextInput
+          style={styles.input}
+          ref={passwordConfInputRef}
+          onChangeText={onChangePasswordConf}
+          value={passwordConf}
+          placeholder="********"
+          keyboardType="default"
+          autoComplete="password"
+          returnKeyType="done"
+          placeholderTextColor={"#A1A1A1"}
+          onSubmitEditing={() => checkMatch(password, passwordConf)}
+          secureTextEntry
+          onFocus={() => {
+  setTimeout(() => {
+    passwordConfInputRef.current?.measureLayout(
+      scrollViewRef.current as any,
+      (x, y) => {
+        scrollViewRef.current?.scrollTo({ y: y - 100, animated: true });
+      }
+    );
+  }, 100);
+}}
+
+        />
+
+
+      
+
+
+      <View style={styles.buttonView}>
+      <Button onPress={() => debug()}>S'inscrire</Button>
+      </View>
+      <Button onPress={() => router.push("/sign-in")} type="secondary">Déjà un compte ?</Button>
+      </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
+
+
 }
 
-const styles = StyleSheet.create({
+const styles = {
   container: {
-    marginVertical: 4,
-  },
-  mainButton: {
-    marginTop: 24,
-    marginBottom: 28,
-  },
-  otherOptionText: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    marginTop: 24,
-  },
-  socialButtonInnerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 12,
-  },
-  socialButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: COLORS.white,
-    padding: 12,
-    borderRadius: 10,
-    boxShadow: "0px 1px 2px 0px rgba(228, 229, 231, 0.24)",
-    borderColor: "#EDF1F3",
-    borderWidth: 1,
-    marginBottom: 16,
-  },
-  sectionDivider: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 16,
-    marginBottom: 24,
-  },
-  divider: {
     flex: 1,
-    height: 2,
-    backgroundColor: "#EDF1F3",
   },
-  signInContainer: {
-    paddingHorizontal: 32,
-    paddingVertical: 32,
+  backButton: {
+    position: "absolute" as const,
+    top: 10,
+    left: 20,
+    zIndex: 1,
+    padding: 10,
   },
-  logo: {
-    alignSelf: "center",
-    width: 135,
-    height: 24,
-    marginBottom: 32,
+  scrollableLayout: {
+    height: "100%",
+    flexGrow: 1,
   },
-  heading: {
-    textAlign: "center",
-    letterSpacing: -1,
-    lineHeight: 40,
-    marginBottom: 28,
+
+  logo:{
+    width: 150,
+    height: 150,
+    alignSelf: "center" as const,
   },
-  textInputLabel: {
-    paddingVertical: 8,
+  header : {
+    padding: 30,
   },
-  textInput: {
-    borderRadius: 10,
+  textHeader:{
+    fontSize: 34,
+    fontWeight: "bold" as const,
+    textAlign: "center" as const,
+  },
+  textForm: {
+    textAlign: "left" as const,
+    paddingLeft: 30,
+  },
+  textFormR: {
+    textAlign: "left" as const,
+    paddingLeft: 30,
+    color : "#FF0000",
+  },
+  input: {
+    height: 40,
+    margin: 20,
     borderWidth: 1,
-    borderColor: "#EDF1F3",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    boxShadow: "0px 1px 2px 0px rgba(228, 229, 231, 0.24)",
-    color: "#000000",
-    marginBottom: 12,
+    padding: 10,
+    borderRadius: 8,
+    marginTop: 10,
+    marginBottom: 15,
+    borderColor: "#CCCCCC",
+    
   },
-});
+  buttonView:{
+    marginTop: -10,
+    padding:20
+  }
+  
+}
+
