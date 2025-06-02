@@ -10,14 +10,13 @@ import { Platform } from "react-native";
 export default function TabLayout() {
     const { isSignedIn } = useAuth();
   return (
-    <SafeAreaView style={{ flex: 1 }}>
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: "black",
           tabBarInactiveTintColor: "#89898D",
           tabBarStyle: {
             ...Platform.select({
-              ios:{padding: 6},
+              ios:{padding: 6, height:"9%"},
               android:{padding: 8, height:"13%"}
             })},
         }}
@@ -98,6 +97,5 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-  </SafeAreaView>
   );
 }
