@@ -31,7 +31,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';  // icone de Instagram
 import FontAwesome from '@expo/vector-icons/FontAwesome'; // icone de user-secret 
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
-import { getInfoFromToken, getToken } from "@/utils/tokenStorage";
+import { clearTokens, getInfoFromToken, getToken } from "@/utils/tokenStorage";
 
 // Menu item interface for type safety
 interface MenuItem {
@@ -277,7 +277,7 @@ export default function ParametreScreen() {
                 <TouchableOpacity style={[styles.btn, { backgroundColor: 'red' }]} onPress={() => { /* Add delete account logic here */ }}>
                   <Text style={{ color: 'white', textAlign: 'center', padding: 10, fontSize:20, fontWeight:500 }}>Supprimer votre compte</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.btn, { backgroundColor: 'White', borderWidth: 1, }]} onPress={() => { setAccountModalVisible(false); navigation.push('../(onboarding)/first-onboarding') }}>
+                <TouchableOpacity style={[styles.btn, { backgroundColor: 'White', borderWidth: 1, }]} onPress={async () => { setAccountModalVisible(false); await clearTokens; navigation.push('../(onboarding)/first-onboarding') }}>
                 <Text style={{ color: 'black', textAlign: 'center', padding: 10, fontSize:20, fontWeight:500 }}>Se Déconnecter</Text>
                 </TouchableOpacity>
               </View>
