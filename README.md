@@ -45,7 +45,7 @@ L'application mobile est développée avec:
 
 ## 🔄 Lien avec Café sans-fil Web
 
-Cette application mobile partage la même base de données et API que la [version web](https://cafesansfil.onrender.com/), permettant une expérience cohérente sur tous les appareils. Les utilisateurs peuvent alterner entre les plateformes selon leurs besoins, avec une synchronisation complète des données.
+Cette application mobile partage la même base de données et API que la [version web](https://cafesansfil-ig3a.onrender.com), permettant une expérience cohérente sur tous les appareils. Les utilisateurs peuvent alterner entre les plateformes selon leurs besoins, avec une synchronisation complète des données.
 
 ## 🚀 Installation
 
