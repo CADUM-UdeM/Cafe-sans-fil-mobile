@@ -17,6 +17,34 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { fetchPannier } from '../../scripts/pannier';
 import { router } from 'expo-router';
 
+// Type pour API post commande
+type HeadersCommand = {
+  "Content-Type" : string;
+  accept: string;
+  // authorization : string;
+};
+
+type OrderOption = {
+  type: string;
+  value: string;
+  fee: number;
+};
+
+type OrderItem = {
+  item_id: string;
+  quantity: number;
+  options: OrderOption[];
+};
+
+type Commande = {
+  items: OrderItem[];
+};
+
+type RequeteCommande = {
+  headers: HeadersCommand;
+  body: Commande;
+};
+
 const Panier = () => {
 
   let panierID = "12345";
@@ -162,6 +190,52 @@ const Panier = () => {
     console.log(items);
   }
 
+  // // function passer la commande via l'API
+  // // je fais juste tester avec le cafe acquic de droit pour l'instant
+  function passCommand(requete: RequeteCommande){
+    fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes/acquis-de-droit/orders", {
+      
+      method: "POST",
+      headers: requete.headers,
+      body: JSON.stringify(requete.body)
+    })
+    .then(response => {
+        if(!response.ok){
+          throw new Error("Erreur HTTP : " + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("Commande réussie :", data);
+        alert("Commande envoyée!");
+      })
+      .catch(error => {
+        console.error("Erreur lors de la commande :", error);
+        alert("Erreur lors de l'envoi de la commande.");
+      });
+  }
+
+  const commande: Commande = {
+    items:[
+          {
+            item_id: "5eb7cf5a86d9755df3a6c593",
+            quantity: 1,
+            options: [
+              {
+                type:"string",
+                value:"string",
+                fee:0
+              }
+            ]
+          }
+        ]
+  }
+
+  const headers : HeadersCommand = {
+    "Content-Type" : "application/json",
+    "accept": "application/json"
+  }
+
   return (<>
     <HeaderLayout />
     <View style={styles.container}>
@@ -181,7 +255,7 @@ const Panier = () => {
           <View style={styles.totalContainer}>
             <Text style={styles.totalText}>Total: {calculateTotal().toFixed(2)} $</Text>
             <TouchableOpacity style={styles.checkoutButton}>
-              <Text style={styles.checkoutButtonText}>Passer la commande</Text>
+              <Text style={styles.checkoutButtonText} onPress={()=>passCommand({headers, body: commande})}>Passer la commande</Text>
             </TouchableOpacity>
           </View>
 
