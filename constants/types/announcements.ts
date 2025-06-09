@@ -8,9 +8,13 @@ type Items = {
     active_until: string;
     tags: string[];
     author: Author;
-    interactions: any[];
+    interactions: Interactions[];
 }
-
+type Interactions = {
+    type : string,
+    count : number,
+    me : boolean
+}
 type Author = {
     id: string;
     username: string;
