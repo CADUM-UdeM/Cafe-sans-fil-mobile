@@ -3,6 +3,7 @@ import React from "react";
 import {Text, View, Image, TextInput, ScrollView, KeyboardAvoidingView, Platform, StatusBar, Pressable} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {useRouter} from "expo-router";
+import { setToken, setRefreshToken } from "@/utils/tokenStorage";
 
 
 
@@ -14,8 +15,6 @@ export default function SignInScreen() {
   const [password, onChangePassword] = React.useState('');
   const emailInputRef = React.useRef<TextInput>(null);
   const passwordInputRef = React.useRef<TextInput>(null);
-  const [token, setToken] = React.useState<string | null>(null);
-  const [refreshToken, setRefreshToken] = React.useState<string | null>(null);
 
   const login = async (email : string , password : string) => {
     const url = 'https://cafesansfil-api-r0kj.onrender.com/api/auth/login';
