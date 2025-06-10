@@ -29,9 +29,9 @@ export default function TabLayout() {
           setIsSignedIn(true);
           const userInfo = await getInfoFromToken(accessToken);
           console.log("User Info: ", userInfo);
-          if (!userInfo) {
+          if (userInfo ==  false) {
             await updateToken(refreshToken);
-            reload();
+            reload()
           }
         } else {
           console.log("Tokens are missing, user not signed in");

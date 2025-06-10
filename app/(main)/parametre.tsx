@@ -121,6 +121,15 @@ export default function ParametreScreen() {
 
   const pulseAnim = React.useRef(new Animated.Value(1)).current;
 
+  const logoutfromthis = async () => {
+    await clearTokens();
+    setAccountModalVisible(false);
+    navigation.push("/first-onboarding");
+  };
+
+  const deletethisaccount = async () =>{
+    
+  }
 
 
   React.useEffect(() => {
@@ -277,7 +286,7 @@ export default function ParametreScreen() {
                 <TouchableOpacity style={[styles.btn, { backgroundColor: 'red' }]} onPress={() => { /* Add delete account logic here */ }}>
                   <Text style={{ color: 'white', textAlign: 'center', padding: 10, fontSize:20, fontWeight:500 }}>Supprimer votre compte</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.btn, { backgroundColor: 'White', borderWidth: 1, }]} onPress={async () => { setAccountModalVisible(false); await clearTokens; navigation.push('../(onboarding)/first-onboarding') }}>
+                <TouchableOpacity style={[styles.btn, { backgroundColor: 'White', borderWidth: 1, }]} onPress={async () => { logoutfromthis() }}>
                 <Text style={{ color: 'black', textAlign: 'center', padding: 10, fontSize:20, fontWeight:500 }}>Se Déconnecter</Text>
                 </TouchableOpacity>
               </View>
