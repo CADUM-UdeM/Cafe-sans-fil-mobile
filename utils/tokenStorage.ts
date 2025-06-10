@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 const STAYING_KEY = 'access_token';
 const REFRESHING_KEY = 'refresh_token';
@@ -90,6 +91,47 @@ export const getInfoFromToken = async (token: string) => {
     
     }
 }
+
+
+export const deleteAccount = async (token: string) => {
+  const userInfo = await getInfoFromToken(token);
+  if (!userInfo) {
+    console.error('Failed to get user info');
+    alert("Error deleting account, please try again later");
+    return false;
+  }
+
+  const id = userInfo.id;
+  try{
+    const response = await fetch(`https://cafesansfil-api-r0kj.onrender.com/api/users/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'accept': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    console.log("Response from delete account: ", response);
+    
+    if (response.ok) {
+      console.log("Account deleted successfully");
+      await clearTokens();
+      return true;
+    } else {
+      console.error(`Delete failed with status: ${response.status}`);
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
+      alert("Error deleting account, please try again later");
+      return false;
+    }
+  }
+  catch (error) {
+    alert("Error deleting account, please try again later");
+    console.error('Error deleting account:', error);
+    return false;
+  }
+}
+
 
 
 
