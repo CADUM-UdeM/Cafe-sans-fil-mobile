@@ -11,7 +11,7 @@ import {
   TextInput,
   ScrollView,
 } from "react-native";
-import { useUser } from "@clerk/clerk-expo";
+
 import React, { useState } from 'react'
 import ScrollableLayout from "@/components/layouts/ScrollableLayout";
 import {
