@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "MenuM",
-    "slug": "MenuM",
+    "name": "Café sans-fil",
+    "slug": "Café sans-fil",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "logo.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,

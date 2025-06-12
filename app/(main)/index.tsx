@@ -25,7 +25,7 @@ import CardScrollableLayout from "@/components/layouts/CardScrollableLayout";
 import { useModal } from "@/components/layouts/GlobalModal";
 import ScrollableLayout from "@/components/layouts/ScrollableLayout";
 import FilterModalLayout from "@/components/layouts/FilterModalLayout";
-import { useUser } from "@clerk/clerk-expo";
+
 import COLORS from "@/constants/Colors";
 import { Cafe } from "@/constants/types/GET_cafe";
 

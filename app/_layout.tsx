@@ -8,7 +8,6 @@ import { Stack } from "expo-router/stack";
 import * as SplashScreen from 'expo-splash-screen'; 
 import COLORS from '@/constants/Colors';
 import { GlobalModalProvider } from '@/components/layouts/GlobalModal';
-import { ClerkProvider, ClerkLoaded } from '@clerk/clerk-expo';
 
 import { type TokenCache } from '@/lib/token-cache';
 import * as SecureStore from 'expo-secure-store'
@@ -17,33 +16,8 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
 
-    // IMPORTANT: Data stored with expo-secure-store may not persist between new builds of your app unless you clear the app data of the previously installed build.
-    const tokenCache: TokenCache = {
-        async getToken(key: string) {
-          try {
-            const item = await SecureStore.getItemAsync(key)
-            if (item) {
-              console.log(`${key} was used 🔐 \n`)
-            } else {
-              console.log('No values stored under key: ' + key)
-            }
-            return item
-          } catch (error) {
-            console.error('SecureStore get item error: ', error)
-            await SecureStore.deleteItemAsync(key)
-            return null
-          }
-        },
-        async saveToken(key: string, value: string) {
-          try {
-            return SecureStore.setItemAsync(key, value)
-          } catch (err) {
-            return
-          }
-        },
-      }
+    
 
-    const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
     const [loaded, error] = useFonts({
         'Inter-Black': require("../assets/fonts/Inter/Inter-Black.ttf"),
@@ -94,13 +68,8 @@ export default function RootLayout() {
         return null;
     }
 
-    if (!publishableKey) {
-        throw new Error('Add EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY to your .env file')
-    }
 
     return (
-      <ClerkProvider publishableKey={publishableKey}>
-        <ClerkLoaded>
           <GlobalModalProvider>
             <Stack screenOptions={{ 
               gestureEnabled: false,
@@ -111,8 +80,6 @@ export default function RootLayout() {
               <Stack.Screen name='(auth)' options={{ headerShown: false}} />
             </Stack>
           </GlobalModalProvider>
-        </ClerkLoaded>
-      </ClerkProvider>
     )
     
 }

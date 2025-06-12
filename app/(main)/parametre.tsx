@@ -11,7 +11,7 @@ import {
   TextInput,
   ScrollView,
 } from "react-native";
-import { useUser } from "@clerk/clerk-expo";
+
 import React, { useState } from 'react'
 import ScrollableLayout from "@/components/layouts/ScrollableLayout";
 import {
@@ -31,6 +31,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';  // icone de Instagram
 import FontAwesome from '@expo/vector-icons/FontAwesome'; // icone de user-secret 
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
+import { clearTokens, getInfoFromToken, getToken, deleteAccount} from "@/utils/tokenStorage";
 
 // Menu item interface for type safety
 interface MenuItem {
@@ -41,13 +42,17 @@ interface MenuItem {
 }
 
 export default function ParametreScreen() {
-  const { user } = useUser();
+  
   const navigation = useRouter();
   const [notifModal,setNotifModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [accountModalVisible, setAccountModalVisible] = useState(false);
   const [ordersModalVisible, setOrdersModalVisible] = useState(false);
   const [prferencesModalVisible, setPreferencesModalVisible] = useState(false);
+  const [userImage, setUserImage] = React.useState<string | null>(null);
+  const [userFullName, setUserFullName] = React.useState<string>("");
+  const [userProfilePicture, setUserProfilePicture] = React.useState<string | null>(null);
+  const [isLoading, setIsLoading] = React.useState(true);
   
 
   const orders = [
@@ -71,22 +76,77 @@ export default function ParametreScreen() {
   ];
   
 
-  const [profilePicture, setProfilePicture] = useState('https://placehold.jp/150x150.png');
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
+  React.useEffect(() => {
+      const getUserInfo = async () => {
+        try {
+          // Get the access token
+          const accessToken = await getToken();
+          
+          if (accessToken) {
+            // Get user info from token
+            const userInfo = await getInfoFromToken(accessToken);
+            console.log("User Info from token:", userInfo);
+            
+            // Set the full name (first name + last name)
+            if (userInfo && userInfo.first_name && userInfo.last_name) {
+              setUserFullName(`${userInfo.first_name} ${userInfo.last_name}`);
+              setUserImage(userInfo.photo_url);
+            } else if (userInfo && userInfo.name) {
+              // Fallback to name field if first_name/last_name aren't available
+              setUserFullName(userInfo.name);
+            } else if (userInfo && userInfo.username) {
+              // Fallback to username if no name fields are available
+              setUserFullName(userInfo.username);
+            } else {
+              setUserFullName("Utilisateur");
+            }
+  
+  
+  
+          } else {
+            console.log("No access token found");
+            setUserFullName("Utilisateur");
+          }
+        
+        } catch (error) {
+          console.error("Error getting user info from token:", error);
+          setUserFullName("Utilisateur");
+        } finally {
+          setIsLoading(false);
+        }
+      };
+  
+      getUserInfo();
+    }, []);
 
-    if (!result.canceled) {
-      if (result.assets && result.assets.length > 0) {
-        setProfilePicture(result.assets[0].uri);
+  const pulseAnim = React.useRef(new Animated.Value(1)).current;
+
+  const logoutfromthis = async () => {
+    await clearTokens();
+    setAccountModalVisible(false);
+    navigation.push("/first-onboarding");
+  };
+
+  const deletethisaccount = async () =>{
+
+    const token = await getToken();
+    if (token) {
+      const isDeleted = await deleteAccount(token);
+      if (isDeleted) {
+        setAccountModalVisible(false);
+        navigation.push("/first-onboarding");
+      } else {
+        alert("Erreur lors de la suppression du compte. Veuillez réessayer plus tard.");
       }
     }
-  };
-  const pulseAnim = React.useRef(new Animated.Value(1)).current;
+    else {
+      alert("Vous devez être connecté pour supprimer votre compte.");
+    }
+  setAccountModalVisible(false);
+
+    
+  }
+
 
   React.useEffect(() => {
     Animated.loop(
@@ -162,14 +222,15 @@ export default function ParametreScreen() {
     <TouchableOpacity style={styles.profileSection} onPress={() => setAccountModalVisible(true)}>
     <View style={styles.profileLeft}>
       <Image
-        source={{ uri: "https://i.pravatar.cc/900" }}
+        source={{ uri: userImage } as any} 
         style={styles.profileImage}
       />
       <View style={styles.profileInfo}>
         <Text
           style={[TYPOGRAPHY.heading.small.bold, styles.profileName]}
         >
-          {user?.fullName}
+          {isLoading ? "Chargement..." : userFullName}
+          {}
         </Text>
         <Text
           style={[TYPOGRAPHY.body.small.base, styles.profileSubtitle,  { fontSize: 11 }]}
@@ -231,17 +292,17 @@ export default function ParametreScreen() {
                 </TouchableOpacity>
               </View>
               <View style={styles.modalContent}>
-                <TouchableOpacity onPress={pickImage}>
-                  <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
+                <TouchableOpacity>
+                  <Image source={{ uri: userProfilePicture }} style={styles.profilePicture} />
                 </TouchableOpacity>
                 <Text style={[{alignSelf:'center',padding:20, fontWeight:500}]}>Modifier votre photo de profil</Text>
                 <TextInput style={styles.input } placeholder="Modifier votre Nom" placeholderTextColor="grey" />
                 <TextInput style={styles.input} placeholder="Modifier votre Email" placeholderTextColor="grey" />
                 <TextInput style={styles.input} placeholder="Modifier votre Mot de passe" secureTextEntry placeholderTextColor="grey"/>
-                <TouchableOpacity style={[styles.btn, { backgroundColor: 'red' }]} onPress={() => { /* Add delete account logic here */ }}>
+                <TouchableOpacity style={[styles.btn, { backgroundColor: 'red' }]} onPress={() => { deletethisaccount()}}>
                   <Text style={{ color: 'white', textAlign: 'center', padding: 10, fontSize:20, fontWeight:500 }}>Supprimer votre compte</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.btn, { backgroundColor: 'White', borderWidth: 1, }]} onPress={() => { setAccountModalVisible(false); navigation.push('../(onboarding)/first-onboarding') }}>
+                <TouchableOpacity style={[styles.btn, { backgroundColor: 'White', borderWidth: 1, }]} onPress={async () => { logoutfromthis() }}>
                 <Text style={{ color: 'black', textAlign: 'center', padding: 10, fontSize:20, fontWeight:500 }}>Se Déconnecter</Text>
                 </TouchableOpacity>
               </View>
