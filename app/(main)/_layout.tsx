@@ -1,4 +1,4 @@
-import { Redirect, Tabs } from "expo-router";
+import { Redirect, router, Tabs } from "expo-router";
 import TYPOGRAPHY from "@/constants/Typography";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import HeaderLayout from "@/components/layouts/HeaderLayout";
@@ -6,7 +6,6 @@ import { Home, Settings, ShoppingBasket, UserRound} from "lucide-react-native";
 import { Platform, View, ActivityIndicator } from "react-native";
 import { getInfoFromToken, getToken, getRefreshToken, clearTokens, updateToken } from "@/utils/tokenStorage";
 import { useEffect, useState } from "react";
-import { reload } from "expo-router/build/global-state/routing";
 
 export default function TabLayout() {
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -31,7 +30,7 @@ export default function TabLayout() {
           console.log("User Info: ", userInfo);
           if (userInfo ==  false) {
             await updateToken(refreshToken);
-            reload()
+            <Redirect href="/first-onboarding" />
           }
         } else {
           console.log("Tokens are missing, user not signed in");
@@ -39,6 +38,7 @@ export default function TabLayout() {
         }
       } catch (error) {
         console.error("Error checking tokens:", error);
+        console.log(error)
         setIsSignedIn(false);
       } finally {
         setIsLoading(false); 

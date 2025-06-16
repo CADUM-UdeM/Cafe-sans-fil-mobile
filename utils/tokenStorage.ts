@@ -85,7 +85,6 @@ export const getInfoFromToken = async (token: string) => {
     const userInfo = await response.json();
     return userInfo;
     } catch (error) {
-    console.error('Error fetching user info from token:', error);
     return false
     throw error;
     
