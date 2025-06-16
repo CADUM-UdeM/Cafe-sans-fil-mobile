@@ -15,6 +15,7 @@ export default function SignInScreen() {
   const [password, onChangePassword] = React.useState('');
   const emailInputRef = React.useRef<TextInput>(null);
   const passwordInputRef = React.useRef<TextInput>(null);
+  const [isError,setIsError] = React.useState(false)
 
   const login = async (email : string , password : string) => {
     const url = 'https://cafesansfil-api-r0kj.onrender.com/api/auth/login';
@@ -43,7 +44,13 @@ export default function SignInScreen() {
       data.refresh_token && setRefreshToken(data.refresh_token);
       console.log(data);
       if (data.access_token && data.refresh_token) {
+        setIsError(false)
         router.push("/");
+      }
+      else if (data.detail == "Incorrect email or password"){
+        alert("Incorrect email or password")
+        setIsError(true)
+
       }
     } catch (error) {
       console.error('Login failed:', error);
@@ -68,14 +75,14 @@ export default function SignInScreen() {
       </View>
 
 
-    <Text style={styles.textForm}>
+    <Text style={isError ? styles.textFormR : styles.textForm}>
       <Text >
         Adresse e-mail
       </Text>
       <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
     </Text>
       <TextInput
-          style={styles.input}
+          style={isError ? styles.inputR : styles.input}
           ref={emailInputRef}
           onChangeText={onChangeEmail}
           value={email}
@@ -97,7 +104,7 @@ export default function SignInScreen() {
 }}
         />
 
-      <Text style={styles.textForm}>
+      <Text style={isError ? styles.textFormR : styles.textForm}>
       <Text >
         Mot de passe
       </Text>
@@ -105,7 +112,7 @@ export default function SignInScreen() {
     </Text>
 
       <TextInput
-          style={styles.input}
+          style={isError ? styles.inputR : styles.input}
           ref={passwordInputRef}
           onChangeText={onChangePassword}
           value={password}
@@ -204,7 +211,23 @@ const styles = {
   buttonView:{
     marginTop: -10,
     padding:20
-  }
+  },
+  inputR: {
+    height: 40,
+    margin: 20,
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 8,
+    marginTop: 10,
+    marginBottom: 15,
+    borderColor: "#FF0000",
+    
+  },
+  textFormR: {
+    textAlign: "left" as const,
+    paddingLeft: 30,
+    color : "#FF0000",
+  },
   
 }
 
