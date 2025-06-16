@@ -1,4 +1,9 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, FlatList } from "react-native";
+
+import { EventsData } from '@/constants/types/events';
+import { useEffect, useState } from 'react';
+import EventsCard from './EventCard';
+
 
 export default function Events() {
     return (
