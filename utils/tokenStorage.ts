@@ -57,7 +57,9 @@ export const updateToken = async (refreshToken: string) => {
     // Assuming the API returns a new access token
     if (data.access_token || data.accessToken || data.token) {
       const newToken = data.access_token || data.accessToken || data.token;
+      const newRefreshToken = data.refresh_token || data.refreshToken 
       await setToken(newToken);
+      await setRefreshToken(newRefreshToken); // Store the same refresh token
       return newToken;
     }
     
