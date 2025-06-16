@@ -1,223 +1,233 @@
 import Button from "@/components/common/Buttons/Button";
-import SocialButton from "@/components/common/Buttons/SocialButton";
-import COLORS from "@/constants/Colors";
-import TYPOGRAPHY from "@/constants/Typography";
-import { Link, router, useRouter } from "expo-router";
 import React from "react";
-import TextInput from "@/components/common/Inputs/TextInput";
-import { View, Text, StyleSheet, Image } from "react-native";
-import { useAuth, useSignIn } from "@clerk/clerk-expo";
-import { useOAuth } from '@clerk/clerk-expo'
-import * as Linking from 'expo-linking'
-import * as WebBrowser from 'expo-web-browser'
+import {Text, View, Image, TextInput, ScrollView, KeyboardAvoidingView, Platform, StatusBar, Pressable} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {useRouter} from "expo-router";
+import { setToken, setRefreshToken } from "@/utils/tokenStorage";
 
-export const useWarmUpBrowser = () => {
-  React.useEffect(() => {
-    // Warm up the android browser to improve UX
-    // https://docs.expo.dev/guides/authentication/#improving-user-experience
-    void WebBrowser.warmUpAsync()
-    return () => {
-      void WebBrowser.coolDownAsync()
-    }
-  }, [])
-}
 
-WebBrowser.maybeCompleteAuthSession()
+
 
 export default function SignInScreen() {
+  const scrollViewRef = React.useRef<ScrollView>(null);
+  const router = useRouter();
+  const [email, onChangeEmail] = React.useState('');
+  const [password, onChangePassword] = React.useState('');
+  const emailInputRef = React.useRef<TextInput>(null);
+  const passwordInputRef = React.useRef<TextInput>(null);
+  const [isError,setIsError] = React.useState(false)
 
-  useWarmUpBrowser();
-  const { startOAuthFlow } = useOAuth({ strategy: 'oauth_google' })
-  const { startOAuthFlow: startFacebookOAuthFlow } = useOAuth({ strategy: 'oauth_facebook' })
+  const login = async (email : string , password : string) => {
+    const url = 'https://cafesansfil-api-r0kj.onrender.com/api/auth/login';
 
-  const onPress = React.useCallback(async () => {
-    try {
-      const { createdSessionId, signIn, signUp, setActive } = await startOAuthFlow({
-        redirectUrl: Linking.createURL('/dashboard', { scheme: 'myapp' }),
-      })
-
-      // If sign in was successful, set the active session
-      if (createdSessionId) {
-        await setActive!({ session: createdSessionId })
-        console.log("Session created")
-        router.replace('/')
-        console.log("Navigated")
-      } else {
-        // Use signIn or signUp returned from startOAuthFlow
-        // for next steps, such as MFA (Multi-Factor Authentication)
-      }
-    } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
-      console.error(JSON.stringify(err, null, 2))
-    }
-  }, [])
-
-  const onPress2 = React.useCallback(async () => {
-    try {
-      const { createdSessionId, signIn, signUp, setActive } = await startFacebookOAuthFlow({
-        redirectUrl: Linking.createURL('/dashboard', { scheme: 'myapp' }),
-      })
-
-      // If sign in was successful, set the active session
-      if (createdSessionId) {
-        await setActive!({ session: createdSessionId })
-        console.log("Session created")
-        router.replace('/')
-        console.log("Navigated")
-      } else {
-        // Use signIn or signUp returned from startOAuthFlow
-        // for next steps, such as MFA (Multi-Factor Authentication)
-      }
-    } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
-      console.error(JSON.stringify(err, null, 2))
-    }
-  }, [])
-
-  const { signIn, setActive, isLoaded } = useSignIn()
-  const router = useRouter()
-
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-
-  const handleConnexion = React.useCallback(async () => {
-    if (!isLoaded) {
-      return
-    }
+    const formBody = new URLSearchParams({
+      grant_type: 'password',
+      username: email,
+      password: password,
+      scope: '',
+      client_id: 'string',
+      client_secret: 'string'
+    }).toString();
 
     try {
-      const signInAttempt = await signIn.create({
-        identifier: email,
-        password,
-      })
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: formBody
+      });
 
-      if (signInAttempt.status === 'complete') {
-        await setActive({ session: signInAttempt.createdSessionId })
-        //router.replace('/')
-        router.push('/(main)')
-      } else {
-        // See https://clerk.com/docs/custom-flows/error-handling
-        // for more info on error handling
-        console.error(JSON.stringify(signInAttempt, null, 2))
+      const data = await response.json();
+      data.access_token && setToken(data.access_token);
+      data.refresh_token && setRefreshToken(data.refresh_token);
+      console.log(data);
+      if (data.access_token && data.refresh_token) {
+        setIsError(false)
+        router.push("/");
       }
-    } catch (err: any) {
-      console.error(JSON.stringify(err, null, 2))
+      else if (data.detail == "Incorrect email or password"){
+        alert("Incorrect email or password")
+        setIsError(true)
+
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
     }
-  }, [isLoaded, email, password])
+  };
 
-
-  const handleEmail = (email: string) => setEmail(email);
-  const handlePassword = (password: string) => setPassword(password);
 
   return (
-    <View style={styles.signInContainer}>
-      <View style={styles.container}>
-        <Image source={require("@/assets/images/placeholder/logo.png")} style={styles.logo} />
-
-        <Text style={[TYPOGRAPHY.heading.large.bold, styles.heading]}>
-          Connectez-vous à votre compte
-        </Text>
-
-        <View>
-          <TextInput label="Adresse électronique" placeholder="menum@cadum.ca" handleOnChangeText={handleEmail}/>
-          <TextInput label="Mot de passe" placeholder="*******************" secureTextEntry helpLinkHref="/sign-up" helpLinkText="Mot de passe oublié ?" handleOnChangeText={handlePassword} helpLink/>
-        </View>
-
-        {/*<Button onPress={handleConnexion} style={styles.mainButton}>Se connecter</Button>*/}
-        <Button onPress={() => {router.push('/(main)')}} style={styles.mainButton}>Se connecteR</Button>
-
-        <View style={styles.sectionDivider}>
-          <View style={styles.divider}></View>
-          <Text style={[TYPOGRAPHY.body.normal.base, { textAlign: "right" }]}>Ou</Text>
-          <View style={styles.divider}></View>
-        </View>
-
-        <SocialButton type="google" style={{marginBottom: 16}} onPress={onPress}/>
-        <SocialButton type="facebook" style={{marginBottom: 16}} onPress={onPress2} />
-
-        <View style={styles.otherOptionText}>
-          <Text style={TYPOGRAPHY.body.normal.base}>Pas de compte?</Text>
-          <Link href={"/sign-up"} style={TYPOGRAPHY.body.normal.semiBold}>Créez un compte</Link>
-        </View>
+    <SafeAreaView  >
+       <StatusBar />
+      <KeyboardAvoidingView 
+    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    
+  >
+      <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false}
+  keyboardShouldPersistTaps="handled" style={{  minHeight: "100%" }}>
+      <Image source={require("@/logo.png")} style={styles.logo}/>
+      <View style={styles.header}>
+      <Text style={styles.textHeader}>
+        Connectez-vous à votre compte
+      </Text>
       </View>
-    </View>
+
+
+    <Text style={isError ? styles.textFormR : styles.textForm}>
+      <Text >
+        Adresse e-mail
+      </Text>
+      <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
+    </Text>
+      <TextInput
+          style={isError ? styles.inputR : styles.input}
+          ref={emailInputRef}
+          onChangeText={onChangeEmail}
+          value={email}
+          placeholder="email@email.com"
+          keyboardType="email-address"
+          autoComplete="email"
+          returnKeyType="next"
+          onSubmitEditing={() => passwordInputRef.current?.focus()}
+          placeholderTextColor={"#A1A1A1"}
+          onFocus={() => {
+  setTimeout(() => {
+    emailInputRef.current?.measureLayout(
+      scrollViewRef.current as any,
+      (x, y) => {
+        scrollViewRef.current?.scrollTo({ y: y - 100, animated: true });
+      }
+    );
+  }, 100);
+}}
+        />
+
+      <Text style={isError ? styles.textFormR : styles.textForm}>
+      <Text >
+        Mot de passe
+      </Text>
+      <Text style={{color: "#ff0000", fontSize: 19, fontWeight: "400"}}> *</Text>
+    </Text>
+
+      <TextInput
+          style={isError ? styles.inputR : styles.input}
+          ref={passwordInputRef}
+          onChangeText={onChangePassword}
+          value={password}
+          placeholder="********"
+          keyboardType="default"
+          autoComplete="password"
+          returnKeyType="done"
+          placeholderTextColor={"#A1A1A1"}
+          secureTextEntry
+          onFocus={() => {
+  setTimeout(() => {
+    passwordInputRef.current?.measureLayout(
+      scrollViewRef.current as any,
+      (x, y) => {
+        scrollViewRef.current?.scrollTo({ y: y - 100, animated: true });
+      }
+    );
+  }, 100);
+}}
+
+        />
+      <View style={{marginRight: "5%"}}>
+        <Pressable
+          onPress={() => router.push("/forgot")}
+          style={({ pressed }) => [
+        {
+          opacity: pressed ? 0.5 : 1,
+        }
+          ]}
+        >
+          {({ pressed }) => (
+        <Text 
+          style={{
+            color: pressed ? "#000000" : "#000000", 
+            textAlign: "right",
+            padding: 8,
+            fontWeight: "500"
+          }}
+        >
+          Mot de passe oublié ?
+        </Text>
+          )}
+        </Pressable>
+      </View>
+
+
+      <View style={styles.buttonView}>
+      <Button onPress={() => login(email,password)}>Se connecter</Button>
+      </View>
+      <Button style={{margin:-10}} onPress={() => router.push("/sign-up")} type="secondary">Pas de compte ?</Button>
+      </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
+
+
 }
 
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: 28,
+const styles = {
+  scrollableLayout: {
+    height: "100%",
+    flexGrow: 1,
   },
-  mainButton: {
-    marginTop: 24,
-    marginBottom: 28,
+
+  logo:{
+    width: 150,
+    height: 150,
+    alignSelf: "center" as const,
   },
-  otherOptionText: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    marginTop: 24,
+  header : {
+    padding: 30,
   },
-  socialButtonInnerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 12,
+  textHeader:{
+    fontSize: 34,
+    fontWeight: "bold" as const,
+    textAlign: "center" as const,
   },
-  socialButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: COLORS.white,
-    padding: 12,
-    borderRadius: 10,
-    boxShadow: "0px 1px 2px 0px rgba(228, 229, 231, 0.24)",
-    borderColor: "#EDF1F3",
+  textForm: {
+    textAlign: "left" as const,
+    paddingLeft: 30,
+    
+  },
+  input: {
+    height: 40,
+    margin: 20,
     borderWidth: 1,
-    marginBottom: 16,
+    padding: 10,
+    borderRadius: 8,
+    marginTop: 10,
+    marginBottom: 15,
+    borderColor: "#CCCCCC",
+    
+    
+    
   },
-  sectionDivider: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 16,
-    marginBottom: 24,
+  buttonView:{
+    marginTop: -10,
+    padding:20
   },
-  divider: {
-    flex: 1,
-    height: 2,
-    backgroundColor: "#EDF1F3",
-  },
-  signInContainer: {
-    paddingHorizontal: 32,
-    paddingVertical: 32,
-  },
-  logo: {
-    alignSelf: "center",
-    width: 135,
-    height: 24,
-    marginBottom: 32,
-  },
-  heading: {
-    textAlign: "center",
-    letterSpacing: -1,
-    lineHeight: 40,
-    marginBottom: 28,
-  },
-  textInputLabel: {
-    paddingVertical: 8,
-  },
-  textInput: {
-    borderRadius: 10,
+  inputR: {
+    height: 40,
+    margin: 20,
     borderWidth: 1,
-    borderColor: "#EDF1F3",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    boxShadow: "0px 1px 2px 0px rgba(228, 229, 231, 0.24)",
-    color: "#000000",
-    marginBottom: 12,
+    padding: 10,
+    borderRadius: 8,
+    marginTop: 10,
+    marginBottom: 15,
+    borderColor: "#FF0000",
+    
   },
-});
+  textFormR: {
+    textAlign: "left" as const,
+    paddingLeft: 30,
+    color : "#FF0000",
+  },
+  
+}
+
