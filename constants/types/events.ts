@@ -28,7 +28,10 @@ export interface Creator {
     last_name: string;
     photo_url: string;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1acb5f19a4bd78ebc95dd213f0967f88c2eb0f07
 export interface Interaction {
     type: string;
     count: number;
@@ -50,4 +53,8 @@ export interface EventList {
     size: number;
     pages: number;
     links: Links;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 1acb5f19a4bd78ebc95dd213f0967f88c2eb0f07

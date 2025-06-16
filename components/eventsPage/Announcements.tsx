@@ -40,7 +40,7 @@ export default function Announcements() {
     //    id = announ.items.id
 
     return (
-        <View>
+        <View style={{width:"100%"}}>
             <FlatList data={announcements?.items}
                 renderItem={(announ) =>
                     <AnnouncementCard
