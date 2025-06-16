@@ -77,8 +77,8 @@ export default function TabLayout() {
         tabBarInactiveTintColor: "#89898D",
         tabBarStyle: {
           ...Platform.select({
-            ios: { padding: 6 },
-            android: { padding: 8, height: "7%" }
+            ios: { padding: 6 , height: "10%"},
+            android: { padding: 8, height: "10%" }
           })
         },
       }}
