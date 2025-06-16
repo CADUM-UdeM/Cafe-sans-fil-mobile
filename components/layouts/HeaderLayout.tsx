@@ -69,14 +69,14 @@ export default function HeaderLayout({fullName, profilePicture}: HeaderLayoutPro
       extrapolate: 'clamp',
     });
 
-    const width = dragX.interpolate({
-      inputRange: [-0, 0],
-      outputRange: [0, 10],
+    const translateX = dragX.interpolate({
+      inputRange: [-10, 0],
+      outputRange: [0, 100],
       extrapolate: 'clamp',
     });
 
     return (
-      <Animated.View style={[styles.deleteButton, {transform: [{ translateX: width }]}]}>
+      <Animated.View style={[styles.deleteButton, { opacity, transform: [{ translateX }] }]}>
         <TouchableOpacity onPress={() => handleDelete(id)}>
           <Text style={styles.deleteButtonText}>Effacer</Text>
         </TouchableOpacity>
@@ -85,19 +85,13 @@ export default function HeaderLayout({fullName, profilePicture}: HeaderLayoutPro
   };
   const renderLeftActions = (dragX : any, id : any) => {
     const opacity = dragX.interpolate({
-      inputRange: [-100, 0],
-      outputRange: [1, 0],
-      extrapolate: 'clamp',
-    });
-
-    const width = dragX.interpolate({
-      inputRange: [-0, 0],
-      outputRange: [0, 10],
+      inputRange: [0, 100],
+      outputRange: [0, 1],
       extrapolate: 'clamp',
     });
 
     return (
-      <Animated.View style={[styles.toggleButton, {transform: [{ translateX: width }]}]}>
+      <Animated.View style={[styles.toggleButton, { opacity }]}>
         <TouchableOpacity onPress={() => handleUpdate(id)}>
             <Text style={styles.toggleButtonText}>
             {notifs.find((notif) => notif.id === id)?.status ? "Marquer comme non lu" : "Marquer comme lu"}
