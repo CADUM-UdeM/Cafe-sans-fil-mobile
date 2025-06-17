@@ -165,6 +165,28 @@ export default function ParametreScreen() {
     ).start();
   }, []);
 
+  const fetchOrders = async () => {
+
+    const token = await getToken();
+
+    const response = await fetch('https://cafesansfil-api-r0kj.onrender.com/api/users/@me/orders', {
+      method: 'GET',
+      headers: {
+      'accept': 'application/json',
+      'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const ordersData = await response.json();
+    console.log("Orders Data: ", ordersData);
+    return ordersData;
+  }
+
+  fetchOrders()
   // Menu items data with their respective icons and actions
   const menuItems: MenuItem[] = [
     {
