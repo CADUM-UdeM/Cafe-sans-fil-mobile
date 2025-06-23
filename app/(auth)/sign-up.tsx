@@ -45,7 +45,7 @@ export default function SignInScreen() {
       first_name: first_name, 
       last_name: last_name,
       matricule: matricule.toString(),
-      email: email,
+      email: email.toLowerCase(),
       password: password,
       photo_url: "https://example.com/",
     };

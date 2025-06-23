@@ -22,7 +22,7 @@ export default function SignInScreen() {
 
     const formBody = new URLSearchParams({
       grant_type: 'password',
-      username: email,
+      username: email.toLowerCase(),
       password: password,
       scope: '',
       client_id: 'string',

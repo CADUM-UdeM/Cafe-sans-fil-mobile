@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 const STAYING_KEY = 'access_token';
 const REFRESHING_KEY = 'refresh_token';
@@ -88,7 +87,6 @@ export const getInfoFromToken = async (token: string) => {
     return userInfo;
     } catch (error) {
     return false
-    throw error;
     
     }
 }
