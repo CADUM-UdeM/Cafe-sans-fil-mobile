@@ -17,6 +17,34 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { fetchPannier } from '../../scripts/pannier';
 import { router } from 'expo-router';
 
+// Type pour API post commande
+type HeadersCommand = {
+  "Content-Type" : string;
+  accept: string;
+  // authorization : string;
+};
+
+type OrderOption = {
+  type: string;
+  value: string;
+  fee: number;
+};
+
+type OrderItem = {
+  item_id: string;
+  quantity: number;
+  options: OrderOption[];
+};
+
+type Commande = {
+  items: OrderItem[];
+};
+
+type RequeteCommande = {
+  headers: HeadersCommand;
+  body: Commande;
+};
+
 const Panier = () => {
 
   let panierID = "12345";
@@ -45,29 +73,39 @@ const Panier = () => {
     }
     for(const item of items){
       let itemPrice = Number(fetchSync(item.id).price);
-      total = total + itemPrice;
+      total = total + itemPrice*item.quantity;
     }
     return total;
   }
 
   // Fonction pour augmenter la quantité d'un item
   const increaseQuantity = (id) => {
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
+    let currPanier = items;
+    for(const item of currPanier){
+      if(item.id == id){
+        item.quantity = item.quantity+1;
+        break;
+      }
+    }
+    setItems(currPanier);
+    saveSync(panierID, currPanier);
+    refreshPanier();
   };
 
   // Fonction pour diminuer la quantité d'un item
   const decreaseQuantity = (id) => {
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-    );
+    let currPanier = items;
+    for(const item of currPanier){
+      if(item.id == id){
+        if(item.quantity>1){
+          item.quantity = item.quantity -1
+        }
+        break;
+      }
+    }
+    setItems(currPanier);
+    saveSync(panierID, currPanier);
+    refreshPanier();
   };
 
   function deletePanierItem(id){
@@ -119,7 +157,7 @@ const Panier = () => {
   function panierItemDisplay(panierItem){
     let item = panierItemToItem(panierItem);
     return(
-      <View style={styles.itemContainer}>
+      <TouchableOpacity style={styles.itemContainer} onPress={()=>router.push(`/cafe/${item.cafe_id}/${item.id}`)}>
                 <Image source={{ uri: item.image_url }} style={styles.itemImage} />
                 <View style={styles.textContainer}>
                   <Text style={styles.itemTitle}>{item.name}</Text>
@@ -139,7 +177,7 @@ const Panier = () => {
                     <Feather name="trash" size={20} color="red" />
                   </TouchableOpacity>
                 </View>
-              </View>
+        </TouchableOpacity>
     )
   }
 
@@ -150,6 +188,52 @@ const Panier = () => {
     }
     console.log(currPanier);
     console.log(items);
+  }
+
+  // // function passer la commande via l'API
+  // // je fais juste tester avec le cafe acquic de droit pour l'instant
+  function passCommand(requete: RequeteCommande){
+    fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes/acquis-de-droit/orders", {
+      
+      method: "POST",
+      headers: requete.headers,
+      body: JSON.stringify(requete.body)
+    })
+    .then(response => {
+        if(!response.ok){
+          throw new Error("Erreur HTTP : " + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("Commande réussie :", data);
+        alert("Commande envoyée!");
+      })
+      .catch(error => {
+        console.error("Erreur lors de la commande :", error);
+        alert("Erreur lors de l'envoi de la commande.");
+      });
+  }
+
+  const commande: Commande = {
+    items:[
+          {
+            item_id: "5eb7cf5a86d9755df3a6c593",
+            quantity: 1,
+            options: [
+              {
+                type:"string",
+                value:"string",
+                fee:0
+              }
+            ]
+          }
+        ]
+  }
+
+  const headers : HeadersCommand = {
+    "Content-Type" : "application/json",
+    "accept": "application/json"
   }
 
   return (<>
@@ -171,7 +255,7 @@ const Panier = () => {
           <View style={styles.totalContainer}>
             <Text style={styles.totalText}>Total: {calculateTotal().toFixed(2)} $</Text>
             <TouchableOpacity style={styles.checkoutButton}>
-              <Text style={styles.checkoutButtonText}>Passer la commande</Text>
+              <Text style={styles.checkoutButtonText} onPress={()=>passCommand({headers, body: commande})}>Passer la commande</Text>
             </TouchableOpacity>
           </View>
 
