@@ -1,4 +1,12 @@
-import { View, Text, StyleSheet, Image, Pressable, Animated, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Pressable,
+  Animated,
+  Dimensions,
+} from "react-native";
 import { Circle } from "lucide-react-native";
 import { router } from "expo-router";
 import React from "react";
@@ -20,7 +28,7 @@ type CafeCardProps = {
   priceRange: "$" | "$$" | "$$$";
 
   /** The rating of the cafe */
-  rating: number;
+  //rating: number;
 
   /** The image of the cafe */
   image?: string;
@@ -83,19 +91,20 @@ export default function CafeCard({
   size = "medium",
   slug = "INVALID_SLUG",
 }: CafeCardProps) {
-  
   return (
-    <Pressable 
-      onPress={() => {router.push(`/cafe/${id}`);
-                      console.log(slug);
+    <Pressable
+      onPress={() => {
+        router.push(`/cafe/${id}`);
+        console.log(slug);
       }}
-      style={{ width: cardDimensions[size].width, 
-        shadowColor: COLORS.black ,                       // Black shadow
-        shadowOffset: { width: 5, height: 5 },     // Offset shadow towards bottom-right 
-        shadowOpacity: 0.25,                        // Half opaque
-        shadowRadius: 6,                          // Smoothness of the shadow
-        elevation: 20, 
-        paddingTop: 5
+      style={{
+        width: cardDimensions[size].width,
+        shadowColor: COLORS.black, // Black shadow
+        shadowOffset: { width: 5, height: 5 }, // Offset shadow towards bottom-right
+        shadowOpacity: 0.25, // Half opaque
+        shadowRadius: 6, // Smoothness of the shadow
+        elevation: 20,
+        paddingTop: 5,
       }}
       testID="button"
     >
@@ -104,7 +113,7 @@ export default function CafeCard({
           source={image ? { uri: image } : cardDimensions[size].image}
           width={cardDimensions[size].width}
           height={cardDimensions[size].height}
-          style={{borderRadius:10}}
+          style={{ borderRadius: 10 }}
           testID="image"
         />
         {/*}
@@ -124,20 +133,15 @@ export default function CafeCard({
         <View style={styles.cafeInfo}>
           <View style={styles.cafeInfoHeader}>
             <Text style={[TYPOGRAPHY.body.large.semiBold]}>{name}</Text>
-            
+
             <Circle
               width={12}
               height={12}
               strokeWidth={1}
-              color={
-                status ? COLORS.status.green : COLORS.status.red
-              }
-              fill={
-                status ? COLORS.status.green : COLORS.status.red
-              }
+              color={status ? COLORS.status.green : COLORS.status.red}
+              fill={status ? COLORS.status.green : COLORS.status.red}
               testID="tooltip-icon"
             />
-           
           </View>
           <Text
             style={[TYPOGRAPHY.body.normal.semiBold, styles.cafeInfoLocation]}
@@ -190,11 +194,11 @@ const styles = StyleSheet.create({
     top: SPACING.sm,
   },
   wrapper: {
-    shadowColor: COLORS.black ,                       // Black shadow
-    shadowOffset: { width: 5, height: 5 },     // Offset shadow towards bottom-right 
-    shadowOpacity: 0.25,                        // Half opaque
-    shadowRadius: 5,                          // Smoothness of the shadow
+    shadowColor: COLORS.black, // Black shadow
+    shadowOffset: { width: 5, height: 5 }, // Offset shadow towards bottom-right
+    shadowOpacity: 0.25, // Half opaque
+    shadowRadius: 5, // Smoothness of the shadow
 
-    elevation: 3, 
-  }
+    elevation: 3,
+  },
 });

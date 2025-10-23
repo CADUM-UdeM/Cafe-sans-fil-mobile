@@ -48,7 +48,7 @@ const Panier = () => {
   }
 
   // Fonction pour augmenter la quantité d'un item
-  const increaseQuantity = (id) => {
+  const increaseQuantity = (id: any) => {
     setItems((prevItems) =>
       prevItems.map((item) =>
         item.id === id ? { ...item, quantity: item.quantity + 1 } : item
@@ -57,7 +57,7 @@ const Panier = () => {
   };
 
   // Fonction pour diminuer la quantité d'un item
-  const decreaseQuantity = (id) => {
+  const decreaseQuantity = (id: any) => {
     setItems((prevItems) =>
       prevItems.map((item) =>
         item.id === id && item.quantity > 1
@@ -67,7 +67,7 @@ const Panier = () => {
     );
   };
 
-  function deletePanierItem(id) {
+  function deletePanierItem(id: any) {
     /*
     try{
       deleteSecurely(id);
@@ -97,7 +97,7 @@ const Panier = () => {
   }
 
   // Fonction pour supprimer un item du panier
-  const removeItem = (id) => {
+  const removeItem = (id: any) => {
     Alert.alert(
       "Supprimer l’item",
       "Êtes-vous sûr de vouloir supprimer cet article du panier ?",
@@ -111,11 +111,11 @@ const Panier = () => {
     );
   };
 
-  function panierItemToItem(panierItem) {
+  function panierItemToItem(panierItem: { id: any }) {
     return fetchSync(panierItem.id);
   }
 
-  function panierItemDisplay(panierItem) {
+  function panierItemDisplay(panierItem: { quantity?: any; id: any }) {
     let item = panierItemToItem(panierItem);
     return (
       <View style={styles.itemContainer}>

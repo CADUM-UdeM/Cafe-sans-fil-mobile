@@ -311,7 +311,7 @@ export default function FavorisScreen() {
                   image={cafe.banner_url}
                   location={cafe.location.pavillon}
                   priceRange="$$"
-                  rating={4.5}
+                  //rating={4.5}
                   status={cafe.is_open}
                   id={cafe.id}
                 />

@@ -288,7 +288,7 @@ export default function HomeScreen() {
 
     return filteredCafesClose;
   };
-  const isOpenOrNot = (cafe) => {
+  const isOpenOrNot = (cafe: any) => {
     const currentDate = new Date();
     const currentDay = currentDate
       .toLocaleDateString("en-US", { weekday: "long" })
@@ -297,7 +297,7 @@ export default function HomeScreen() {
     let openStatus = false;
     if (cafe && cafe.opening_hours) {
       const todayHours = cafe.opening_hours.find(
-        (day) => day.day.toLowerCase() === currentDay
+        (day: { day: string }) => day.day.toLowerCase() === currentDay
       );
       //console.log("today hours: ", todayHours);
       if (todayHours) {
