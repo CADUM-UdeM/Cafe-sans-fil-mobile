@@ -1,10 +1,12 @@
-import React, {
-  useState,
-  createContext,
-  useContext,
-  useRef,
-} from "react";
-import { Modal, StyleSheet, Pressable, Animated, Easing, View } from "react-native";
+import React, { useState, createContext, useContext, useRef } from "react";
+import {
+  Modal,
+  StyleSheet,
+  Pressable,
+  Animated,
+  Easing,
+  View,
+} from "react-native";
 
 import COLORS from "@/constants/Colors";
 import SPACING from "@/constants/Spacing";
@@ -33,24 +35,19 @@ export const GlobalModalProvider = ({
   };
 
   const closeModal = () => {
-    
-      setIsVisible(false);
-    
+    setIsVisible(false);
   };
 
   return (
     <ModalContext.Provider value={{ openModal, closeModal }}>
       {children}
-      <Modal 
-        visible={isVisible} 
-        animationType="slide" 
+      <Modal
+        visible={isVisible}
+        animationType="slide"
         presentationStyle="pageSheet"
         onRequestClose={closeModal}
-        
       >
-        <View style={styles.modalContainer}>
-          {customBody}
-        </View>
+        <View style={styles.modalContainer}>{customBody}</View>
       </Modal>
     </ModalContext.Provider>
   );

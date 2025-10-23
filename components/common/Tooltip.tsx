@@ -44,7 +44,7 @@ type TooltipProps = {
   /** Callback function triggered when the tooltip is pressed */
   onPress?: () => void;
 
-  description? : string;
+  description?: string;
 };
 
 /**
@@ -98,7 +98,7 @@ export default function Tooltip({
   children,
   label,
   status,
-  Icon = status? Circle : Circle, // Default to Circle if a status is provided
+  Icon = status ? Circle : Circle, // Default to Circle if a status is provided
   showChevron = true,
   color,
   textColor,
@@ -143,21 +143,20 @@ export default function Tooltip({
     if (onPress && !showChevron) onPress();
   }
   return (
-      <TouchableOpacity
-        onPress={handlePress}
-        style={[
-          styles.tooltipContainer,
-          changeColorOnPress
-            ? isPressed
-              ? { backgroundColor: COLORS.black }
-              : { backgroundColor: COLORS.lightGray }
-            : { backgroundColor: COLORS.lightGray },
-          color && { backgroundColor: color },
-        ]}
-        activeOpacity={0.7}
-        testID="tooltip-container"
-      >
-      
+    <TouchableOpacity
+      onPress={handlePress}
+      style={[
+        styles.tooltipContainer,
+        changeColorOnPress
+          ? isPressed
+            ? { backgroundColor: COLORS.black }
+            : { backgroundColor: COLORS.lightGray }
+          : { backgroundColor: COLORS.lightGray },
+        color && { backgroundColor: color },
+      ]}
+      activeOpacity={0.7}
+      testID="tooltip-container"
+    >
       {/* Icon if provided */}
       {Icon && (
         <View style={styles.iconContainer}>
@@ -188,7 +187,7 @@ export default function Tooltip({
               fill={COLORS.status.red}
               testID="tooltip-icon"
             />
-          ): status === "black" ? (
+          ) : status === "black" ? (
             <Icon
               width={12}
               height={12}
@@ -196,15 +195,17 @@ export default function Tooltip({
               color={COLORS.black}
               fill={COLORS.black}
               testID="tooltip-icon"
-            />) : status === "white" ? (
-              <Icon
-                width={12}
-                height={12}
-                strokeWidth={3}
-                color={COLORS.black}
-                fill={COLORS.white}
-                testID="tooltip-icon"
-              />) :(
+            />
+          ) : status === "white" ? (
+            <Icon
+              width={12}
+              height={12}
+              strokeWidth={3}
+              color={COLORS.black}
+              fill={COLORS.white}
+              testID="tooltip-icon"
+            />
+          ) : (
             <Icon
               width={14}
               height={14}

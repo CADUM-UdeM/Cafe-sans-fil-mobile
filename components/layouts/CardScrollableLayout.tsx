@@ -54,7 +54,7 @@ type CardScrollableLayoutProps = {
  *
  * A reusable layout component for creating horizontally scrollable sections
  * with optional dividers, title, and customizable margins. By default, the
- * the component will render a horizontal scroll. You can disable the 
+ * the component will render a horizontal scroll. You can disable the
  * horizontal scroll by setting the `scroll` prop to `false`.
  *
  * **Note**: The scrollable component inside this layout has some default

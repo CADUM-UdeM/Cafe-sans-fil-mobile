@@ -1,8 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { Redirect, router } from "expo-router";
 import * as Location from "expo-location";
-import { Activity, CreditCard, DollarSign, Star, Vegan } from "lucide-react-native";
-import { View, StyleSheet,StatusBar, Image, Text, FlatList, SafeAreaView, ActivityIndicator, TouchableOpacity, Platform } from "react-native";
+import {
+  Activity,
+  CreditCard,
+  DollarSign,
+  Star,
+  Vegan,
+} from "lucide-react-native";
+import {
+  View,
+  StyleSheet,
+  StatusBar,
+  Image,
+  Text,
+  FlatList,
+  SafeAreaView,
+  ActivityIndicator,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
 
 import useLocation from "@/hooks/useLocation";
 import useOnForegroundBack from "@/hooks/useOnForegroundBack";
@@ -65,26 +82,27 @@ export default function HomeScreen() {
   const [showCash, setShowCash] = useState(false);
   const [showDebit, setShowDebit] = useState(false);
   const [showCredit, setShowCredit] = useState(false);
-  const [location, getCurrentLocation, locationPermissionDenied] = useLocation();
+  const [location, getCurrentLocation, locationPermissionDenied] =
+    useLocation();
   const [originalData, setOriginalData] = useState<Cafe[]>();
   const [searched, setSearched] = useState(false);
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
   const [selectedLocation, setSelectedLocation] = useState<{
-    name: string,
-    coords: { latitude: number, longitude: number }
+    name: string;
+    coords: { latitude: number; longitude: number };
   } | null>(null);
   // Execute a callback when the app comes to the foreground
   useOnForegroundBack(getCurrentLocation);
 
   useEffect(() => {
     const checkIfOnboarded = async () => {
-      const hasOnboarded = await AsyncStorage.getItem('hasOnboarded');
+      const hasOnboarded = await AsyncStorage.getItem("hasOnboarded");
       console.log("Has onboarded: de home", hasOnboarded);
       if (hasOnboarded === null) {
         console.log("Redirecting to onboarding from home");
-        router.replace('/first-onboarding'); // Redirect to onboarding if not onboarded
+        router.replace("/first-onboarding"); // Redirect to onboarding if not onboarded
       }
-    }
+    };
     checkIfOnboarded();
   }, []);
 
@@ -101,18 +119,26 @@ export default function HomeScreen() {
       .then((response) => response.json())
       .then((json) => {
         setOriginalData(json.items);
-        
+
         // Only set data and closest if we don't have a selected location
         if (!selectedLocation) {
           setData(json.items);
-          
+
           // Only sort by distance if location permission was granted
           if (!locationPermissionDenied) {
-            const sortedCafes = sortByDistance(location as Location.LocationObject, json.items);
+            const sortedCafes = sortByDistance(
+              location as Location.LocationObject,
+              json.items
+            );
             setClosest(sortedCafes);
-            console.log("Cafes sorted by distance, closest:", sortedCafes?.[0]?.location.pavillon);
+            console.log(
+              "Cafes sorted by distance, closest:",
+              sortedCafes?.[0]?.location.pavillon
+            );
           } else {
-            console.log("Location permission denied, showing all cafes without sorting");
+            console.log(
+              "Location permission denied, showing all cafes without sorting"
+            );
             // Just set the cafes without sorting
             setClosest(json.items);
           }
@@ -129,7 +155,7 @@ export default function HomeScreen() {
     if (selectedLocation && originalData && location) {
       console.log("Selected location changed, re-sorting cafes");
       const sortedCafes = sortByDistance(
-        location as Location.LocationObject, 
+        location as Location.LocationObject,
         originalData,
         selectedLocation.coords
       );
@@ -140,12 +166,19 @@ export default function HomeScreen() {
   /**
    * This function returns the closest cafe based on the provided coordinates.
    */
-  function sortByDistance(current: Location.LocationObject, cafes: Cafe[], customCoords?: { latitude: number, longitude: number }): Cafe[] | undefined {
+  function sortByDistance(
+    current: Location.LocationObject,
+    cafes: Cafe[],
+    customCoords?: { latitude: number; longitude: number }
+  ): Cafe[] | undefined {
     if (current && cafes) {
       // Use custom coordinates if provided, otherwise use device location
-      const useCoords = customCoords || { latitude: current.coords.latitude, longitude: current.coords.longitude };
+      const useCoords = customCoords || {
+        latitude: current.coords.latitude,
+        longitude: current.coords.longitude,
+      };
 
-      let cafeDistances = cafes.map(cafe => {
+      let cafeDistances = cafes.map((cafe) => {
         if (cafe.location.geometry) {
           let cafeCoords = cafe.location.geometry.coordinates;
           let x = useCoords.latitude - cafeCoords[1];
@@ -162,12 +195,15 @@ export default function HomeScreen() {
   }
 
   // Function to handle location changes from SelectLocalisation
-  const handleLocationChange = (pavilionName: string, coords: { latitude: number, longitude: number }) => {
+  const handleLocationChange = (
+    pavilionName: string,
+    coords: { latitude: number; longitude: number }
+  ) => {
     console.log("Location change handler called with:", pavilionName, coords);
 
     const newSelectedLocation = {
       name: pavilionName,
-      coords: coords
+      coords: coords,
     };
 
     setSelectedLocation(newSelectedLocation);
@@ -175,15 +211,13 @@ export default function HomeScreen() {
     // Immediately update closest cafes with the new coordinates
     if (originalData && location) {
       const sortedCafes = sortByDistance(
-        location as Location.LocationObject, 
+        location as Location.LocationObject,
         originalData,
         coords
       );
       setClosest(sortedCafes);
     }
   };
-
-  
 
   function sortByPavillon(cafes: Cafe[]): Cafe[][] {
     if (!cafes || cafes.length === 0) {
@@ -194,7 +228,7 @@ export default function HomeScreen() {
     const pavillonMap = new Map<string, Cafe[]>();
 
     // Group cafes by pavillon
-    cafes.forEach(cafe => {
+    cafes.forEach((cafe) => {
       const pavillon = cafe.location.pavillon;
       if (!pavillonMap.has(pavillon)) {
         pavillonMap.set(pavillon, []);
@@ -214,45 +248,57 @@ export default function HomeScreen() {
     let filteredCafesClose = cafes;
 
     if (showOnlyOrder) {
-      filteredCafesClose = filteredCafesClose.filter(cafe => cafe.features.includes("ORDER"));
+      filteredCafesClose = filteredCafesClose.filter((cafe) =>
+        cafe.features.includes("ORDER")
+      );
     }
 
     if (showOpen) {
-      filteredCafesClose = filteredCafesClose.filter(cafe => isOpenOrNot(cafe) == true);
+      filteredCafesClose = filteredCafesClose.filter(
+        (cafe) => isOpenOrNot(cafe) == true
+      );
     }
     if (showClosed) {
-      filteredCafesClose = filteredCafesClose.filter(cafe => isOpenOrNot(cafe) == false);
+      filteredCafesClose = filteredCafesClose.filter(
+        (cafe) => isOpenOrNot(cafe) == false
+      );
     }
 
     if (showCash) {
-      filteredCafesClose = filteredCafesClose.filter(cafe =>
-      Array.isArray(cafe.payment_details) &&
-      cafe.payment_details.some((p: any) => p?.method === "CASH")
+      filteredCafesClose = filteredCafesClose.filter(
+        (cafe) =>
+          Array.isArray(cafe.payment_details) &&
+          cafe.payment_details.some((p: any) => p?.method === "CASH")
       );
     }
     if (showDebit) {
-      filteredCafesClose = filteredCafesClose.filter(cafe =>
-      Array.isArray(cafe.payment_details) &&
-      cafe.payment_details.some((p: any) => p?.method === "DEBIT")
+      filteredCafesClose = filteredCafesClose.filter(
+        (cafe) =>
+          Array.isArray(cafe.payment_details) &&
+          cafe.payment_details.some((p: any) => p?.method === "DEBIT")
       );
     }
     if (showCredit) {
-      filteredCafesClose = filteredCafesClose.filter(cafe =>
-      Array.isArray(cafe.payment_details) &&
-      cafe.payment_details.some((p: any) => p?.method === "CREDIT")
+      filteredCafesClose = filteredCafesClose.filter(
+        (cafe) =>
+          Array.isArray(cafe.payment_details) &&
+          cafe.payment_details.some((p: any) => p?.method === "CREDIT")
       );
     }
 
     return filteredCafesClose;
-
   };
-  const isOpenOrNot = (cafe) =>{
+  const isOpenOrNot = (cafe) => {
     const currentDate = new Date();
-    const currentDay = currentDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-    const currentTime = currentDate.toTimeString().slice(0,5); // "HH:MM"
+    const currentDay = currentDate
+      .toLocaleDateString("en-US", { weekday: "long" })
+      .toLowerCase();
+    const currentTime = currentDate.toTimeString().slice(0, 5); // "HH:MM"
     let openStatus = false;
     if (cafe && cafe.opening_hours) {
-      const todayHours = cafe.opening_hours.find((day) => day.day.toLowerCase() === currentDay);
+      const todayHours = cafe.opening_hours.find(
+        (day) => day.day.toLowerCase() === currentDay
+      );
       //console.log("today hours: ", todayHours);
       if (todayHours) {
         for (let block of todayHours.blocks) {
@@ -266,12 +312,10 @@ export default function HomeScreen() {
     //console.log("lol", cafe.opening_hours);
     //console.log("open status de ", openStatus, currentDay, currentTime);
     return openStatus;
-
-  }
+  };
 
   // Improved search function that correctly handles text changes
   function handleSearch(text: string): void {
-
     // Always work with the original data to ensure consistent search results
     if (!originalData) return;
 
@@ -283,11 +327,12 @@ export default function HomeScreen() {
     }
 
     // Filter cafes based on the current search text
-    const filteredCafes = originalData.filter((cafe: Cafe) =>
-      cafe.name.toLowerCase().includes(text.toLowerCase()) ||
-      cafe.location.pavillon.toLowerCase().includes(text.toLowerCase()) ||
-      cafe.location.local.toLowerCase().includes(text.toLowerCase()) ||
-      cafe.affiliation.faculty.toLowerCase().includes(text.toLowerCase())
+    const filteredCafes = originalData.filter(
+      (cafe: Cafe) =>
+        cafe.name.toLowerCase().includes(text.toLowerCase()) ||
+        cafe.location.pavillon.toLowerCase().includes(text.toLowerCase()) ||
+        cafe.location.local.toLowerCase().includes(text.toLowerCase()) ||
+        cafe.affiliation.faculty.toLowerCase().includes(text.toLowerCase())
     );
 
     setData(filteredCafes);
@@ -296,42 +341,61 @@ export default function HomeScreen() {
 
   if (isLoading || !location || (!data && !closest)) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignContent: 'center' }}>
-        <ActivityIndicator size={'large'} />
+      <View
+        style={{ flex: 1, justifyContent: "center", alignContent: "center" }}
+      >
+        <ActivityIndicator size={"large"} />
         {!location && !locationPermissionDenied && (
-          <Text style={{ textAlign: 'center', marginTop: 10, color: COLORS.subtuleDark }}>
+          <Text
+            style={{
+              textAlign: "center",
+              marginTop: 10,
+              color: COLORS.subtuleDark,
+            }}
+          >
             Récupération de votre position...
           </Text>
         )}
         {locationPermissionDenied && (
-          <Text style={{ textAlign: 'center', marginTop: 10, color: COLORS.subtuleDark }}>
+          <Text
+            style={{
+              textAlign: "center",
+              marginTop: 10,
+              color: COLORS.subtuleDark,
+            }}
+          >
             Chargement des cafés...
           </Text>
         )}
       </View>
-    )
-  }
-  else {
+    );
+  } else {
     return (
-      
       <SafeAreaView>
-        <StatusBar   barStyle={Platform.OS === "android" ? "dark-content" : undefined}/>
+        <StatusBar
+          barStyle={Platform.OS === "android" ? "dark-content" : undefined}
+        />
         <ScrollableLayout>
           <>
             {/* User Location and Search */}
-            
+
             <View style={styles.locationAndSearchContainer}>
               {location && !locationPermissionDenied && (
-              <SelectLocalisation
-                currentLocalisation={selectedLocation ? selectedLocation.name : (closest && closest.length > 0) ? closest[0].location.pavillon : ""}
-                location={location as Location.LocationObject}
-                onLocationChange={handleLocationChange}
-              />
+                <SelectLocalisation
+                  currentLocalisation={
+                    selectedLocation
+                      ? selectedLocation.name
+                      : closest && closest.length > 0
+                      ? closest[0].location.pavillon
+                      : ""
+                  }
+                  location={location as Location.LocationObject}
+                  onLocationChange={handleLocationChange}
+                />
               )}
 
               <Search onSearch={handleSearch} />
             </View>
-            
 
             {/* TODO: IMPLEMENT FILTERS USING TOOLTIPS */}
             {/* Quick Search Section with Tooltips */}
@@ -383,38 +447,49 @@ export default function HomeScreen() {
                 changeColorOnPress
               />
               */}
-              
             </CardScrollableLayout>
             {filterCafes(data).length === 0 && (
-              <Text style={{ textAlign: 'center', marginTop: SPACING["lg"], color: COLORS.subtuleDark }}>
-              Aucun café trouvé.
+              <Text
+                style={{
+                  textAlign: "center",
+                  marginTop: SPACING["lg"],
+                  color: COLORS.subtuleDark,
+                }}
+              >
+                Aucun café trouvé.
               </Text>
             )}
 
             {filterCafes(data).length > 0 && (
               <Text
-              style={{
-                marginVertical: SPACING["sm"],
-                marginHorizontal: SPACING["sm"],
-                ...TYPOGRAPHY.heading.small.bold
-              }}>
-              {!searched ? "Tous les cafés" : `Résultats (${data.length})`}
+                style={{
+                  marginVertical: SPACING["sm"],
+                  marginHorizontal: SPACING["sm"],
+                  ...TYPOGRAPHY.heading.small.bold,
+                }}
+              >
+                {!searched ? "Tous les cafés" : `Résultats (${data.length})`}
               </Text>
             )}
-            <FlatList data={filterCafes(data)} renderItem={({ item }) =>
-              <CafeCard
-                name={item.name}
-                image={item.banner_url}
-                location={item.location.pavillon}
-                priceRange="$$"
-                //rating={4.8}
-                status={isOpenOrNot(item)}
-                id={item.id}
-              />}
-              keyExtractor={item => item.id}
+            <FlatList
+              data={filterCafes(data)}
+              renderItem={({ item }) => (
+                <CafeCard
+                  name={item.name}
+                  image={item.banner_url}
+                  location={item.location.pavillon}
+                  priceRange="$$"
+                  //rating={4.8}
+                  status={isOpenOrNot(item)}
+                  id={item.id}
+                />
+              )}
+              keyExtractor={(item) => item.id}
               horizontal
               showsHorizontalScrollIndicator={false}
-              ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
+              ItemSeparatorComponent={() => (
+                <View style={{ width: SPACING["md"] }} />
+              )}
               style={{
                 paddingHorizontal: SPACING["sm"],
                 paddingBottom: SPACING["md"],
@@ -460,38 +535,45 @@ export default function HomeScreen() {
                   const pavillonName = pavillonGroup[0].location.pavillon;
 
                   return (
-                    <View key={`pavillon-${index}`} style={{ marginBottom: SPACING["lg"] }}>
+                    <View
+                      key={`pavillon-${index}`}
+                      style={{ marginBottom: SPACING["lg"] }}
+                    >
                       <Text
                         style={{
                           marginVertical: SPACING["sm"],
                           marginHorizontal: SPACING["md"],
                           marginTop: -SPACING["sm"],
-                          ...TYPOGRAPHY.heading.small.bold
-                        }}>
+                          ...TYPOGRAPHY.heading.small.bold,
+                        }}
+                      >
                         {pavillonName}
                       </Text>
-                      
+
                       <FlatList
                         data={pavillonGroup}
                         renderItem={({ item }) => (
                           <CafeCard
                             name={item.name}
                             image={item.banner_url}
-                            location={'L' + item.location.local.substring(1) || ""}
+                            location={
+                              "L" + item.location.local.substring(1) || ""
+                            }
                             priceRange="$$"
                             //rating={4.8}
                             status={isOpenOrNot(item)}
                             id={item.id}
                           />
                         )}
-                        keyExtractor={item => item.id}
+                        keyExtractor={(item) => item.id}
                         horizontal
                         showsHorizontalScrollIndicator={false}
-                        ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
+                        ItemSeparatorComponent={() => (
+                          <View style={{ width: SPACING["md"] }} />
+                        )}
                         style={{
                           paddingHorizontal: SPACING["sm"],
                           paddingBottom: SPACING["md"],
-                          
                         }}
                       />
                     </View>
@@ -499,61 +581,69 @@ export default function HomeScreen() {
                 })}
               </View>
             )}
-            
+
             {/* Cafés groupés par pavillon */}
             {data && closest && !searched && (
               <View style={{ marginTop: SPACING["xl"] }}>
-                
+                {sortByPavillon(filterCafes(closest)).map(
+                  (pavillonGroup, index) => {
+                    if (pavillonGroup.length === 0) return null;
 
-                {sortByPavillon(filterCafes(closest)).map((pavillonGroup, index) => {
-                  if (pavillonGroup.length === 0) return null;
+                    const pavillonName = pavillonGroup[0].location.pavillon;
 
-                  const pavillonName = pavillonGroup[0].location.pavillon;
-
-                  return (
-                    <View key={`pavillon-${index}`} style={{ marginBottom: SPACING["lg"] }}>
-                      <Text
-                        style={{
-                          marginVertical: SPACING["sm"],
-                          marginHorizontal: SPACING["md"],
-                          marginTop: -SPACING["sm"],
-                          ...TYPOGRAPHY.heading.small.bold
-                        }}>
-                        {pavillonName}
-                      </Text>
-                      <FlatList
-                        data={pavillonGroup}
-                        renderItem={({ item }) => (
-                          <CafeCard
-                            name={item.name}
-                            image={item.banner_url}
-                            location={'L' + item.location.local.substring(1) || ""}
-                            priceRange="$$"
-                            //rating={4.8}
-                            status={isOpenOrNot(item)}
-                            id={item.id}
-                          />
-                        )}
-                        keyExtractor={item => item.id}
-                        horizontal
-                        ItemSeparatorComponent={() => <View style={{ width: SPACING["md"] }} />}
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={{
-                          paddingHorizontal: SPACING["sm"],
-                          paddingBottom: SPACING["md"],
-                        }}
-                      />
-                    </View>
-                  );
-                })}
+                    return (
+                      <View
+                        key={`pavillon-${index}`}
+                        style={{ marginBottom: SPACING["lg"] }}
+                      >
+                        <Text
+                          style={{
+                            marginVertical: SPACING["sm"],
+                            marginHorizontal: SPACING["md"],
+                            marginTop: -SPACING["sm"],
+                            ...TYPOGRAPHY.heading.small.bold,
+                          }}
+                        >
+                          {pavillonName}
+                        </Text>
+                        <FlatList
+                          data={pavillonGroup}
+                          renderItem={({ item }) => (
+                            <CafeCard
+                              name={item.name}
+                              image={item.banner_url}
+                              location={
+                                "L" + item.location.local.substring(1) || ""
+                              }
+                              priceRange="$$"
+                              //rating={4.8}
+                              status={isOpenOrNot(item)}
+                              id={item.id}
+                            />
+                          )}
+                          keyExtractor={(item) => item.id}
+                          horizontal
+                          ItemSeparatorComponent={() => (
+                            <View style={{ width: SPACING["md"] }} />
+                          )}
+                          showsHorizontalScrollIndicator={false}
+                          contentContainerStyle={{
+                            paddingHorizontal: SPACING["sm"],
+                            paddingBottom: SPACING["md"],
+                          }}
+                        />
+                      </View>
+                    );
+                  }
+                )}
               </View>
             )}
-
           </>
         </ScrollableLayout>
       </SafeAreaView>
-    );}
+    );
   }
+}
 
 const styles = StyleSheet.create({
   locationAndSearchContainer: {
@@ -579,7 +669,7 @@ const styles = StyleSheet.create({
     paddingRight: SPACING["md"],
   },
   resetLocationButton: {
-    alignSelf: 'center',
+    alignSelf: "center",
     paddingVertical: 4,
     paddingHorizontal: 10,
     backgroundColor: COLORS.lightGray,

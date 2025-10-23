@@ -1,10 +1,10 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+import React from "react";
+import { View, Text } from "react-native";
 
 // Constants
-import TYPOGRAPHY from '@/constants/Typography';
-import COLORS from '@/constants/Colors';
-import SPACING from '@/constants/Spacing';  
+import TYPOGRAPHY from "@/constants/Typography";
+import COLORS from "@/constants/Colors";
+import SPACING from "@/constants/Spacing";
 
 /*
     Here we have a OnboardingStatusBar component that renders a OnboardingStatusBar with text.
@@ -21,8 +21,8 @@ import SPACING from '@/constants/Spacing';
 */
 
 type OnboardingStatusBarProps = {
-    id: 1 | 2 | 3,
-}
+  id: 1 | 2 | 3;
+};
 
 /**
  * OnboardingStatusBar component that renders a OnboardingStatusBar with text.
@@ -35,5 +35,5 @@ export default function OnboardingStatusBar({ id }: OnboardingStatusBarProps) {
     <View>
       <Text>OnboardingStatusBar</Text>
     </View>
-  )
+  );
 }

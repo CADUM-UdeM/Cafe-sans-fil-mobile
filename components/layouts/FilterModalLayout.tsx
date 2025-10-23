@@ -25,12 +25,13 @@ export default function InfoModalLayout({
         margin: SPACING.md,
       }}
     >
-      {description? description : "Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque nostrum accusantium autem eos vero consequatur reiciendis quae tenetur possimus sit!"}
+      {description
+        ? description
+        : "Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque nostrum accusantium autem eos vero consequatur reiciendis quae tenetur possimus sit!"}
     </Text>
   ),
   handleApplyFilter = () => console.log("Apply Filter"),
   handleResetFilter = () => console.log("Reset Filter"),
-  
 }: InfoModalLayoutProps) {
   return (
     <>
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
   title: {
     textAlign: "center",
     ...TYPOGRAPHY.heading.medium.bold,
-    marginTop: Platform.OS === 'android' ? 15 : 0,
+    marginTop: Platform.OS === "android" ? 15 : 0,
   },
   description: {
     textAlign: "center",

@@ -2,9 +2,22 @@ import { Redirect, router, Tabs } from "expo-router";
 import TYPOGRAPHY from "@/constants/Typography";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import HeaderLayout from "@/components/layouts/HeaderLayout";
-import { Home, Settings, ShoppingBasket, UserRound, Newspaper, UserRoundPen} from "lucide-react-native";
+import {
+  Home,
+  Settings,
+  ShoppingBasket,
+  UserRound,
+  Newspaper,
+  UserRoundPen,
+} from "lucide-react-native";
 import { Platform, View, ActivityIndicator, Dimensions } from "react-native";
-import { getInfoFromToken, getToken, getRefreshToken, clearTokens, updateToken } from "@/utils/tokenStorage";
+import {
+  getInfoFromToken,
+  getToken,
+  getRefreshToken,
+  clearTokens,
+  updateToken,
+} from "@/utils/tokenStorage";
 import { useEffect, useState } from "react";
 import COLORS from "@/constants/Colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -14,9 +27,9 @@ export default function TabLayout() {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const insets = useSafeAreaInsets();
-  
+
   const getTabBarHeight = () => {
-    if (Platform.OS === 'android') {
+    if (Platform.OS === "android") {
       // If bottom inset is 0, device uses button navigation
       // If bottom inset > 0, device uses gesture navigation
       const hasButtonNavigation = insets.bottom === 0;
@@ -25,14 +38,12 @@ export default function TabLayout() {
     return undefined; // Let iOS handle it automatically
   };
   useEffect(() => {
-
     const checkTokens = async () => {
       try {
-
-        // await clearTokens(); 
+        // await clearTokens();
         const accessToken = await getToken();
         const refreshToken = await getRefreshToken();
-        
+
         console.log("Access Token: loli ", accessToken);
         console.log("Refresh Token: popi ", refreshToken);
 
@@ -41,7 +52,7 @@ export default function TabLayout() {
           setIsSignedIn(true);
           const userInfo = await getInfoFromToken(accessToken);
           console.log("User Info: ", userInfo);
-          if (userInfo ==  false) {
+          if (userInfo == false) {
             // Token is invalid, try to refresh
             try {
               await updateToken(refreshToken);
@@ -50,13 +61,12 @@ export default function TabLayout() {
               // Refresh failed, updateToken already cleared all data
               console.log("Token refresh failed, redirecting to onboarding");
               setIsSignedIn(false);
-              const hasOnboarded = await AsyncStorage.getItem('hasOnboarded');
+              const hasOnboarded = await AsyncStorage.getItem("hasOnboarded");
               console.log("Has onboarded: de layout", hasOnboarded);
               if (hasOnboarded !== null) {
-                router.replace('/'); // Redirect to home if already onboarded
-              }
-              else{
-                router.replace('/first-onboarding'); // Redirect to onboarding if not onboarded
+                router.replace("/"); // Redirect to home if already onboarded
+              } else {
+                router.replace("/first-onboarding"); // Redirect to onboarding if not onboarded
               }
             }
           }
@@ -66,35 +76,30 @@ export default function TabLayout() {
         }
       } catch (error) {
         console.error("Error checking tokens:", error);
-        console.log(error)
+        console.log(error);
         setIsSignedIn(false);
       } finally {
-        setIsLoading(false); 
+        setIsLoading(false);
       }
     };
 
     checkTokens();
   }, []);
 
-  
   useEffect(() => {
     if (!isLoading) {
       console.log("isSignedIn: ", isSignedIn);
     }
   }, [isSignedIn, isLoading]);
 
-  
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color={COLORS.black} />
       </View>
     );
   }
 
-
- 
-  
   return (
     <Tabs
       detachInactiveScreens={false}
@@ -104,9 +109,13 @@ export default function TabLayout() {
         tabBarInactiveTintColor: "#89898D",
         tabBarStyle: {
           ...Platform.select({
-            ios: { padding: 6 , height: "10%"},
-            android: { padding: 8, height: getTabBarHeight(),paddingBottom: insets.bottom > 0 ? insets.bottom : 8 }
-          })
+            ios: { padding: 6, height: "10%" },
+            android: {
+              padding: 8,
+              height: getTabBarHeight(),
+              paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
+            },
+          }),
         },
       }}
     >
@@ -117,10 +126,9 @@ export default function TabLayout() {
           header: () => <HeaderLayout />,
           tabBarIcon: ({ color }) => <Home size={28} color={color} />,
           tabBarLabelStyle: TYPOGRAPHY.body.small.bold,
-          animation: 'shift',
-          sceneStyle: { backgroundColor: COLORS.white }  
+          animation: "shift",
+          sceneStyle: { backgroundColor: COLORS.white },
         }}
-        
       />
       <Tabs.Screen
         name="favoris"
@@ -131,35 +139,32 @@ export default function TabLayout() {
             <FontAwesome size={24} name="heart" color={color} />
           ),
           tabBarLabelStyle: TYPOGRAPHY.body.small.bold,
-          animation: 'shift'
+          animation: "shift",
         }}
       />
-      
+
       <Tabs.Screen
         name="pannier"
         options={{
           href: null,
           title: "Pannier",
           headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <ShoppingBasket size={28} color={color} />
-          ),
+          tabBarIcon: ({ color }) => <ShoppingBasket size={28} color={color} />,
           tabBarLabelStyle: TYPOGRAPHY.body.small.bold,
-          animation: 'shift'
+          animation: "shift",
         }}
       />
       <Tabs.Screen
         name="events"
-        
         options={{
           title: "Communauté",
           headerShown: false,
           tabBarIcon: ({ color }) => <Newspaper size={28} color={color} />,
           tabBarLabelStyle: TYPOGRAPHY.body.small.bold,
-          animation: 'shift'
+          animation: "shift",
         }}
       />
-      
+
       <Tabs.Screen
         name="parametre"
         options={{
@@ -167,7 +172,7 @@ export default function TabLayout() {
           headerShown: false,
           tabBarIcon: ({ color }) => <UserRoundPen size={28} color={color} />,
           tabBarLabelStyle: TYPOGRAPHY.body.small.bold,
-          animation: 'shift'
+          animation: "shift",
         }}
       />
       <Tabs.Screen
@@ -182,7 +187,7 @@ export default function TabLayout() {
         options={{
           href: null,
           headerShown: false,
-          animation: 'shift'
+          animation: "shift",
         }}
       />
       <Tabs.Screen
@@ -190,7 +195,7 @@ export default function TabLayout() {
         options={{
           href: null,
           headerShown: false,
-          animation: 'shift'
+          animation: "shift",
         }}
       />
       <Tabs.Screen
@@ -198,7 +203,7 @@ export default function TabLayout() {
         options={{
           href: null,
           headerShown: false,
-          animation: 'shift'
+          animation: "shift",
         }}
       />
     </Tabs>

@@ -11,20 +11,19 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function ThirdOnboardingScreen() {
   const router = useRouter();
   useEffect(() => {
-      const checkIfOnboarded = async () => {
-        const hasOnboarded = await AsyncStorage.getItem('hasOnboarded');
-        console.log("Has onboarded: de third", hasOnboarded);
-        if (hasOnboarded !== null) {
-          console.log("Redirecting to home from onboarding");
-          router.replace('/'); // Redirect to home if already onboarded
-        }
-        else{
-          console.log("Setting hasOnboarded to true");
-          await AsyncStorage.setItem('hasOnboarded', 'true');
-        }
+    const checkIfOnboarded = async () => {
+      const hasOnboarded = await AsyncStorage.getItem("hasOnboarded");
+      console.log("Has onboarded: de third", hasOnboarded);
+      if (hasOnboarded !== null) {
+        console.log("Redirecting to home from onboarding");
+        router.replace("/"); // Redirect to home if already onboarded
+      } else {
+        console.log("Setting hasOnboarded to true");
+        await AsyncStorage.setItem("hasOnboarded", "true");
       }
-      checkIfOnboarded();
-    }, []);
+    };
+    checkIfOnboarded();
+  }, []);
   return (
     <View style={styles.screenContainer}>
       <View style={styles.currentPage}>
@@ -48,8 +47,8 @@ export default function ThirdOnboardingScreen() {
             Filtres Personnalisés
           </Text>
           <Text style={[TYPOGRAPHY.body.large.base, styles.description]}>
-            Filtrez par prix, moyen de paiement, ouverture pour une expérience rapide et sur mesure
-            et sur mesure.
+            Filtrez par prix, moyen de paiement, ouverture pour une expérience
+            rapide et sur mesure et sur mesure.
           </Text>
         </View>
       </View>

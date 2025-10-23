@@ -23,7 +23,10 @@ type SelectLocalisationProps = {
   currentLocalisation: string;
   location: Location.LocationObject;
   style?: StyleProp<ViewStyle>;
-  onLocationChange?: (pavilionName: string, coords: {latitude: number, longitude: number}) => void;
+  onLocationChange?: (
+    pavilionName: string,
+    coords: { latitude: number; longitude: number }
+  ) => void;
 };
 
 export default function SelectLocalisation({
@@ -33,13 +36,20 @@ export default function SelectLocalisation({
   onLocationChange,
 }: SelectLocalisationProps) {
   const [localisation, setLocalisation] = useState("");
-  const [isCurrentLocalisationModified, setisCurrentLocalisationModified] = useState(false);
+  const [isCurrentLocalisationModified, setisCurrentLocalisationModified] =
+    useState(false);
   const [locationLoaded, setLocationLoaded] = useState("");
-  const [selectedCoords, setSelectedCoords] = useState<{latitude: number; longitude: number}>();
+  const [selectedCoords, setSelectedCoords] = useState<{
+    latitude: number;
+    longitude: number;
+  }>();
   const [newLocation, setNewLocation] = useState(""); // Add this line to store selected location name
-  
+
   // Use refs to store immediate values
-  const currentSelectionRef = useRef<{location: string, coords: {latitude: number, longitude: number}} | null>(null);
+  const currentSelectionRef = useRef<{
+    location: string;
+    coords: { latitude: number; longitude: number };
+  } | null>(null);
 
   // Reset internal state when currentLocalisation changes from parent
   useEffect(() => {
@@ -53,21 +63,25 @@ export default function SelectLocalisation({
   const openModal = modalContext ? modalContext.openModal : () => {};
   const closeModal = modalContext ? modalContext.closeModal : () => {};
 
-  function handleMarkerPress(pressedLocation: string, lat: number, lng: number) {
+  function handleMarkerPress(
+    pressedLocation: string,
+    lat: number,
+    lng: number
+  ) {
     console.log("handleMarkerPress called with:", pressedLocation, lat, lng);
-    const coords = {latitude: lat, longitude: lng};
-    
+    const coords = { latitude: lat, longitude: lng };
+
     // Store immediately in ref
     currentSelectionRef.current = {
       location: pressedLocation,
-      coords: coords
+      coords: coords,
     };
-    
+
     // Also update state
     setLocalisation(pressedLocation);
     setNewLocation(pressedLocation);
     setSelectedCoords(coords);
-    
+
     console.log("Stored in ref:", currentSelectionRef.current);
   }
 
@@ -75,31 +89,35 @@ export default function SelectLocalisation({
     console.log("handleApplyFilter called");
     console.log("State values:", { newLocation, selectedCoords });
     console.log("Ref values:", currentSelectionRef.current);
-    
+
     // Use ref values if available, otherwise fall back to state
     const locationToUse = currentSelectionRef.current?.location || newLocation;
     const coordsToUse = currentSelectionRef.current?.coords || selectedCoords;
-    
+
     console.log("Using values:", { locationToUse, coordsToUse });
-    
+
     // Only proceed if we have both location and coordinates
     if (locationToUse && coordsToUse) {
       setLocationLoaded(locationToUse);
       setLocalisation("");
       setisCurrentLocalisationModified(true);
-      
+
       // Call the parent callback with the new location info
-      if(onLocationChange) {
-        console.log("Calling onLocationChange with:", locationToUse, coordsToUse);
+      if (onLocationChange) {
+        console.log(
+          "Calling onLocationChange with:",
+          locationToUse,
+          coordsToUse
+        );
         onLocationChange(locationToUse, coordsToUse);
       }
-      
+
       // Clear the ref after use
       currentSelectionRef.current = null;
     } else {
       console.log("Missing location or coordinates");
     }
-    
+
     closeModal();
   }
 

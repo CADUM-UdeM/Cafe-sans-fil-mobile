@@ -1,4 +1,4 @@
-import { View, Text, Platform} from "react-native";
+import { View, Text, Platform } from "react-native";
 import React, { useEffect, useState } from "react";
 import * as Location from "expo-location";
 import COLORS from "@/constants/Colors";
@@ -8,31 +8,38 @@ import MapView, { Marker, Callout, PROVIDER_GOOGLE } from "react-native-maps";
 import FilterModalLayout from "./FilterModalLayout";
 
 export default function MapModalLayout({
-    handleApplyFilter,
-    handleResetFilter,
-    handleMarkerPress, // Updated to include coordinates
-    location,
-    currentLocalisation,
-    isCurrentLocalisationModified,
-    locationLoaded,
+  handleApplyFilter,
+  handleResetFilter,
+  handleMarkerPress, // Updated to include coordinates
+  location,
+  currentLocalisation,
+  isCurrentLocalisationModified,
+  locationLoaded,
 }: {
-    handleApplyFilter: () => void;
-    handleResetFilter: () => void;
-    handleMarkerPress: (pressedLocation: string, lat: number, lng: number) => void; // Updated type definition
-    location: Location.LocationObject;
-    currentLocalisation: string;
-    isCurrentLocalisationModified: boolean;
-    locationLoaded: string;
+  handleApplyFilter: () => void;
+  handleResetFilter: () => void;
+  handleMarkerPress: (
+    pressedLocation: string,
+    lat: number,
+    lng: number
+  ) => void; // Updated type definition
+  location: Location.LocationObject;
+  currentLocalisation: string;
+  isCurrentLocalisationModified: boolean;
+  locationLoaded: string;
 }) {
-  
   interface Coordinate {
     pavillon: string;
     lat: number;
     lng: number;
   }
 
-  const [listCoordinates, setListCoordinates] = useState<(Coordinate | null)[]>([]);
-  const [pavillonCoordinates, setPavillonCoordinates] = useState<Coordinate[]>([]);
+  const [listCoordinates, setListCoordinates] = useState<(Coordinate | null)[]>(
+    []
+  );
+  const [pavillonCoordinates, setPavillonCoordinates] = useState<Coordinate[]>(
+    []
+  );
 
   useEffect(() => {
     fetch("https://cafesansfil-api-r0kj.onrender.com/api/cafes")
@@ -50,14 +57,15 @@ export default function MapModalLayout({
             }
             return null;
           })
-          .filter((coordinate : any): coordinate is Coordinate => coordinate !== null);
-        
+          .filter(
+            (coordinate: any): coordinate is Coordinate => coordinate !== null
+          );
+
         // Single state update with filtered data
         setListCoordinates(filteredCoordinates);
       })
       .catch((error) => console.error(error));
-  }, []);  // ← Remove location dependency to prevent re-fetching
-  
+  }, []); // ← Remove location dependency to prevent re-fetching
 
   return (
     <FilterModalLayout
@@ -66,18 +74,18 @@ export default function MapModalLayout({
       handleResetFilter={handleResetFilter}
     >
       <MapView
-      key={`map-${listCoordinates.length}`} // Add this line to force re-render
+        key={`map-${listCoordinates.length}`} // Add this line to force re-render
         style={{
           width: "100%",
           height: 400,
           borderRadius: 20,
-          marginTop: 16,  
+          marginTop: 16,
         }}
-        provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
+        provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
         initialRegion={{
           latitude: location.coords.latitude,
           longitude: location.coords.longitude,
-          latitudeDelta: 0.0922,  // Increased from 0.0922
+          latitudeDelta: 0.0922, // Increased from 0.0922
           longitudeDelta: 0.0421, // Increased from 0.0421
         }}
         showsUserLocation
@@ -90,10 +98,11 @@ export default function MapModalLayout({
         mapType="standard"
       >
         {listCoordinates.map((coordinate, index) =>
-          coordinate && coordinate.pavillon ===
-          (isCurrentLocalisationModified
-            ? locationLoaded
-            : currentLocalisation) ? (
+          coordinate &&
+          coordinate.pavillon ===
+            (isCurrentLocalisationModified
+              ? locationLoaded
+              : currentLocalisation) ? (
             <Marker
               key={`selected-${coordinate.pavillon}-${index}`}
               coordinate={{
@@ -129,47 +138,51 @@ export default function MapModalLayout({
               </Callout>
             </Marker>
           ) : (
-            coordinate && <Marker
-              key={`regular-${coordinate.pavillon}-${index}`}
-              coordinate={{
-                latitude: coordinate.lat,
-                longitude: coordinate.lng,
-              }}
-              title={coordinate.pavillon}
-              pinColor= "blue"
-              onPress={() => handleMarkerPress(
-                coordinate.pavillon, 
-                coordinate.lat,
-                coordinate.lng
-              )}
-            >
-              <Callout>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: SPACING.xs,
-                  }}
-                >
+            coordinate && (
+              <Marker
+                key={`regular-${coordinate.pavillon}-${index}`}
+                coordinate={{
+                  latitude: coordinate.lat,
+                  longitude: coordinate.lng,
+                }}
+                title={coordinate.pavillon}
+                pinColor="blue"
+                onPress={() =>
+                  handleMarkerPress(
+                    coordinate.pavillon,
+                    coordinate.lat,
+                    coordinate.lng
+                  )
+                }
+              >
+                <Callout>
                   <View
                     style={{
-                      width: 12,
-                      height: 12,
-                      borderRadius: 100,
-                      backgroundColor: "blue",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: SPACING.xs,
                     }}
-                  />
-                  <Text
-                    style={[
-                      TYPOGRAPHY.body.normal.semiBold,
-                      { color: COLORS.black },
-                    ]}
                   >
-                    {coordinate.pavillon}
-                  </Text>
-                </View>
-              </Callout>
-            </Marker>
+                    <View
+                      style={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: 100,
+                        backgroundColor: "blue",
+                      }}
+                    />
+                    <Text
+                      style={[
+                        TYPOGRAPHY.body.normal.semiBold,
+                        { color: COLORS.black },
+                      ]}
+                    >
+                      {coordinate.pavillon}
+                    </Text>
+                  </View>
+                </Callout>
+              </Marker>
+            )
           )
         )}
       </MapView>

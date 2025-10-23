@@ -8,22 +8,19 @@ import SPACING from "@/constants/Spacing";
 import Button from "@/components/common/Buttons/Button";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-
 export default function FirstOnboardingScreen() {
-
   const router = useRouter();
   useEffect(() => {
     async function checkIfOnboarded() {
-      const hasOnboarded = await AsyncStorage.getItem('hasOnboarded');
+      const hasOnboarded = await AsyncStorage.getItem("hasOnboarded");
       console.log("Has onboarded: de first", hasOnboarded);
     }
     checkIfOnboarded();
   }, []);
-  
 
   return (
     <View style={styles.screenContainer}>
-       <StatusBar />
+      <StatusBar />
       <View style={styles.currentPage}>
         <View style={[styles.currentPageItem, styles.activePageItem]}></View>
         <View style={styles.currentPageItem}></View>
@@ -37,7 +34,6 @@ export default function FirstOnboardingScreen() {
             alignSelf: "center",
             width: 300,
             height: 260,
-            
           }}
         ></Image>
         <View style={styles.descriptionContainer}>
@@ -52,8 +48,12 @@ export default function FirstOnboardingScreen() {
       </View>
 
       <View style={styles.buttonContainer}>
-        <Button onPress={() => router.push("/second-onboarding")}>Suivant</Button>
-        <Button onPress={() => router.push("/sign-in")} type="secondary">Sauter</Button>
+        <Button onPress={() => router.push("/second-onboarding")}>
+          Suivant
+        </Button>
+        <Button onPress={() => router.push("/sign-in")} type="secondary">
+          Sauter
+        </Button>
       </View>
     </View>
   );

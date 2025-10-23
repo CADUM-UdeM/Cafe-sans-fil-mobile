@@ -16,14 +16,16 @@ type InfoModalLayoutProps = {
 export default function InfoModalLayout({
   title,
   children = "Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque nostrum accusantium autem eos vero consequatur reiciendis quae tenetur possimus sit!",
-  buttonTitle="Button",
+  buttonTitle = "Button",
   buttonAction = () => console.log("hello"),
 }: InfoModalLayoutProps) {
   return (
     <>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.description}>{children}</Text>
-      <Button onPress={buttonAction} style={{ marginBlock: SPACING["sm"] }}>{buttonTitle}</Button>
+      <Button onPress={buttonAction} style={{ marginBlock: SPACING["sm"] }}>
+        {buttonTitle}
+      </Button>
     </>
   );
 }
@@ -38,5 +40,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
     ...TYPOGRAPHY.body.large.medium,
     margin: SPACING.md,
-  }
+  },
 });

@@ -12,7 +12,7 @@ type ScrollableLayoutProps = {
 export default function ScrollableLayout({
   children,
   scrollHorizontal = false,
-  style
+  style,
 }: ScrollableLayoutProps) {
   return (
     <ScrollView
