@@ -23,7 +23,7 @@ import { Item } from "@/constants/types/GET_item";
 import { getToken } from "@/utils/tokenStorage";
 import { router } from "expo-router";
 import { fetchSync, saveSync } from "@/scripts/storage";
-import * as hash from "object-hash";
+//import * as hash from "object-hash";
 
 interface ArticleModalContentProps {
   articleId: string;
